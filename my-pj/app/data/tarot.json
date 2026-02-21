@@ -1,0 +1,422 @@
+{
+  "cards": [
+    {
+      "card_id": "00",
+      "name": "The Fool",
+      "image": "/card/00.svg",
+      "keyword": "การเริ่มต้นใหม่ ความอิสระ ความไร้เดียงสา ความกล้าที่จะก้าวออกไปสู่สิ่งที่ไม่รู้จัก การผจญภัย ความตื่นเต้น และการใช้ชีวิตตามหัวใจ",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "่..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "01",
+      "name": "The Magician",
+      "image": "/card/01.svg",
+      "keyword": "พลังในการสร้างสรรค์ ความสามารถที่ซ่อนอยู่ การควบคุมสถานการณ์ ความมั่นใจ การลงมือทำ และการใช้ศักยภาพของตนเองให้เกิดผลลัพธ์",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "02",
+      "name": "The High Priestess",
+      "image": "/card/02.svg",
+      "keyword": "สัญชาตญาณ ความลับ ความลึกซึ้งทางจิตใจ การรับรู้จากภายใน ความเงียบ การเก็บงำความรู้สึก และการเข้าถึงความจริงที่ซ่อนอยู่เบื้องหลัง",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+        },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "03",
+      "name": "The Empress",
+      "image": "/card/03.svg",
+      "keyword": "ความอุดมสมบูรณ์ ความรัก ความอบอุ่น การดูแลเอาใจใส่ ความคิดสร้างสรรค์ และการเติบโตอย่างงดงาม",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "04",
+      "name": "The Emperor",
+      "image": "/card/04.svg",
+      "keyword": "อำนาจ ความมั่นคง ความเป็นผู้นำ โครงสร้าง ระเบียบวินัย ความรับผิดชอบ และการควบคุมสถานการณ์ด้วยเหตุผล",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "05",
+      "name": "The Hierophant",
+      "image": "/card/05.svg",
+      "keyword": "ความเชื่อ ประเพณี ศีลธรรม การยึดถือหลักการ การเรียนรู้จากผู้มีประสบการณ์ และการดำเนินชีวิตตามกรอบหรือระบบที่มั่นคง",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "06",
+      "name": "The Lovers",
+      "image": "/card/06.svg",
+      "keyword": "ความสัมพันธ์ ความผูกพัน การเชื่อมโยงทางใจ การเลือก การตัดสินใจจากหัวใจ และความกลมกลืนระหว่างสองพลัง",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "07",
+      "name": "The Chariot",
+      "image": "/card/07.svg",
+      "keyword": "ความมุ่งมั่น การควบคุมทิศทางชีวิต ความทะเยอทะยาน ความก้าวหน้า และชัยชนะที่เกิดจากความตั้งใจแน่วแน่",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "08",
+      "name": "Strength",
+      "image": "/card/08.svg",
+      "keyword": "ความเข้มแข็งภายใน ความอดทน ความกล้าหาญ การควบคุมอารมณ์ ความอ่อนโยนที่แฝงด้วยพลัง และการเอาชนะอุปสรรคด้วยใจที่มั่นคง",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "09",
+      "name": "The Hermit",
+      "image": "/card/09.svg",
+      "keyword": "ความรักสงบ ละเอียด รอบคอบ การค้นคว้า การตัดขาดจากโลกภายนอก หรือห่างไกลจากเพื่อนฝูง การอยู่ในสภาวะโดดเดี่ยวตามลำพัง การทำให้จิตใจสงบ ปราศจากความวุ่นวาย",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "10",
+      "name": "Wheel of Fortune ",
+      "image": "/card/10.svg",
+      "keyword": "การเปลี่ยนแปลง วงจรชีวิต โชคชะตา จุดเปลี่ยนสำคัญ โอกาสที่เข้ามาโดยไม่คาดคิด และความไม่แน่นอนที่หลีกเลี่ยงไม่ได้",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "11",
+      "name": "Justice",
+      "image": "/card/11.svg",
+      "keyword": "ความถูกต้อง ความยุติธรรม เหตุและผล ความชัดเจน ความรับผิดชอบต่อการกระทำ และการตัดสินใจด้วยเหตุผล",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "12",
+      "name": "The Hanged Man",
+      "image": "/card/12.svg",
+      "keyword": "การหยุดนิ่ง การเสียสละ การมองโลกในมุมใหม่ การปล่อยวาง ความอดทน และการยอมรับสถานการณ์เพื่อรอเวลาที่เหมาะสม",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+    {
+      "card_id": "13",
+      "name": "Death",
+      "image": "/card/13.svg",
+      "keyword": "การสิ้นสุด การเปลี่ยนแปลงครั้งใหญ่ การเปลี่ยนผ่าน การปิดฉากบางสิ่งเพื่อเริ่มต้นสิ่งใหม่ และการปล่อยวางอดีต",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "14",
+      "name": "Temperance",
+      "image": "/card/14.svg",
+      "keyword": "ความสมดุล ความกลมกลืน ความพอดี การปรับตัว ความอดทน และการผสานสิ่งที่แตกต่างให้เข้ากันอย่างลงตัว",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "15",
+      "name": "The Devil",
+      "image": "/card/15.svg",
+      "keyword": "การยึดติด ความหลงใหล การถูกผูกมัด ข้อจำกัด ความอยากที่ควบคุมไม่ได้ และการตกอยู่ภายใต้อิทธิพลของสิ่งยั่วยุ",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "16",
+      "name": "The Tower",
+      "image": "/card/16.svg",
+      "keyword": "การเปลี่ยนแปลงฉับพลัน ความพังทลายของสิ่งเดิม ความจริงที่ถูกเปิดเผย วิกฤตการณ์ และการรื้อโครงสร้างเพื่อสร้างใหม่",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "17",
+      "name": "The Star",
+      "image": "/card/17.svg",
+      "keyword": "ความหวัง การเยียวยา ศรัทธา แรงบันดาลใจ ความสงบภายใน และการมองเห็นแสงสว่างหลังความมืด",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "18",
+      "name": "The Moon ",
+      "image": "/card/18.svg",
+      "keyword": "ความสับสน ภาพลวงตา ความไม่ชัดเจน ความกลัว ความกังวล อารมณ์ที่แปรปรวน และสัญชาตญาณที่ต้องรับฟัง",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "19",
+      "name": "The Sun",
+      "image": "/card/19.svg",
+      "keyword": "ความสุข ความสำเร็จ ความสดใส ความชัดเจน พลังบวก ความมั่นใจ และความสมหวัง",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "20",
+      "name": "Judgement",
+      "image": "/card/20.svg",
+      "keyword": "การตื่นรู้ การประเมินตนเอง การฟื้นคืน การตัดสินใจครั้งสำคัญ และการก้าวสู่ช่วงใหม่ของชีวิต",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    },
+        {
+      "card_id": "21",
+      "name": "The World",
+      "image": "/card/21.svg",
+      "keyword": "ความสำเร็จ ความสมบูรณ์ การบรรลุเป้าหมาย การจบวงจรอย่างสวยงาม ความสำเร็จระยะยาว และการก้าวสู่ระดับที่สูงขึ้นของชีวิต",
+      "love": {
+        "single": "...",
+        "couple": "...",
+        "guidance": "..."
+      },
+      "job_edu": {
+        "predict": "...",
+        "guidance": "..."
+      },
+      "finance": {
+        "predict": "...",
+        "guidance": "..."
+      }
+    }
+  ]
+}

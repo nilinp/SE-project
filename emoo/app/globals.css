@@ -3,13 +3,15 @@
 :root {
   --bg: #28223C;
   --bg-dark: #1d192b;
-  --main: #FFE4C9;
-  --sec: #1E1E1E;
+  --main: #ffe4c9;
+  --sec: #1e1e1e;
 }
 
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
   background: var(--bg);
   color: var(--main);
   font-family: 'K2D', sans-serif;

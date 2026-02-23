@@ -17,11 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th">
       <body className={k2d.className}>
         <Sidebar />
         {children}
       </body>
-    </html>
   );
 }

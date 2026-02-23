@@ -17,9 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <body className={k2d.className}>
-        <Sidebar />
-        {children}
-      </body>
+  <main className="flex">
+    <Sidebar />
+    <div className="flex-1">
+      {children}
+    </div>
+  </main>
   );
 }

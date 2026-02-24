@@ -4,7 +4,7 @@ import Sidebar from "../components/sidebar";
 
 const k2d = K2D({
   subsets: ["latin", "thai"],
-  weight: ["100","200","300","400","500","600","700","800"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -17,11 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-  <main className="flex">
-    <Sidebar />
-    <div className="flex-1">
-      {children}
-    </div>
-  </main>
+    <main className="flex">
+      <Sidebar />
+      <div className="flex-1">
+        {children}
+      </div>
+    </main>
   );
 }

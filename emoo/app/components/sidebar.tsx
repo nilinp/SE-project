@@ -9,7 +9,7 @@ export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { 
+  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -20,59 +20,54 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <>
-      {/* Desktop */}
-      <aside className=" 
-      hidden md:flex 
-      w-20 
-      h-screen 
+    <aside className=" 
+      hidden 
+      md:flex 
+      w-20
+      min-h-screen
       bg-(--bg) 
       flex-col 
       items-center 
       justify-between 
       py-6 
-      fixed 
-      left-0 
-      top-0 
       shadow-lg">
-        
-        <div className="flex flex-col items-center gap-10">
 
-          <Image 
-          src="/icon.png" 
-          alt="logo" 
-          width={50} 
+      <div className="flex flex-col items-center gap-10">
+
+        <Image
+          src="/icon.png"
+          alt="logo"
+          width={50}
           height={50} />
 
-          <div className="flex flex-col gap-10 text-white">
-            <Home className="cursor-pointer hover:text-(--main) transition" />
-            <ShoppingCart className="cursor-pointer hover:text-(--main) transition" />
-          </div>
+        <div className="flex flex-col gap-10 text-white">
+          <Home className="cursor-pointer hover:text-(--main) transition" />
+          <ShoppingCart className="cursor-pointer hover:text-(--main) transition" />
         </div>
+      </div>
 
-        <div className="
+      <div className="
         flex 
         flex-col 
         items-center 
         gap-6 
         relative" ref={menuRef}>
-          <Bell className="text-white cursor-pointer hover:text-(--main) transition" />
-          <div
-            className="w-10 h-10 rounded-full overflow-hidden cursor-pointer"
-            onClick={() => setOpen(!open)}
-          >
-            <Image
-              src="/icon.png" /*รอดาต้าเบส*/
-              alt="profile"
-              width={40}
-              height={40}
-              className="object-cover"
-            />
-          </div>
+        <Bell className="text-white cursor-pointer hover:text-(--main) transition" />
+        <div
+          className="w-10 h-10 rounded-full overflow-hidden cursor-pointer"
+          onClick={() => setOpen(!open)}
+        >
+          <Image
+            src="/icon.png" /*รอดาต้าเบส*/
+            alt="profile"
+            width={40}
+            height={40}
+            className="object-cover"
+          />
+        </div>
 
-          {/* Popup */}
-          {open && (
-            <div className="
+        {open && (
+          <div className="
             absolute 
             bottom-16 
             -right-30 
@@ -86,8 +81,8 @@ export default function Sidebar() {
             flex-col 
             gap-2 
             animate-fadeIn">
-              
-              <Link href="/login" className="
+
+            <Link href="/login" className="
               block
               text-left 
               px-3 
@@ -96,9 +91,10 @@ export default function Sidebar() {
               hover:bg-(--main) 
               hover:text-(--bg)
               transition duration-200">
-                Login
-              </Link>
-              {/* <button className="
+              Login
+            </Link>
+
+            {/* <button className="
               text-left 
               px-3 py-2 
               rounded 
@@ -108,10 +104,9 @@ export default function Sidebar() {
                 Logout
               </button> */}
 
-            </div>
-          )}
-        </div>
-      </aside>
-    </>
+          </div>
+        )}
+      </div>
+    </aside>
   );
 }

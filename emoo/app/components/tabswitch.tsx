@@ -7,7 +7,7 @@ export default function TabSwitch() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const current = pathname.startsWith("/horoscope")? "horoscope": "shopping";
+  const current = pathname.startsWith("/horoscope") ? "horoscope" : "shopping";
 
   const [active, setActive] = useState(current);
 
@@ -44,11 +44,10 @@ export default function TabSwitch() {
 
       <button
         onClick={() => handleChange("horoscope")}
-        className={`relative z-10 flex-1 py-2 rounded-full
-          ${
-            active === "horoscope"
-              ? "text-(--main)"
-              : "text-(--bg)"
+        className={`relative z-10 flex-1 py-2 rounded-full cursor-pointer
+          ${active === "horoscope"
+            ? "text-(--main)"
+            : "text-(--bg)"
           }`}
       >
         Horoscope
@@ -56,11 +55,10 @@ export default function TabSwitch() {
 
       <button
         onClick={() => handleChange("shopping")}
-        className={`relative z-10 flex-1 py-2 rounded-full
-          ${
-            active === "shopping"
-              ? "text-(--main)"
-              : "text-(--bg)"
+        className={`relative z-10 flex-1 py-2 rounded-full cursor-pointer
+          ${active === "shopping"
+            ? "text-(--main)"
+            : "text-(--bg)"
           }`}
       >
         Shopping

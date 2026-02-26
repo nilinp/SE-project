@@ -1,32 +1,40 @@
-"use client";
-
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, SearchIcon } from "lucide-react";
 
 export default function SearchBar() {
-    const [search, setSearch] = useState("");
-
     return (
-        <div className="w-[320px]">
-            <div className="relative w-[320px]">
+        <div className="relative w-96">
+            <input
+                type="text"
+                placeholder="Search..."
+                className="
+            bg-(--main)
+            px-6
+            py-2
+            w-full
+            rounded-full
+            outline-none
+            text-(--bg)
+            placeholder:text-(--bg)/70  
+            "/>
 
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-[#CBB6A5] text-[#2B2343]
-                     placeholder:text-[#2B2343]/60
-                     rounded-full py-3 pl-5 pr-12
-                     outline-none"
-                />
-
-                <Search
-                    className="absolute right-4 top-1/2 -translate-y-1/2
-                     w-5 h-5 text-[#2B2343]"
-                />
-
-            </div>
+            <button type="submit" className="
+            absolute
+            right-1
+            top-1/2
+            -translate-y-1/2
+            bg-(--bg)
+            px-2
+            py-2
+            rounded-full
+            hover:bg-(--bg)/70
+            transition
+            cursor-pointer
+            flex
+            items-center
+            justify-center
+            ">
+                <SearchIcon size={20} className="text-(--main)" />
+            </button>
         </div>
     );
 }

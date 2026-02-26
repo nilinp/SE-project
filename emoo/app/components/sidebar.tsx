@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { Home, ShoppingCart, Bell } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -23,8 +24,11 @@ export default function Sidebar() {
     <aside className=" 
       hidden 
       md:flex 
+      fixed
+      top-0
+      left-0
       w-20
-      min-h-screen
+      h-screen
       bg-(--bg) 
       flex-col 
       items-center 
@@ -64,10 +68,16 @@ export default function Sidebar() {
             height={40}
             className="object-cover"
           />
-        </div>
+      </div>
 
+      <AnimatePresence>
         {open && (
-          <div className="
+          <motion.div 
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="
             absolute 
             bottom-16 
             -right-30 
@@ -79,8 +89,7 @@ export default function Sidebar() {
             p-3 
             flex 
             flex-col 
-            gap-2 
-            animate-fadeIn">
+            gap-2">
 
             <Link href="/login" className="
               block
@@ -93,8 +102,9 @@ export default function Sidebar() {
               transition duration-200">
               Login
             </Link>
+          </motion.div>
 
-            {/* <button className="
+            /* <button className="
               text-left 
               px-3 py-2 
               rounded 
@@ -102,10 +112,11 @@ export default function Sidebar() {
               transition 
               text-red-400">
                 Logout
-              </button> */}
+              </button> */
 
-          </div>
+          
         )}
+      </AnimatePresence>
       </div>
     </aside>
   );

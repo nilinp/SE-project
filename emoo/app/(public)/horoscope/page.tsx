@@ -1,94 +1,140 @@
 "use client";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence, color } from "framer-motion";
 
 import TabSwitch from "@/app/components/tabswitch";
-import Sidebar from "@/app/components/sidebar";
-import SearchBar from "@/app/components/SearchBar";
-import luckyData from "@/app/data/luckycolor.json";
-import Image from "next/image";
+import SearchBar from "@/app/components/searchbar";
+import rawData from "@/app/data/luckycolor.json";
+
+type LuckyDay = {
+  name: string;
+  work: string[];
+  lucky: string[];
+  money: string[];
+  love: string[];
+  unlucky: string[];
+}
+
+type LuckyData = {
+  lucky_color: LuckyDay[];
+}
+
+const luckyData = rawData as LuckyData;
 
 export default function Horoscope() {
-
   const [open, setOpen] = useState(false);
+  const [today, setToday] = useState<string | null>(null);
 
-  const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+  useEffect(() => {
+    const today = new Date().toLocaleDateString("th-TH", { 
+      weekday: "long" });
+    setToday(today);
+  }, []);
 
   const todayColor = luckyData.lucky_color.find(
     (item) => item.name === today
   );
 
+  // กันbgเลื่อนตอนเปิด lucky color modal
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [open]); 
+
+
   return (
-    <div className="relative min-h-screen bg-[#2B2343] text-white flex">
+    <div className="
+    min-h-screen 
+    bg-(--bg) 
+    flex 
+    flex-col 
+    lg:flex-row 
+    lg:items-start
+    justify-center
+    px-4
+    lg:px-16
+    lg:ml-24
+    pt-10
+    gap-20">
+      {/* LEFT SECTION */}
+      <div className="w-full lg:w-2/3 flex flex-col items-center">
 
-      <Sidebar/>
-
-      {/* TOP BAR */}
-      <div className="absolute top-6 left-0 w-full px-16 flex items-center justify-between">
-
-        <div className="ml-24">
+        <div className="w-full mb-10 flex justify-center">
           <TabSwitch />
         </div>
 
-        <SearchBar />
-
-      </div>
-
-      {/* LEFT SECTION */}
-      <div className="flex-1 p-16 pt-28 ml-24">
-
         {/* CATEGORY BOX */}
-        <div className="bg-gradient-to-b from-[#4B415E] to-[#3E354F]
-          p-10 rounded-[32px] shadow-2xl
-          max-w-4xl border border-[#6B5E7A]">
-
+        <div className="
+          mt-5
+          bg-gradient-to-b from-[#4B415E] to-[#3E354F]
+          p-10 
+          rounded-[32px] 
+          shadow-2xl
+          w-full
+          max-w-4xl 
+          mx-auto
+          border 
+          border-(--bg2)">
+          
           {/* HEADER */}
           <div className="flex items-center gap-6 mb-12">
 
             <div className="w-16 h-[4px] bg-[#E6D5B8]" />
 
-            <h2 className="text-6xl font-extrabold text-[#F3E2C7]
+            <h2 className="
+            text-6xl 
+            font-extrabold 
+            text-(--main)
             drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]">
-              Category
+              หมวดหมู่
             </h2>
 
-            <p className="text-sm text-[#CBBBA3] mt-4 whitespace-nowrap">
-              Choose what you want to know about today
+            <p className="text-sm text-(--main) mt-4 whitespace-nowrap">
+              วันนี้คุณอยากรู้อะไร?
             </p>
 
-            <div className="flex-1 h-[4px] bg-[#E6D5B8]" />
-            <div className="w-6 h-[4px] bg-[#E6D5B8]" />
-
+            <div className="flex-1 h-[4px] bg-(--main)" />
+            <div className="w-6 h-[4px] bg-(--main)" />
           </div>
 
-          {/* CARD LIST */}
-          <div className="flex justify-between px-6">
+          <div className="text-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 mt-10">
             {[
-              { icon: "❤️", label: "Love" },
-              { icon: "💵", label: "Finances" },
-              { icon: "📚", label: "Study" },
+              { src: "/love.jpg", label: "ความรัก", href: "/" },
+              { src: "/money.jpg", label: "การเงิน", href: "/" },
+              { src: "/study.jpg", label: "การเรียน", href: "/" },
             ].map((item, index) => (
               <div key={index}
-                className="flex flex-col items-center gap-4 cursor-pointer group">
-
-                <div className="relative bg-[#F3E2C7]
-                w-44 h-44 rounded-2xl
-                flex items-center justify-center
+              className="
+              flex 
+              flex-col 
+              items-center 
+              gap-4 
+              cursor-pointer 
+              group">
+                <div className="
+                relative
+                w-32 h-32
+                sm:w-40 sm:h-40
+                lg:w-44 lg:h-44
+                rounded-2xl
+                bg-cover bg-center
+                overflow-hidden
                 shadow-lg
-                group-hover:scale-105
-                transition duration-300">
-
-                  <div className="absolute -top-3
-                  w-12 h-6 bg-[#3E354F]
-                  rounded-b-xl" />
-
-                  <span className="text-6xl">{item.icon}</span>
+                group-hover:scale-110
+                transition-all duration-500 ease-out
+                group-hover:scale-110
+                group-hover:shadow-2xl"
+                style={{ backgroundImage: `url(${item.src})` }}> 
+                  <div className="absolute inset-0 bg-black/20 rounded-2xl" />
                 </div>
 
-                <p className="text-[#F3E2C7] text-xl font-semibold">
+                <p className="text-(--main) text-xl font-semibold">
                   {item.label}
                 </p>
-
+            
               </div>
             ))}
           </div>
@@ -99,67 +145,53 @@ export default function Horoscope() {
           p-10 rounded-[28px]
           border border-[#B9AFAF]
           shadow-xl
+          w-full
           max-w-4xl">
+            <div className="flex items-center gap-6 mb-8">
+              <div className="w-16 h-[3px] bg-(--bg)" />
+              <h2 className="text-5xl font-bold text-(--main)">
+                สีเสริมดวงวันนี้
+              </h2>
+              <div className="flex-1 h-[3px] bg-(--bg)" />
+              <div className="w-6 h-[3px] bg-(--bg)" />
+            </div>
 
-          <div className="flex items-center gap-6 mb-8">
-
-            <div className="w-16 h-[3px] bg-[#3E354F]" />
-
-            <h2 className="text-5xl font-bold text-[#F3E2C7]">
-              Lucky color
-            </h2>
-
-            <span className="text-xs text-[#3E354F] mt-3">
-              Your color of the day
-            </span>
-
-            <div className="flex-1 h-[3px] bg-[#3E354F]" />
-            <div className="w-6 h-[3px] bg-[#3E354F]" />
-
-          </div>
-
-          {todayColor && (
-            <div className="flex items-center justify-between">
-
-              {/* LEFT SIDE */}
-              <div className="flex items-center gap-10">
-
-                {/* Day */}
-                <p className="text-2xl font-semibold text-[#F3E2C7]">
+            {todayColor && (
+              <div className="flex flex-col items-center gap-6">
+                {/* วัน */}
+                <p className="text-2xl font-bold text-(--main)">
                   {todayColor.name}
                 </p>
 
-                {/* Recommended Colors */}
-                <div className="flex items-center gap-4">
+                {/* สี */}
+                <div className="flex flex-wrap justify-center gap-4">
                   {[
-                    ...todayColor.work,
-                    ...todayColor.lucky,
-                    ...todayColor.money,
-                    ...todayColor.love
+                  ...todayColor.work.map(c => ({ color: c, type: "การงาน" })),
+                  ...todayColor.lucky.map(c => ({ color: c, type: "โชคลาภ" })),
+                  ...todayColor.money.map(c => ({ color: c, type: "การเงิน" })),
+                  ...todayColor.love.map(c => ({ color: c, type: "ความรัก" })),
                   ]
-                    .slice(0, 4) // กันยาวเกิน
-                    .map((color, index) => (
-                      <div
-                        key={index}
-                        className="w-14 h-14 rounded-full shadow-lg border border-white/30 hover:scale-110 transition duration-300"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
+                  .slice(0, 6)
+                .map((item, index) => (
+                  <div key={index} className="relative group">
+                    <div
+                      className="w-14 h-14 rounded-full shadow-lg border border-white/30 hover:scale-110 transition duration-300"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-(--bg) text-(--main) text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
+                      {item.type}
+                    </div>
+                  </div>
+                ))}
                 </div>
-
-              </div>
-
-              {/* RIGHT SIDE */}
-              <div className="flex items-center gap-8">
-
-                {/* Unlucky */}
+                
+                {/* กาลกิณี */}
                 <div className="flex items-center gap-4 bg-red-500/10 px-4 py-2 rounded-xl border border-red-400">
-
                   <span className="text-red-400 text-sm font-medium">
-                    ⚠ Unlucky
+                    ⚠ กาลกิณี
                   </span>
-
-                  <div className="flex gap-2">
+                   
+                   <div className="flex gap-2">
                     {todayColor.unlucky.map((color, index) => (
                       <div
                         key={index}
@@ -167,130 +199,152 @@ export default function Horoscope() {
                         style={{ backgroundColor: color }}
                       />
                     ))}
-                  </div>
-
+                   </div>
                 </div>
-
+                
                 {/* View Button */}
                 <button
                   onClick={() => setOpen(true)}
-                  className="text-sm text-[#3E354F] underline hover:opacity-70 transition"
+                  className="mt-4 px-6 py-2 rounded-full bg-(--main) text-(--bg) text-sm font-medium hover:opacity-70 transition"
                 >
                   View full →
                 </button>
-
+                
               </div>
+            )}
+        </div>
+      </div>
+        {/* RIGHT SECTION */}
+        <div className="w-full lg:w-1/2 flex flex-col items-center">
+          <div className="w-full mb-10 flex justify-center">
+            <SearchBar />
+          </div>
+          {/* 🃏 Tarot Card */}
+          <div className="
+            relative 
+            w-[280px] 
+            h-[420px] 
+            sm:w-[340px] 
+            sm:h-[520px] 
+            lg:w-[380px] 
+            lg:h-[600px] 
+            rounded-[40px] 
+            max-w-full
+            overflow-hidden">
+              {/* พื้นหลังดาว */}
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: "url('/Profile-bg.jpg')" }} />
 
-            </div>
-          )}
+              {/* overlay */}
+              <div className="absolute inset-0 bg-[#1E1A33]/60" />
 
+              {/* มุมเว้า */}
+              <div
+                className="
+                absolute 
+                left-0 
+                top-1/2 
+                -translate-y-1/2 
+                -translate-x-1/2
+                w-24 
+                h-24 
+                bg-(--bg) 
+                rounded-full"
+              /> 
+          </div>
         </div>
 
-      </div>
-
-      {/* RIGHT SECTION */}
-      <div className="flex flex-col items-center pt-28 gap-6">
-
-        {/* 🃏 Tarot Card */}
-        <div className="relative w-[420px] h-[650px] rounded-[40px] overflow-hidden">
-
-          {/* พื้นหลังดาว */}
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('/Profile-bg.jpg')" }}
-          />
-
-          {/* overlay */}
-          <div className="absolute inset-0 bg-[#1E1A33]/60" />
-
-          {/* มุมเว้า */}
-          <div
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2
-                 w-24 h-24 bg-[#2B2343] rounded-full"
-          />
-
-        </div>
-
-      </div>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
+        <AnimatePresence>
+          {open && (
+            <motion.div
             className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            onClick={() => setOpen(false)}
-          >
+            onClick={() => setOpen(false)} > 
 
-            <motion.div
-              className="bg-[#3E354F] w-[90%] max-w-5xl max-h-[85vh] overflow-y-auto
-        p-12 rounded-3xl shadow-2xl relative"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
-            >
+              <motion.div
+                className="
+                bg-[#3E354F] 
+                w-[90%] 
+                max-w-5xl 
+                max-h-[85vh] 
+                overflow-y-auto
+                p-12 
+                rounded-3xl 
+                shadow-2xl 
+                relative"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={(e) => e.stopPropagation()} >
+                  {/* CLOSE BUTTON */}
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="absolute top-6 right-6 text-white text-2xl" >
+                    ✕
+                  </button>
 
-              {/* CLOSE BUTTON */}
-              <button
-                onClick={() => setOpen(false)}
-                className="absolute top-6 right-6 text-white text-2xl"
-              >
-                ✕
-              </button>
+                  <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7]">
+                    Lucky Color
+                  </h1>
 
-              <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7]">
-                Lucky Color
-              </h1>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    {luckyData.lucky_color.map((day) => (
+                      <div
+                        key={day.name}
+                        className="bg-[#4B415E] p-8 rounded-2xl shadow-xl border border-[#6B5E7A]" >
+                          {/* Day Title */}
+                          <h2 className="text-2xl font-bold text-[#F3E2C7] mb-6">
+                            {day.name}
+                          </h2>
+                          {/* Categories Grid */}
+                          <div className="grid grid-cols-2 gap-6">
+                            
+                            {Object.entries(day)
+                              .filter(([key]) => key !== "name")
+                              .map(([category, colors]) => {
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                {luckyData.lucky_color.map((day) => (
-                  <div
-                    key={day.name}
-                    className="bg-[#4B415E] p-8 rounded-2xl shadow-xl border border-[#6B5E7A]"
-                  >
+                              const isUnlucky = category === "unlucky";
 
-                    {/* Day Title */}
-                    <h2 className="text-2xl font-bold text-[#F3E2C7] mb-6">
-                      {day.name}
-                    </h2>
-
-                    {/* Categories Grid */}
-                    <div className="grid grid-cols-2 gap-6">
-
-                      {Object.entries(day)
-                        .filter(([key]) => key !== "name")
-                        .map(([category, colors]) => {
-
-                          const isUnlucky = category === "unlucky";
-
-                          return (
-                            <div
-                              key={category}
-                              className={`flex flex-col gap-3 p-4 rounded-xl transition duration-300
-        ${isUnlucky
+                              return (
+                                <div key={category} className={`
+                                  flex 
+                                  flex-col 
+                                  gap-3 
+                                  p-4 
+                                  rounded-xl 
+                                  transition 
+                                  duration-300
+                                  ${isUnlucky
                                   ? "bg-red-500/10 border-2 border-red-500 "
                                   : "bg-white/5 border border-white/10"
-                                }`}
-                            >
+                                }`}>
 
-                              <p
-                                className={`capitalize text-sm font-semibold ${isUnlucky ? "text-red-400" : "text-[#CBBBA3]"
-                                  }`}
-                              >
-                                {isUnlucky ? "⚠ unlucky" : category}
-                              </p>
+                                <p className={`
+                                  capitalize 
+                                  text-sm 
+                                  font-semibold 
+                                  ${isUnlucky ? "text-red-400" : "text-[#CBBBA3]" }`}>
+                                  {isUnlucky ? "⚠ unlucky" : category}
+                                </p>
 
-                              <div className="flex gap-3">
-                                {colors.map((color, index) => (
+                                <div className="flex gap-3">
+                                {(colors as string[]).map((color, index) => (
                                   <div
                                     key={index}
-                                    className={`w-10 h-10 rounded-full shadow-md border
-                ${isUnlucky ? "border-red-400" : "border-white/30"}
-                hover:scale-110 transition duration-300`}
+                                    className={`
+                                      w-10 
+                                      h-10 
+                                      rounded-full 
+                                      shadow-md 
+                                      border
+                                      ${isUnlucky ? "border-red-400" : "border-white/30"}
+                                      hover:scale-110 
+                                      transition duration-300`}
                                     style={{ backgroundColor: color }}
                                   />
                                 ))}
@@ -300,18 +354,15 @@ export default function Horoscope() {
                           );
                         })}
 
-                    </div>
-
+                          </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-
+              </motion.div>
             </motion.div>
+          )}
+        </AnimatePresence>
 
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-    </div>
+      </div>
   );
 }

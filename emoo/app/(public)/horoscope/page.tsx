@@ -1,9 +1,23 @@
+"use client";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import TabSwitch from "@/app/components/tabswitch";
 import Sidebar from "@/app/components/sidebar";
 import SearchBar from "@/app/components/SearchBar";
+import luckyData from "@/app/data/luckycolor.json";
 import Image from "next/image";
 
 export default function Horoscope() {
+
+  const [open, setOpen] = useState(false);
+
+  const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
+  const todayColor = luckyData.lucky_color.find(
+    (item) => item.name === today
+  );
+
   return (
     <div className="relative min-h-screen bg-[#2B2343] text-white flex">
 
@@ -104,6 +118,72 @@ export default function Horoscope() {
 
           </div>
 
+          {todayColor && (
+            <div className="flex items-center justify-between">
+
+              {/* LEFT SIDE */}
+              <div className="flex items-center gap-10">
+
+                {/* Day */}
+                <p className="text-2xl font-semibold text-[#F3E2C7]">
+                  {todayColor.name}
+                </p>
+
+                {/* Recommended Colors */}
+                <div className="flex items-center gap-4">
+                  {[
+                    ...todayColor.work,
+                    ...todayColor.lucky,
+                    ...todayColor.money,
+                    ...todayColor.love
+                  ]
+                    .slice(0, 4) // กันยาวเกิน
+                    .map((color, index) => (
+                      <div
+                        key={index}
+                        className="w-14 h-14 rounded-full shadow-lg border border-white/30 hover:scale-110 transition duration-300"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                </div>
+
+              </div>
+
+              {/* RIGHT SIDE */}
+              <div className="flex items-center gap-8">
+
+                {/* Unlucky */}
+                <div className="flex items-center gap-4 bg-red-500/10 px-4 py-2 rounded-xl border border-red-400">
+
+                  <span className="text-red-400 text-sm font-medium">
+                    ⚠ Unlucky
+                  </span>
+
+                  <div className="flex gap-2">
+                    {todayColor.unlucky.map((color, index) => (
+                      <div
+                        key={index}
+                        className="w-10 h-10 rounded-full border-2 border-red-400 shadow-md hover:scale-110 transition"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* View Button */}
+                <button
+                  onClick={() => setOpen(true)}
+                  className="text-sm text-[#3E354F] underline hover:opacity-70 transition"
+                >
+                  View full →
+                </button>
+
+              </div>
+
+            </div>
+          )}
+
         </div>
 
       </div>
@@ -133,6 +213,104 @@ export default function Horoscope() {
 
       </div>
 
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setOpen(false)}
+          >
+
+            <motion.div
+              className="bg-[#3E354F] w-[90%] max-w-5xl max-h-[85vh] overflow-y-auto
+        p-12 rounded-3xl shadow-2xl relative"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+
+              {/* CLOSE BUTTON */}
+              <button
+                onClick={() => setOpen(false)}
+                className="absolute top-6 right-6 text-white text-2xl"
+              >
+                ✕
+              </button>
+
+              <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7]">
+                Lucky Color
+              </h1>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {luckyData.lucky_color.map((day) => (
+                  <div
+                    key={day.name}
+                    className="bg-[#4B415E] p-8 rounded-2xl shadow-xl border border-[#6B5E7A]"
+                  >
+
+                    {/* Day Title */}
+                    <h2 className="text-2xl font-bold text-[#F3E2C7] mb-6">
+                      {day.name}
+                    </h2>
+
+                    {/* Categories Grid */}
+                    <div className="grid grid-cols-2 gap-6">
+
+                      {Object.entries(day)
+                        .filter(([key]) => key !== "name")
+                        .map(([category, colors]) => {
+
+                          const isUnlucky = category === "unlucky";
+
+                          return (
+                            <div
+                              key={category}
+                              className={`flex flex-col gap-3 p-4 rounded-xl transition duration-300
+        ${isUnlucky
+                                  ? "bg-red-500/10 border-2 border-red-500 "
+                                  : "bg-white/5 border border-white/10"
+                                }`}
+                            >
+
+                              <p
+                                className={`capitalize text-sm font-semibold ${isUnlucky ? "text-red-400" : "text-[#CBBBA3]"
+                                  }`}
+                              >
+                                {isUnlucky ? "⚠ unlucky" : category}
+                              </p>
+
+                              <div className="flex gap-3">
+                                {colors.map((color, index) => (
+                                  <div
+                                    key={index}
+                                    className={`w-10 h-10 rounded-full shadow-md border
+                ${isUnlucky ? "border-red-400" : "border-white/30"}
+                hover:scale-110 transition duration-300`}
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+
+                            </div>
+                          );
+                        })}
+
+                    </div>
+
+                  </div>
+                ))}
+              </div>
+
+            </motion.div>
+
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -1,7 +1,7 @@
 {
     "lucky_color": [
         {
-            "name": "Sunday",
+            "name": "วันอาทิตย์",
             "work": ["#F893B5", "#B76E79"],
             "lucky": ["#2E712A", "#00968f"],
             "money": ["#000000", "#5e35b1"],
@@ -9,7 +9,7 @@
             "unlucky": ["#29b6f6", "#3949ab"]
         },
         {
-            "name": "Monday",
+            "name": "วันจันทร์",
             "work": ["#2E712A", "#008000"],
             "lucky": ["#5e35b1", "#212121"],
             "money": ["#e65100", "#4e342e"],
@@ -17,7 +17,7 @@
             "unlucky": ["#b0120a", "#FA4616"]
         },
         {
-            "name": "Tuesday",
+            "name": "วันอังคาร",
             "work": ["#5e35b1", "#212121"],
             "lucky": ["#e65100", "#4e342e"],
             "money": ["#3e2723", "#9e9e9e"],
@@ -25,7 +25,7 @@
             "unlucky": ["#FFFFFF", "#fdd835"]
         },
         {
-            "name": "Wednesday",
+            "name": "วันพุธ",
             "work": ["#e65100", "#4e342e"],
             "lucky": ["#9e9e9e", "#d0ac1a"],
             "money": ["#29b6f6", "#3949ab"],
@@ -33,7 +33,7 @@
             "unlucky": ["#F893B5", "#B76E79"]
         },
         {
-            "name": "Thursday",
+            "name": "วันพฤหัสบดี",
             "work": ["#29b6f6", "#3949ab"],
             "lucky": ["#b0120a", "#B76E79"],
             "money": ["#fdd835", "#FDFBD4"],
@@ -41,7 +41,7 @@
             "unlucky": ["#000000", "#212121"]
         },
         {
-            "name": "Friday",
+            "name": "วันศุกร์",
             "work": ["#fdd835", "#FFFFFF"],
             "lucky": ["#FFBE98", "#F893B5"],
             "money": ["#004d40", "#80ffeb"],
@@ -49,7 +49,7 @@
             "unlucky": ["#9e9e9e", "#d0ac1a"]
         },
         {
-            "name": "Saturday",
+            "name": "วันเสาร์",
             "work": ["#3e2723", "#9e9e9e"],
             "lucky": ["#29b6f6", "#3949ab"],
             "money": ["#b0120a", "#FFBE98"],

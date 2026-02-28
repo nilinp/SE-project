@@ -3,6 +3,7 @@
 :root {
   --bg: #28223C;
   --bg2: #1d192b;
+  --bg3: linear-gradient(to bottom, #4B415E, #3E354F);;
   --main: #ffe4c9;
   --sec: #1e1e1e;
 }

@@ -7,6 +7,7 @@ import Image from "next/image";
 import TabSwitch from "@/app/components/tabswitch";
 import SearchBar from "@/app/components/searchbar";
 import products from "@/app/data/product.json";
+import { ShoppingCart } from "lucide-react";
 
 const banner = [
   "/banner/banner-1.jpg",
@@ -92,33 +93,62 @@ export default function Shopping() {
       </div>
 
       {/* PRODUCT SECTION */}
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
         {products.product.map((item) => (
-          <div key={item.id} className="flex flex-col gap-4">
-
-            <div className="relative w-72 h-72 rounded-2xl overflow-hidden">
+          <div
+            key={item.id}
+            className="
+              w-[370px]
+              h-[480px]
+              p-6
+              bg-[white]
+              rounded-[30px]
+              shadow-[0_0_30px_rgba(0,0,0,0.05)]">
+          
+            <div className="relative w-full h-[240px] bg-white rounded-2xl overflow-hidden">
               <Image
-                src={item.image}
+                src={item.image || "/placeholder.png"}
                 alt={item.name}
                 fill
-                className="object-cover"
-              />
+                className="object-contain p-6"/>
             </div>
 
-            <div className="flex justify-between items-center">
-              <p className="text-lg font-semibold">
+            {/* Content */}
+            <div className="mt-5 text-(--sec)">
+              <h3 className="text-2xl font-bold leading-tight">
                 {item.name}
+              </h3>
+
+              {/* รายละเอียด */}
+              <p className="text-sm mt-3 text-gray-700">
+                {item.details}
               </p>
 
-              <p className="text-lg font-semibold">
-                {item.price} ฿
-              </p>
+              {/* ราคา */}
+              <div className="flex justify-between items-end mt-3">
+                <p className="text-2xl font-bold">
+                  {item.price} ฿
+                </p>
+
+                <button className="
+                w-[45px]
+                h-[45px]
+                rounded-full
+                bg-(--bg)
+                text-(--main)
+                flex
+                justify-center
+                items-center
+                cursor-pointer">
+                  <ShoppingCart className="w-[20px] h-[20px]"/>
+                  {/* ปุ่ม + เล็ก */}
+                  <span className="text-sm">+</span>
+                </button>
+
+              </div>
             </div>
-
           </div>
         ))}
-
       </div>
 
     </div>

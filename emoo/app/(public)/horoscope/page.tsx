@@ -102,9 +102,9 @@ export default function Horoscope() {
 
           <div className="text-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 mt-10">
             {[
-              { src: "/love.jpg", label: "ความรัก", href: "/" },
-              { src: "/money.jpg", label: "การเงิน", href: "/" },
-              { src: "/study.jpg", label: "การเรียน", href: "/" },
+              { src: "/category/love.jpg", label: "ความรัก", href: "/" },
+              { src: "/category/money.jpg", label: "การเงิน", href: "/" },
+              { src: "/category/study.jpg", label: "การเรียน", href: "/" },
             ].map((item, index) => (
               <div key={index}
               className="
@@ -234,7 +234,7 @@ export default function Horoscope() {
               {/* พื้นหลังดาว */}
               <div
                 className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: "url('/Profile-bg.jpg')" }} />
+                style={{ backgroundImage: "url('/bg/Profile-bg.jpg')" }} />
 
               {/* overlay */}
               <div className="absolute inset-0 bg-[#1E1A33]/60" />

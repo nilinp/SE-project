@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, color } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 import TabSwitch from "@/app/components/tabswitch";
 import SearchBar from "@/app/components/searchbar";
@@ -44,6 +45,13 @@ export default function Horoscope() {
     };
   }, [open]); 
 
+  const router = useRouter();
+
+  const categories = [
+    { src: "/category/love.jpg", label: "ความรัก", slug: "love" },
+    { src: "/category/money.jpg", label: "การเงิน", slug: "money" },
+    { src: "/category/study.jpg", label: "การเรียน", slug: "study" },
+  ];
 
   return (
     <div className="
@@ -101,40 +109,24 @@ export default function Horoscope() {
           </div>
 
           <div className="text-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 mt-10">
-            {[
-              { src: "/category/love.jpg", label: "ความรัก", href: "/" },
-              { src: "/category/money.jpg", label: "การเงิน", href: "/" },
-              { src: "/category/study.jpg", label: "การเรียน", href: "/" },
-            ].map((item, index) => (
-              <div key={index}
-              className="
-              flex 
-              flex-col 
-              items-center 
-              gap-4 
-              cursor-pointer 
-              group">
-                <div className="
-                relative
-                w-32 h-32
-                sm:w-40 sm:h-40
-                lg:w-44 lg:h-44
-                rounded-2xl
-                bg-cover bg-center
-                overflow-hidden
-                shadow-lg
-                group-hover:scale-110
-                transition-all duration-500 ease-out
-                group-hover:scale-110
-                group-hover:shadow-2xl"
-                style={{ backgroundImage: `url(${item.src})` }}> 
+            {categories.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => router.push(`/horoscope/${item.slug}`)}
+                className="flex flex-col items-center gap-4 cursor-pointer group"
+              >
+                <div
+                  className=" relative w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44
+                              rounded-2xl bg-cover bg-center overflow-hidden
+                              shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl"
+                  style={{ backgroundImage: `url(${item.src})` }}
+                >
                   <div className="absolute inset-0 bg-black/20 rounded-2xl" />
                 </div>
 
                 <p className="text-(--main) text-xl font-semibold">
                   {item.label}
                 </p>
-            
               </div>
             ))}
           </div>

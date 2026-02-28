@@ -6,11 +6,13 @@ import Image from "next/image";
 
 import TabSwitch from "@/app/components/tabswitch";
 import SearchBar from "@/app/components/searchbar";
+import products from "@/app/data/product.json";
 
 const banner = [
   "/banner/banner-1.jpg",
   "/banner/banner-2.jpg",
-  "/banner/banner-3.jpg"
+  "/banner/banner-3.jpg",
+  "/banner/banner-4.jpg"
 ];
 
 export default function Shopping() {
@@ -39,39 +41,30 @@ export default function Shopping() {
 }, [index, controls]);
 
   return (
-    <div className="
-    min-h-screen 
-    flex 
-    flex-col 
-    lg:flex-row 
-    lg:items-start
-    justify-center
-    px-4
-    lg:px-16
-    lg:ml-24
-    pt-10
-    gap-20">
+    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10">
 
-      {/* LEFT SECTION */}
-      <div className="w-full lg:w-2/3 flex flex-col items-center">
+      {/* TOP SECTION */}
+      <div className="flex flex-col lg:flex-row lg:items-start justify-center gap-20">
 
-        <div className="w-full mb-10 flex justify-center">
-          <TabSwitch />
-        </div>
+        {/* LEFT SECTION */}
+        <div className="w-full lg:w-2/3 flex flex-col items-center">
 
-        {/* BANNER */}
-        <div className="
-        relative 
-        w-full 
-        h-64
-        overflow-hidden
-        mb-10
-        rounded-2xl
-        ">
-          <motion.div
-            className="flex w-full h-full"
-            animate={controls}
-            initial={{ x:0 }}>
+          <div className="w-full mb-10 flex justify-center">
+            <TabSwitch />
+          </div>
+
+          {/* BANNER */}
+          <div className="
+            relative 
+            w-full 
+            h-64
+            overflow-hidden
+            mb-10
+            rounded-2xl">
+            <motion.div
+              className="flex w-full h-full"
+              animate={controls}
+              initial={{ x:0 }}>
           
               {loopImage.map((img, i) => (
                 <div key={i} className="relative w-full h-full flex-shrink-0">
@@ -82,20 +75,54 @@ export default function Shopping() {
                   className="object-cover"/>
                 </div>
               ))}
-          </motion.div>
+            </motion.div>
+
+          </div>
 
         </div>
 
-      </div>
-
         {/* RIGHT SECTION */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center">
+        <div className="w-full lg:w-1/2 flex flex-col items-center">
 
           <div className="w-full mb-10 flex justify-center">
             <SearchBar />
           </div>
 
+        </div>
       </div>
+
+      {/* PRODUCT SECTION */}
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+        {products.product.map((item) => (
+          <div key={item.id} className="flex flex-col gap-4">
+
+            <div className="relative w-72 h-72 rounded-2xl overflow-hidden">
+              <Image
+                src={item.image}
+                alt={item.name}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            <div className="flex justify-between items-center">
+              <p className="text-lg font-semibold">
+                {item.name}
+              </p>
+
+              <p className="text-lg font-semibold">
+                {item.price} ฿
+              </p>
+            </div>
+
+          </div>
+        ))}
+
+      </div>
+
     </div>
+
+    
   );
 }

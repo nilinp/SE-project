@@ -143,7 +143,7 @@ export default function Horoscope() {
         {/* LUCKY COLOR BOX */}
         <div className="mt-10 bg-[#8E7F7F]
           p-10 rounded-[28px]
-          border border-[#B9AFAF]
+          border border-(--main)
           shadow-xl
           w-full
           max-w-4xl">
@@ -171,11 +171,11 @@ export default function Horoscope() {
                   ...todayColor.money.map(c => ({ color: c, type: "การเงิน" })),
                   ...todayColor.love.map(c => ({ color: c, type: "ความรัก" })),
                   ]
-                  .slice(0, 6)
+                  .slice(0, 8)
                 .map((item, index) => (
                   <div key={index} className="relative group">
                     <div
-                      className="w-14 h-14 rounded-full shadow-lg border border-white/30 hover:scale-110 transition duration-300"
+                      className="w-12 h-12 rounded-full shadow-lg border border-white/30 hover:scale-110 transition duration-300"
                       style={{ backgroundColor: item.color }}
                     />
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-(--bg) text-(--main) text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">

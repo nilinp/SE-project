@@ -69,7 +69,7 @@ export default function Horoscope() {
         {/* CATEGORY BOX */}
         <div className="
           mt-5
-          bg-gradient-to-b from-[#4B415E] to-[#3E354F]
+          bg-(--bg3)
           p-10 
           rounded-[32px] 
           shadow-2xl
@@ -77,7 +77,7 @@ export default function Horoscope() {
           max-w-4xl 
           mx-auto
           border 
-          border-(--bg2)">
+          border-(--main)">
           
           {/* HEADER */}
           <div className="flex items-center gap-6 mb-12">

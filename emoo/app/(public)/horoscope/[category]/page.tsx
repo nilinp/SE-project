@@ -38,7 +38,7 @@ export default function SelectCardPage() {
                         const radius = 900; // รัศมีวงกลม (มาก = โค้งเนียนขึ้น)
 
                         const x = radius * Math.sin(angle);
-                        const y = radius * (1 - Math.cos(angle)) + 100;
+                        const y = radius * (1 - Math.cos(angle)) - 200;
 
                         return (
                             <motion.div

@@ -8,6 +8,16 @@ import TabSwitch from "@/app/components/tabswitch";
 import SearchBar from "@/app/components/searchbar";
 import products from "@/app/data/product.json";
 import { ShoppingCart } from "lucide-react";
+import Link from "next/link";
+
+{products.product.map((item) => (
+  <Link key={item.id} href={`/shopping/${item.id}`}>
+    <div className="card">
+      <h3>{item.name}</h3>
+      <p>{item.price} ฿</p>
+    </div>
+  </Link>
+))}
 
 const banner = [
   "/banner/banner-1.jpg",

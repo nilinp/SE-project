@@ -16,7 +16,7 @@ const banner = [
   "/banner/banner-4.jpg"
 ];
 
-export default function Shopping() {
+export default function Productdetail() {
   const controls = useAnimation();
   const [index, setIndex] = useState(0);
 
@@ -109,7 +109,8 @@ r
                 src={item.image || "/placeholder.png"}
                 alt={item.name}
                 fill
-                className="object-contain p-6"/>
+                className="object-contain p-6"
+              />
             </div>
 
             {/* Content */}

@@ -50,46 +50,44 @@ export default function Shopping() {
         {/* LEFT SECTION */}
         <div className="w-full lg:w-2/3 flex flex-col items-center">
 
-          <div className="w-full mb-10 flex justify-center">
+          <div className="w-full mb-6 flex justify-center">
             <TabSwitch />
           </div>
-
-          {/* BANNER */}
-          <div className="
-            relative 
-            w-full 
-            h-64
-            overflow-hidden
-            mb-10
-            rounded-2xl">
-            <motion.div
-              className="flex w-full h-full"
-              animate={controls}
-              initial={{ x:0 }}>
-          
-              {loopImage.map((img, i) => (
-                <div key={i} className="relative w-full h-full flex-shrink-0">
-                  <Image 
-                  src={img} 
-                  alt={`banner-${i}`}
-                  fill
-                  className="object-cover"/>
-                </div>
-              ))}
-            </motion.div>
-
-          </div>
-
         </div>
 
         {/* RIGHT SECTION */}
         <div className="w-full lg:w-1/2 flex flex-col items-center">
 
-          <div className="w-full mb-10 flex justify-center">
+          <div className="w-full mb-6 flex justify-center">
             <SearchBar />
           </div>
 
         </div>
+      </div>
+
+      {/* BANNER */}
+      <div className="
+        relative 
+        w-full 
+        h-100
+        overflow-hidden
+        mb-6
+        rounded-2xl">
+        <motion.div
+          className="flex w-full h-full"
+          animate={controls}
+          initial={{ x:0 }}>
+          
+          {loopImage.map((img, i) => (
+              <div key={i} className="relative w-full h-full flex-shrink-0">
+                <Image 
+                  src={img} 
+                  alt={`banner-${i}`}
+                  fill
+                  className="object-cover"/>
+              </div>
+            ))}
+          </motion.div>
       </div>
 
       {/* PRODUCT SECTION */}

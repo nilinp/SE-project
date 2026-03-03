@@ -2,14 +2,54 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+  const router = useRouter();
+  
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleRegister = async () => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+        },
+      },
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("สมัครสมาชิกสำเร็จ");
+      router.push("/login");
+    }
+
+    const user = data.user;;
+    if (user) {
+      await supabase.from("profiles").insert({
+        id: user.id,
+        username,
+      });
+    }
+
+    alert("สมัครสมาชิกสำเร็จ");
+    router.push("/login");
+  };
+
   return (
     <div className="
     min-h-screen 
     w-screen 
     flex
-    bg-[url('/register-bg.jpg')] 
+    bg-[url('/bg/register-bg.jpg')] 
     bg-cover 
     bg-center ">
         
@@ -28,10 +68,7 @@ export default function Register() {
             bg-white
             p-10
             ">
-                <h2 className="
-                text-5xl 
-                font-bold 
-                text-(--bg)">
+                <h2 className=" text-5xl font-bold text-(--bg)">
                     CREATE ACCOUNT
                 </h2>
                 <p className="text-(--bg) text-center mt-3">
@@ -41,18 +78,19 @@ export default function Register() {
             
             <div className="flex gap-10 mb-6 text-(--bg)">
                 <button className="hover:scale-110 transition">
-                <Image src="/google.png" alt="google" width={30} height={30}/>
+                    <Image src="/icon/google.png" alt="google" width={30} height={30}/>
                 </button>
                 <button className="hover:scale-110 transition">
-                <Image src="/facebook.svg" alt="facebook" width={30} height={30}/>
+                    <Image src="/icon/facebook.svg" alt="facebook" width={30} height={30}/>
                 </button>
                 <button className="hover:scale-110 transition">
-                <Image src="/linkedin.png" alt="linkedin" width={30} height={30}/>
+                    <Image src="/icon/linkedin.png" alt="linkedin" width={30} height={30}/>
                 </button>
             </div>
 
             <input
             placeholder="Name"
+            onChange={(e) => setUsername(e.target.value)}
             className="
             w-1/2 
             mb-5 
@@ -67,6 +105,7 @@ export default function Register() {
             <input
                 type="email"
                 placeholder="Email"
+                onChange={(e) => setEmail(e.target.value)}
                 className="
                 w-1/2 
                 mb-5 
@@ -81,6 +120,7 @@ export default function Register() {
             <input
                 type="password"
                 placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
                 className="
                 w-1/2 
                 mb-6 
@@ -91,7 +131,7 @@ export default function Register() {
                 outline-none text-(--bg)"
             />
 
-            <button className="
+            <button onClick={handleRegister} className="
             w-1/2 
             py-3 
             rounded-full 

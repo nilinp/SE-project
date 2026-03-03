@@ -2,14 +2,41 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("เข้าสู่ระบบสำเร็จ");
+      router.push("/horoscope");
+    }
+  };
   return (
     <div className="
     min-h-screen 
     w-screen 
     flex
-    bg-[url('/login-bg.jpg')] 
+    bg-[url('/bg/login-bg.jpg')] 
     bg-cover 
     bg-center ">
         
@@ -57,19 +84,20 @@ export default function Login() {
           
           <div className="flex gap-10 mb-6 text-(--bg)">
             <button className="hover:scale-110 transition">
-              <Image src="/google.png" alt="google" width={30} height={30}/>
+              <Image src="/icon/google.png" alt="google" width={30} height={30}/>
             </button>
             <button className="hover:scale-110 transition">
-              <Image src="/facebook.svg" alt="facebook" width={30} height={30}/>
+              <Image src="/icon/facebook.svg" alt="facebook" width={30} height={30}/>
             </button>
             <button className="hover:scale-110 transition">
-              <Image src="/linkedin.png" alt="linkedin" width={30} height={30}/>
+              <Image src="/icon/linkedin.png" alt="linkedin" width={30} height={30}/>
             </button>
           </div>
 
           <input
             type="email"
             placeholder="Email"
+            onChange={ (e) => setEmail(e.target.value)}
             className="
             w-1/2 
             mb-5 
@@ -84,6 +112,7 @@ export default function Login() {
           <input
             type="password"
             placeholder="Password"
+            onChange={ (e) => setPassword(e.target.value)}
             className="
             w-1/2 
             mb-5 
@@ -95,7 +124,7 @@ export default function Login() {
             text-(--bg)"
           />
 
-          <button className="
+          <button onClick={handleLogin} className="
           w-1/2 
           py-3 
           rounded-full 

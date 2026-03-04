@@ -124,9 +124,11 @@ r
 
             {/* Content */}
             <div className="mt-5 text-(--sec) flex flex-col flex-grow">
-              <h3 className="text-2xl font-bold leading-tight min-h-[56px]">
-                {item.name}
-              </h3>
+              <Link href={`/shopping/${item.id}`}>   
+                <h3 className="text-2xl font-bold leading-tight min-h-[56px] hover:underline">
+                  {item.name}
+                </h3>
+              </Link>
 
               {/* รายละเอียด */}
               <p className="text-sm mt-3 text-gray-700 min-h-[60px]">

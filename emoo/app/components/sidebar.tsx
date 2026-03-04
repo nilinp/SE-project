@@ -82,7 +82,7 @@ export default function Sidebar() {
             bottom-16 
             -right-30 
             w-40 
-            bg-(--bg-dark)
+            bg-(--bg2)
             text-white 
             rounded-xl
             shadow-lg
@@ -96,6 +96,7 @@ export default function Sidebar() {
               text-left 
               px-3 
               py-2 
+              bg-(--bg2)
               rounded 
               hover:bg-(--main) 
               hover:text-(--bg)

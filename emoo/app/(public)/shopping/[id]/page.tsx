@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, use } from "react";
 import { ShoppingCart } from "lucide-react";
+import { useCartStore } from "@/lib/cartstore";
+
 
 export default function ProductDetail({
   params,
@@ -13,7 +15,6 @@ export default function ProductDetail({
   params: Promise<{ id: string }>;
 }) {
 
-  // ✅ unwrap params ก่อน
   const { id } = use(params);
 
   const product = products.product.find(
@@ -23,6 +24,7 @@ export default function ProductDetail({
   if (!product) return notFound();
 
   const [quantity, setQuantity] = useState(1);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   return (
     <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10 bg-(white) text-(--sec)">
@@ -67,7 +69,17 @@ export default function ProductDetail({
 
           <div className="w-full max-w-2xl flex gap-4 mt-30">
 
-            <button className="
+            <button 
+            onClick={() => {
+              addToCart({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                quantity: quantity,
+              });
+            }}
+            className="
             flex-1 
             flex 
             items-center 

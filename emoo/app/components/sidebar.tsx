@@ -45,8 +45,12 @@ export default function Sidebar() {
           height={50} />
 
         <div className="flex flex-col gap-10 text-white">
-          <Home className="cursor-pointer hover:text-(--main) transition" />
-          <ShoppingCart className="cursor-pointer hover:text-(--main) transition" />
+          <Link href="/horoscope">
+            <Home className="cursor-pointer hover:text-(--main) transition" />
+          </Link>
+          <Link href="/cart">
+            <ShoppingCart className="cursor-pointer hover:text-(--main) transition" />
+          </Link>
         </div>
       </div>
 

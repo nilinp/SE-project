@@ -31,9 +31,9 @@ export default function AdminShopping() {
           </button>
         </div>
 
-        <div className="flex items-center gap-4 w-full justify-center">
+        <div className="flex items-center w-full justify-center relative">
           <SearchBar />
-          <Link href="/admin/shopping/add">
+          <Link href="/admin/shopping/add" className="absolute right-0">
             <button className="w-10 h-10 bg-[#1e1b4b] text-white rounded-lg text-2xl flex items-center justify-center hover:opacity-80 transition">
               +
             </button>

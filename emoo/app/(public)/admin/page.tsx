@@ -29,9 +29,9 @@ export default function AdminHome() {
       </div>
 
       {/* Chart Card */}
-      <div className="bg-[#c4a882] rounded-2xl p-7 w-full max-w-3xl">
+      <div className="bg-[#c4a882] rounded-2xl p-7 w-full max-w-5xl">
         <h2 className="text-3xl font-bold text-[#1e1b4b] mb-5">Chart</h2>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={450}>
           <BarChart data={horoscopeData} barGap={4}>
             <CartesianGrid vertical={false} stroke="rgba(0,0,0,0.1)" />
             <XAxis

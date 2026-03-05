@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import TabSwitch from "@/app/components/tabswitch";
 import SearchBar from "@/app/components/searchbar";
 import products from "@/app/data/product.json";
 
@@ -19,7 +18,19 @@ export default function AdminShopping() {
 
       {/* Tab + Search + Add */}
       <div className="flex flex-col items-center gap-4 mb-8">
-        <TabSwitch />
+
+        {/* Tab Toggle */}
+        <div className="flex bg-[#f5e6d0] rounded-full p-1">
+          <Link href="/admin">
+            <button className="px-6 py-2 rounded-full font-semibold text-sm text-gray-500">
+              Horoscope
+            </button>
+          </Link>
+          <button className="px-6 py-2 rounded-full font-semibold text-sm bg-[#2d2a6e] text-white">
+            Shopping
+          </button>
+        </div>
+
         <div className="flex items-center gap-4 w-full justify-center">
           <SearchBar />
           <Link href="/admin/shopping/add">

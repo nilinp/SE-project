@@ -2,9 +2,10 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { Home, ShoppingCart, Bell } from "lucide-react";
+import { Home, ShoppingCart, Bell, Store } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useCartStore } from "@/lib/cartstore";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
@@ -20,6 +21,10 @@ export default function Sidebar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const items = useCartStore((state) => state.cart);
+
+  const totalItems = items.reduce(
+    (sum, item) => sum + item.quantity, 0);
   return (
     <aside className=" 
       hidden 
@@ -45,11 +50,48 @@ export default function Sidebar() {
           height={50} />
 
         <div className="flex flex-col gap-10 text-white">
-          <Link href="/horoscope">
-            <Home className="cursor-pointer hover:text-(--main) transition" />
+          <Link href="/">
+            <Home 
+            size={28}
+            className="cursor-pointer hover:text-(--main) transition" />
           </Link>
+          
+          <Link href="/shopping">
+            <Store
+            size={28}
+            className="cursor-pointer hover:text-(--main) transition" />
+          </Link>
+          
           <Link href="/cart">
-            <ShoppingCart className="cursor-pointer hover:text-(--main) transition" />
+            <div className="relative">
+              <ShoppingCart 
+              size={28}
+              className="cursor-pointer hover:text-(--main) transition" />
+
+              <AnimatePresence>
+                {totalItems > 0 && (
+                <motion.span 
+                  key={totalItems}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  className="
+                  absolute 
+                  -top-2 
+                  -right-2 
+                  bg-red-500 
+                  text-white 
+                  rounded-full 
+                  w-5 h-5 
+                  flex 
+                  items-center 
+                  justify-center">
+                  {totalItems}
+                </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
           </Link>
         </div>
       </div>

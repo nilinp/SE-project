@@ -14,7 +14,7 @@ export default function CartPage() {
   );
 
   return (
-    <div className="p-10 flex gap-10">
+    <div className="p-10 flex gap-10 text-(--sec)">
 
       {/* cart items */}
       <div className="flex-1 space-y-6">

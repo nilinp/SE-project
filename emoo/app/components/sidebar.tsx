@@ -82,12 +82,15 @@ export default function Sidebar() {
                   -right-2 
                   bg-red-500 
                   text-white 
+                  text-xs
                   rounded-full 
-                  w-5 h-5 
+                  min-w-[20px] 
+                  h-[20px] 
+                  px-1
                   flex 
                   items-center 
                   justify-center">
-                  {totalItems}
+                  {totalItems > 99 ? "99+" : totalItems}
                 </motion.span>
                 )}
               </AnimatePresence>

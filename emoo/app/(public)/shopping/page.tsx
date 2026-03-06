@@ -9,6 +9,7 @@ import SearchBar from "@/app/components/searchbar";
 import products from "@/app/data/product.json";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { useCartStore } from "@/lib/cartstore";
 
 {products.product.map((item) => (
   <Link key={item.id} href={`/shopping/${item.id}`}>
@@ -29,6 +30,7 @@ const banner = [
 export default function Shopping() {
   const controls = useAnimation();
   const [index, setIndex] = useState(0);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const loopImage = [...banner, ...banner];
 
@@ -141,7 +143,18 @@ r
                   {item.price} ฿
                 </p>
 
-                <button className="
+                <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  addToCart({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    image: item.image,
+                    quantity: 1,
+                  });
+                }}
+                className="
                 w-[45px]
                 h-[45px]
                 rounded-full

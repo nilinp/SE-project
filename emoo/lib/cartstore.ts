@@ -9,6 +9,7 @@ type CartItem = {
 };
 
 type CartStore = {
+  remove: any;
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   increase: (id: string) => void;
@@ -25,13 +26,13 @@ export const useCartStore = create<CartStore>((set) => ({
       if (exist) {
         return {
           cart: state.cart.map((p) =>
-            p.id === item.id ? { ...p, quantity: p.quantity + 1 } : p
+            p.id === item.id ? { ...p, quantity: p.quantity + item.quantity } : p
           ),
         };
       }
 
       return {
-        cart: [...state.cart, { ...item, quantity: 1 }],
+        cart: [...state.cart, item],
       };
     }),
 
@@ -48,4 +49,8 @@ export const useCartStore = create<CartStore>((set) => ({
         p.id === id ? { ...p, quantity: p.quantity - 1 } : p
       ),
     })),
+    remove: (id: string) =>
+      set((state) => ({
+        cart: state.cart.filter((item) => item.id !== id),
+      })),
 }));

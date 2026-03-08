@@ -1,26 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { useCartStore } from "@/lib/cartstore";
+import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import Image from "next/image";
 import { EllipsisVertical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
 
 export default function CartPage() {
-  const cart = useCartStore((state) => state.cart);
-  const increase = useCartStore((state) => state.increase);
-  const decrease = useCartStore((state) => state.decrease);
-  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const cart = useCartStore((state: CartStore) => state.cart);
+  const increase = useCartStore((state: CartStore) => state.increase);
+  const decrease = useCartStore((state: CartStore) => state.decrease);
+  const updateQuantity = useCartStore((state: CartStore) => state.updateQuantity);
 
   const [selected, setSelected] = useState<string[]>([])
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   const toggleSelect = (id: string) => {
-  setSelected((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
+  setSelected((prev: string[]) => prev.includes(id) ? prev.filter((item: string) => item !== id) : [...prev, id]);
   };
 
-  const remove = useCartStore((state) => state.remove);
+  const remove = useCartStore((state: CartStore) => state.remove);
 
     const confirmDelete = (id: string) => {
         setItemToDelete(id);
@@ -40,16 +41,17 @@ export default function CartPage() {
 
     const handleDecrease = (item: { id: string; name?: string; price?: number; image?: string; quantity: number }) => {
         if (item.quantity <= 1) {
-            confirmDelete(item.id);
+            // If only one item left, remove it directly instead of opening delete modal
+            remove(item.id);
         } else {
             decrease(item.id);
         }
     };
 
     const total = cart
-        .filter((item) => selected.includes(item.id))
-        .reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        .filter((item: CartItem) => selected.includes(item.id))
+        .reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
+    const totalItems = cart.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
 
     return (
     <>
@@ -76,6 +78,7 @@ export default function CartPage() {
         bg-white/95 
         backdrop-blur-sm 
         pb-4 pt-5 mb-6 
+        mt-4 
         flex 
         items-baseline 
         gap-2">
@@ -87,7 +90,7 @@ export default function CartPage() {
 
         <div className="space-y-6">
           <AnimatePresence mode="popLayout">
-          {cart.map((item) => (
+          {cart.map((item: CartItem) => (
             <motion.div 
               layout
               initial={{ opacity: 0, scale: 0.9, y: 10 }}
@@ -127,7 +130,7 @@ export default function CartPage() {
                   type="text" 
                   inputMode="numeric"
                   value={item.quantity === 0 ? "0" : item.quantity}
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const val = e.target.value.replace(/[^0-9]/g, '');
                     if (val === "" || val === "0") {
                       updateQuantity(item.id, 0);
@@ -139,7 +142,7 @@ export default function CartPage() {
                       updateQuantity(item.id, num);
                     }
                   }}
-                  onBlur={(e) => {
+                  onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                     if (item.quantity === 0 && itemToDelete !== item.id) {
                       updateQuantity(item.id, 1);
                     }
@@ -220,8 +223,8 @@ export default function CartPage() {
 
               <div className="space-y-4">
                   {cart
-                      .filter((item) => selected.includes(item.id))
-                      .map((item) => (
+                      .filter((item: CartItem) => selected.includes(item.id))
+                      .map((item: CartItem) => (
                           <div key={item.id} className="flex gap-3 justify-between items-start">
                               <Image
                                   src={item.image}

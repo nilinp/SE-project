@@ -3,26 +3,44 @@
 import { useState } from "react";
 import { useCartStore } from "@/lib/cartstore";
 import Image from "next/image";
+import { EllipsisVertical } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartPage() {
   const cart = useCartStore((state) => state.cart);
   const increase = useCartStore((state) => state.increase);
   const decrease = useCartStore((state) => state.decrease);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
 
   const [selected, setSelected] = useState<string[]>([])
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+
   const toggleSelect = (id: string) => {
   setSelected((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
   };
 
   const remove = useCartStore((state) => state.remove);
 
-    const handleDecrease = (item: { id: any; name?: string; price?: number; image?: string; quantity: any; }) => {
-        if (item.quantity === 1) {
-            const confirmDelete = window.confirm("คุณต้องการลบสินค้าออกจากตะกร้าใช่หรือไม่");
+    const confirmDelete = (id: string) => {
+        setItemToDelete(id);
+    };
 
-            if (confirmDelete) {
-                remove(item.id);
-            }
+    const handleConfirmDelete = () => {
+        if (itemToDelete) {
+            remove(itemToDelete);
+            setItemToDelete(null);
+            setOpenMenuId(null);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setItemToDelete(null);
+    };
+
+    const handleDecrease = (item: { id: string; name?: string; price?: number; image?: string; quantity: number }) => {
+        if (item.quantity <= 1) {
+            confirmDelete(item.id);
         } else {
             decrease(item.id);
         }
@@ -31,7 +49,10 @@ export default function CartPage() {
     const total = cart
         .filter((item) => selected.includes(item.id))
         .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
     return (
+    <>
     <div className="
     min-h-screen 
     text-(--sec)
@@ -47,84 +68,283 @@ export default function CartPage() {
     gap-20">
 
       {/* cart items */}
-      <div className="flex-1 space-y-6">
-        <h1 className="text-3xl font-bold mb-6">ตะกร้าสินค้า</h1>
+      <div className="flex-1">
+        <div className="
+        sticky 
+        top-0 
+        z-30 
+        bg-white/95 
+        backdrop-blur-sm 
+        pb-4 pt-5 mb-6 
+        flex 
+        items-baseline 
+        gap-2">
+          <h1 className="text-3xl font-bold">ตะกร้าของคุณ</h1>
+          {totalItems > 0 && (
+            <span className="text-gray-500 font-medium">({totalItems})</span>
+          )}
+        </div>
 
-        {cart.map((item) => (
-          <div key={item.id} className="flex gap-6 items-center border-t pt-3">
+        <div className="space-y-6">
+          <AnimatePresence mode="popLayout">
+          {cart.map((item) => (
+            <motion.div 
+              layout
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -10 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 350, 
+                damping: 30 
+              }}
+              key={item.id}
+              className="flex gap-6 items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_15px_rgba(0,0,0,0.05)]"
+            >
 
-            <input
-              type="checkbox"
-              checked={selected.includes(item.id)}
-              onChange={() => toggleSelect(item.id)}
-              className="w-5 h-5 accent-(--bg) cursor-pointer"
-            />
-            <Image
-              src={item.image}
-              alt={item.name}
-              width={250}
-              height={250}
-              className="rounded-xl"
-            />
+              <input
+                type="checkbox"
+                checked={selected.includes(item.id)}
+                onChange={() => toggleSelect(item.id)}
+                className="w-5 h-5 accent-(--bg) cursor-pointer"
+              />
+              <Image
+                src={item.image}
+                alt={item.name}
+                width={250}
+                height={250}
+                className="rounded-xl"
+              />
 
-            <div className="flex-1">
-              <h2 className="text-xl font-semibold">{item.name}</h2>
-              <p>{item.price} ฿</p>
-            </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-semibold">{item.name}</h2>
+                <p>{item.price} ฿</p>
+              </div>
 
-            <div className="flex gap-3 items-center">
-              <button onClick={() => handleDecrease(item)}>-</button>
-              <span>{item.quantity}</span>
-              <button onClick={() => increase(item.id)}>+</button>
-            </div>
+              <div className="flex gap-3 items-center">
+                <button onClick={() => handleDecrease(item)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">-</button>
+                <input 
+                  type="text" 
+                  inputMode="numeric"
+                  value={item.quantity === 0 ? "0" : item.quantity}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    if (val === "" || val === "0") {
+                      updateQuantity(item.id, 0);
+                      confirmDelete(item.id);
+                      return;
+                    }
+                    const num = parseInt(val, 10);
+                    if (!isNaN(num) && num > 0) {
+                      updateQuantity(item.id, num);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (item.quantity === 0 && itemToDelete !== item.id) {
+                      updateQuantity(item.id, 1);
+                    }
+                  }}
+                  className="w-12 text-center bg-gray-100/80 rounded-md py-1 font-medium hover:bg-gray-200 focus:bg-white focus:ring-1 focus:ring-(--bg) transition-colors focus:outline-none"
+                />
+                <button onClick={() => increase(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">+</button>
+              </div>
 
-          </div>
-        ))}
+              <div className="relative isolate ml-4 self-start -mt-2">
+                <button 
+                  onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                  className="text-gray-500 hover:text-black p-2 text-xl leading-none cursor-pointer"
+                >
+                  <EllipsisVertical/>
+                </button>
+                <AnimatePresence>
+                  {openMenuId === item.id && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-10" 
+                        onClick={() => setOpenMenuId(null)}
+                      />
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg z-20 border border-gray-100 py-1 origin-top-right"
+                      >
+                        <button
+                          onClick={() => {
+                            confirmDelete(item.id);
+                            setOpenMenuId(null);
+                          }}
+                          className="
+                          w-full 
+                          text-left 
+                          px-4 py-2 
+                          text-red-500 
+                          hover:bg-gray-50 
+                          transition-colors
+                          cursor-pointer"
+                        >
+                          ลบสินค้า
+                        </button>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        </div>
       </div>
 
       {/* order summary */}
-      {selected.length > 0 && (
-        <div className="
-          w-[350px] 
-          p-6 
-          border-2 
-          rounded-xl
-          border-(--bg)">
-            <h2 className="text-xl font-bold mb-4">
-              ทำการสั่งซื้อ
-            </h2>
+      <AnimatePresence>
+        {selected.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="
+            w-[350px] 
+            p-6 
+            border-2 
+            rounded-xl
+            border-(--bg)
+            sticky top-10"
+          >
+              <h2 className="text-xl font-bold mb-4">
+                ทำการสั่งซื้อ
+              </h2>
 
-            <div className="space-y-4">
-                {cart
-                    .filter((item) => selected.includes(item.id))
-                    .map((item) => (
-                        <div key={item.id} className="flex justify-between items-start">
+              <div className="space-y-4">
+                  {cart
+                      .filter((item) => selected.includes(item.id))
+                      .map((item) => (
+                          <div key={item.id} className="flex gap-3 justify-between items-start">
+                              <Image
+                                  src={item.image}
+                                  alt={item.name}
+                                  width={50}
+                                  height={50}
+                                  className="rounded-md object-cover w-12 h-12"
+                              />
+                              <div className="flex flex-col flex-1">
+                                  <span className="font-semibold">{item.name}</span>
+                                  <span className="text-gray-500 text-sm">
+                                      x{item.quantity}
+                              </span>
+                          </div>
 
-                            <div className="flex flex-col">
-                                <span className="font-semibold">{item.name}</span>
-                                <span className="text-gray-500 text-sm">
-                                    x{item.quantity}
-                            </span>
-                        </div>
+                          <span className="text-gray-500 text-sm whitespace-nowrap">
+                              {item.price} ฿
+                          </span>
 
-                        <span className="text-gray-500 text-sm">
-                            {item.price * item.quantity} ฿
-                        </span>
+                      </div>
+                  ))}
+              <div className="border-t pt-3 font-bold flex justify-between">
+                  <span>รวมยอดสั่งซื้อ</span>
+                  <span>{total} ฿</span>
+              </div>
+          </div>
 
-                    </div>
-                ))}
-            <div className="border-t pt-3 font-bold flex justify-between">
-                <span>รวมยอดสั่งซื้อ</span>
-                <span>{total} ฿</span>
-            </div>
-        </div>
+          <button className="
+          mt-6 
+          w-full 
+          bg-(--bg) 
+          text-white 
+          py-3 
+          rounded-lg 
+          cursor-pointer 
+          hover:opacity-80 
+          transition-colors 
+          duration-300">
+            ชำระเงิน
+          </button>
+          <button 
+            className="
+            mt-3 
+            w-full 
+            border-2 
+            border-(--bg) 
+            text-(--bg) 
+            py-3 
+            rounded-lg 
+            cursor-pointer 
+            hover:bg-red-500
+            hover:border-red-500
+            hover:text-white 
+            transition-colors 
+            duration-300"
+            onClick={() => setSelected([])}
+          >
+            ยกเลิก
+          </button>
 
-        <button className="mt-6 w-full bg-(--bg) text-white py-3 rounded-lg cursor-pointer hover:opacity-80 transition-colors duration-300">
-          ชำระเงิน
-        </button>
-
-      </div>
-      )}
+        </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+
+      {/* Custom Delete Confirmation Modal */}
+      {itemToDelete && (
+        <div className="
+        fixed 
+        inset-0 
+        bg-black/50 
+        flex 
+        items-center 
+        justify-center 
+        z-50 
+        p-4">
+          <div className="
+          bg-white 
+          rounded-2xl 
+          p-6 w-full 
+          max-w-sm 
+          shadow-xl 
+          transform 
+          transition-all
+          text-(--sec)">
+            <h3 className="text-xl font-bold mb-2">ลบสินค้า?</h3>
+            <p className="text-gray-600 mb-6">คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้ออกจากตะกร้า?</p>
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={() => {
+                    handleCancelDelete();
+                    updateQuantity(itemToDelete, 1); // Reset back to 1 if cancelled when typing 0
+                }}
+                className="
+                px-5 py-2.5 
+                rounded-lg 
+                border border-gray-300 
+                hover:bg-gray-50 
+                transition-colors 
+                font-medium
+                cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+              <button 
+                onClick={handleConfirmDelete}
+                className="
+                px-5 py-2.5 
+                rounded-lg 
+                bg-red-500 
+                text-white 
+                hover:bg-red-600 
+                transition-colors 
+                font-medium
+                cursor-pointer"
+              >
+                ลบสินค้า
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </>
   );
 }

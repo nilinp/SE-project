@@ -9,16 +9,26 @@ import SearchBar from "@/app/components/searchbar";
 import products from "@/app/data/product.json";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useCartStore } from "@/lib/cartstore";
+import { useCartStore, CartStore } from "@/lib/cartstore";
+import React from "react";
 
-{products.product.map((item) => (
+{/* Redundant mapping removed? or fix it */}
+{/* {products.product.map((item) => (
   <Link key={item.id} href={`/shopping/${item.id}`}>
     <div className="card">
       <h3>{item.name}</h3>
       <p>{item.price} ฿</p>
     </div>
   </Link>
-))}
+))} */}
+
+interface ProductItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  details: string;
+}
 
 const banner = [
   "/banner/banner-1.jpg",
@@ -30,7 +40,7 @@ const banner = [
 export default function Shopping() {
   const controls = useAnimation();
   const [index, setIndex] = useState(0);
-  const addToCart = useCartStore((state) => state.addToCart);
+  const addToCart = useCartStore((state: CartStore) => state.addToCart);
 
   const loopImage = [...banner, ...banner];
 
@@ -45,7 +55,7 @@ export default function Shopping() {
         controls.set({ x: 0 });
         setIndex(0);
       } else {
-        setIndex((prev) => prev + 1);
+        setIndex((prev: number) => prev + 1);
       }
     });
   }, 5000); // ค้าง 5 วิ
@@ -104,7 +114,7 @@ export default function Shopping() {
 r
       {/* PRODUCT SECTION */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
-        {products.product.map((item) => (
+        {products.product.map((item: ProductItem) => (
           <div
             key={item.id}
             className="
@@ -144,7 +154,7 @@ r
                 </p>
 
                 <button 
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   addToCart({
                     id: item.id,

@@ -66,7 +66,7 @@ export default function CartPage() {
     px-4
     lg:px-16
     lg:ml-24
-    pt-10
+    pt-5
     gap-20">
 
       {/* cart items */}
@@ -77,8 +77,8 @@ export default function CartPage() {
         z-30 
         bg-white/95 
         backdrop-blur-sm 
-        pb-4 pt-5 mb-6 
-        mt-4 
+        pb-2 pt-4 mb-4
+        mt-2 
         flex 
         items-baseline 
         gap-2">
@@ -125,7 +125,16 @@ export default function CartPage() {
               </div>
 
               <div className="flex gap-3 items-center">
-                <button onClick={() => handleDecrease(item)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">-</button>
+                <button onClick={() => handleDecrease(item)} className="
+                w-8 h-8 
+                flex 
+                items-center justify-center 
+                rounded-full 
+                hover:bg-gray-100 
+                transition-colors
+                cursor-pointer">
+                  -
+                </button>
                 <input 
                   type="text" 
                   inputMode="numeric"
@@ -147,9 +156,29 @@ export default function CartPage() {
                       updateQuantity(item.id, 1);
                     }
                   }}
-                  className="w-12 text-center bg-gray-100/80 rounded-md py-1 font-medium hover:bg-gray-200 focus:bg-white focus:ring-1 focus:ring-(--bg) transition-colors focus:outline-none"
+                  className="
+                  w-12 
+                  text-center 
+                  bg-gray-100/80 
+                  rounded-md py-1 
+                  font-medium 
+                  hover:bg-gray-200 
+                  focus:bg-white 
+                  focus:ring-1 
+                  focus:ring-(--bg) 
+                  transition-colors 
+                  focus:outline-none"
                 />
-                <button onClick={() => increase(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">+</button>
+                <button onClick={() => increase(item.id)} className="
+                w-8 h-8 
+                flex 
+                items-center justify-center 
+                rounded-full 
+                hover:bg-gray-100 
+                transition-colors
+                cursor-pointer">
+                  +
+                </button>
               </div>
 
               <div className="relative isolate ml-4 self-start -mt-2">
@@ -221,36 +250,42 @@ export default function CartPage() {
                 ทำการสั่งซื้อ
               </h2>
 
-              <div className="space-y-4">
+              <div className="flex flex-col flex-1 min-h-0">
+                <div className="
+                  space-y-4 
+                  overflow-y-auto 
+                  pr-2
+                  max-h-[calc(100vh-380px)]
+                  minimal-scrollbar"
+                >
                   {cart
-                      .filter((item: CartItem) => selected.includes(item.id))
-                      .map((item: CartItem) => (
-                          <div key={item.id} className="flex gap-3 justify-between items-start">
-                              <Image
-                                  src={item.image}
-                                  alt={item.name}
-                                  width={50}
-                                  height={50}
-                                  className="rounded-md object-cover w-12 h-12"
-                              />
-                              <div className="flex flex-col flex-1">
-                                  <span className="font-semibold">{item.name}</span>
-                                  <span className="text-gray-500 text-sm">
-                                      x{item.quantity}
-                              </span>
-                          </div>
-
-                          <span className="text-gray-500 text-sm whitespace-nowrap">
-                              {item.price} ฿
+                    .filter((item: CartItem) => selected.includes(item.id))
+                    .map((item: CartItem) => (
+                      <div key={item.id} className="flex gap-3 justify-between items-start">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={50}
+                          height={50}
+                          className="rounded-md object-cover w-12 h-12"
+                        />
+                        <div className="flex flex-col flex-1">
+                          <span className="font-semibold">{item.name}</span>
+                          <span className="text-gray-500 text-sm">
+                            x{item.quantity}
                           </span>
-
+                        </div>
+                        <span className="text-gray-500 text-sm whitespace-nowrap">
+                          {item.price} ฿
+                        </span>
                       </div>
-                  ))}
-              <div className="border-t pt-3 font-bold flex justify-between">
+                    ))}
+                </div>
+                <div className="border-t mt-4 pt-3 font-bold flex justify-between">
                   <span>รวมยอดสั่งซื้อ</span>
                   <span>{total} ฿</span>
+                </div>
               </div>
-          </div>
 
           <button className="
           mt-6 

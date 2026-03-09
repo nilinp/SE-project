@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, use } from "react";
 import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/lib/cartstore";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 export default function ProductDetail({
@@ -24,10 +25,31 @@ export default function ProductDetail({
   if (!product) return notFound();
 
   const [quantity, setQuantity] = useState(1);
+  const [showAlert, setShowAlert] = useState(false);
   const addToCart = useCartStore((state) => state.addToCart);
 
+  const triggerAlert = () => {
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000);
+  };
+
   return (
-    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10 bg-(white) text-(--sec)">
+    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10 bg-(white) text-(--sec) relative">
+      
+      {/* Validation Alert */}
+      <AnimatePresence>
+        {showAlert && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: "-50%" }}
+            animate={{ opacity: 1, y: 20, x: "-50%" }}
+            exit={{ opacity: 0, y: -20, x: "-50%" }}
+            className="fixed top-4 left-1/2 z-50 bg-red-500 text-white px-6 py-3 rounded-xl shadow-2xl font-semibold border border-red-400"
+          >
+            กรุณากรอกข้อมูลให้ถูกต้อง
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Link href="/shopping">← Back</Link>
 
       <div className="flex gap-20 mt-10 justify-center">
@@ -52,17 +74,66 @@ export default function ProductDetail({
               onClick={() =>
                 setQuantity(quantity > 1 ? quantity - 1 : 1)
               }
-              className="px-4 py-2 bg-gray-300 rounded-full"
+              className="
+                px-4 py-2 
+                bg-gray-300
+                flex 
+                items-center justify-center 
+                rounded-full 
+                hover:bg-gray-200 
+                transition-colors
+                cursor-pointer"
             >
               -
             </button>
 
-            <span>{quantity}</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={quantity}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const val = e.target.value.replace(/[^0-9]/g, '');
+                if (val === "" || val === "0") {
+                  setQuantity(0);
+                  return;
+                }
+                const num = parseInt(val, 10);
+                if (!isNaN(num) && num > 0) {
+                  setQuantity(num);
+                }
+              }}
+              onBlur={() => {
+                if (quantity <= 0) {
+                  setQuantity(1);
+                  triggerAlert();
+                }
+              }}
+              className="
+                w-12 
+                text-center 
+                bg-gray-100/80 
+                rounded-md 
+                py-1 
+                font-medium 
+                hover:bg-gray-200 
+                focus:bg-white 
+                focus:ring-1 
+                focus:ring-(--bg) 
+                transition-colors 
+                focus:outline-none"
+            />
 
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="px-4 py-2 bg-gray-300 rounded-full"
-            >
+              className="
+                px-4 py-2 
+                bg-gray-300
+                flex 
+                items-center justify-center 
+                rounded-full 
+                hover:bg-gray-200 
+                transition-colors
+                cursor-pointer" >
               +
             </button>
           </div>
@@ -71,6 +142,10 @@ export default function ProductDetail({
 
             <button 
             onClick={() => {
+              if (quantity <= 0) {
+                triggerAlert();
+                return;
+              }
               addToCart({
                 id: product.id,
                 name: product.name,

@@ -46,22 +46,27 @@ export default function Shopping() {
 
   // animation banner
   useEffect(() => {
+    let isMounted = true;
     const timeout = setTimeout(() => {
-    controls.start({
-      x: `-${(index + 1) * 100}%`,
-      transition: { duration: 1.5, ease: "easeInOut" },
-    }).then(() => {
-      if (index + 1 === banner.length) {
-        controls.set({ x: 0 });
-        setIndex(0);
-      } else {
-        setIndex((prev: number) => prev + 1);
-      }
-    });
-  }, 5000); // ค้าง 5 วิ
+      controls.start({
+        x: `-${(index + 1) * 100}%`,
+        transition: { duration: 1.5, ease: "easeInOut" },
+      }).then(() => {
+        if (!isMounted) return;
+        if (index + 1 === banner.length) {
+          controls.set({ x: 0 });
+          setIndex(0);
+        } else {
+          setIndex((prev: number) => prev + 1);
+        }
+      });
+    }, 5000); // ค้าง 5 วิ
 
-  return () => clearTimeout(timeout);
-}, [index, controls]);
+    return () => {
+      isMounted = false;
+      clearTimeout(timeout);
+    };
+  }, [index, controls]);
 
   return (
     <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10">
@@ -98,20 +103,20 @@ export default function Shopping() {
         <motion.div
           className="flex w-full h-full"
           animate={controls}
-          initial={{ x:0 }}>
-          
+          initial={{ x: 0 }}>
+
           {loopImage.map((img, i) => (
-              <div key={i} className="relative w-full h-full flex-shrink-0">
-                <Image 
-                  src={img} 
-                  alt={`banner-${i}`}
-                  fill
-                  className="object-cover"/>
-              </div>
-            ))}
-          </motion.div>
+            <div key={i} className="relative w-full h-full flex-shrink-0">
+              <Image
+                src={img}
+                alt={`banner-${i}`}
+                fill
+                className="object-cover" />
+            </div>
+          ))}
+        </motion.div>
       </div>
-r
+
       {/* PRODUCT SECTION */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
         {products.product.map((item: ProductItem) => (

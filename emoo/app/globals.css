@@ -17,3 +17,20 @@ body {
   color: var(--main);
   font-family: 'K2D', sans-serif;
 }
+
+@layer utilities {
+  .minimal-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .minimal-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .minimal-scrollbar::-webkit-scrollbar-thumb {
+    background: #e5e7eb; /* gray-200 */
+    border-radius: 9999px;
+  }
+  .minimal-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #e5e7eb transparent;
+  }
+}

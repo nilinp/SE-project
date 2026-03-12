@@ -6,20 +6,44 @@ import { Home, ShoppingCart, Bell, Store } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/cartstore";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for changes on auth state
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      subscription.unsubscribe();
+    };
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setOpen(false);
+    router.push("/login");
+  };
 
   const items = useCartStore((state) => state.cart);
 
@@ -140,31 +164,38 @@ export default function Sidebar() {
             flex-col 
             gap-2">
 
-            <Link href="/login" className="
-              block
-              text-left 
-              px-3 
-              py-2 
-              bg-(--bg2)
-              rounded 
-              hover:bg-(--main) 
-              hover:text-(--bg)
-              transition duration-200">
-              Login
-            </Link>
-          </motion.div>
-
-            /* <button className="
-              text-left 
-              px-3 py-2 
-              rounded 
-              hover:bg-(--main)
-              transition 
-              text-red-400">
+            {user ? (
+              <button 
+                onClick={handleLogout}
+                className="
+                block
+                w-full
+                text-left 
+                px-3 
+                py-2 
+                bg-(--bg2)
+                rounded 
+                hover:bg-red-500 
+                hover:text-white
+                transition duration-200
+                text-red-400">
                 Logout
-              </button> */
-
-          
+              </button>
+            ) : (
+              <Link href="/login" className="
+                block
+                text-left 
+                px-3 
+                py-2 
+                bg-(--bg2)
+                rounded 
+                hover:bg-(--main) 
+                hover:text-(--bg)
+                transition duration-200">
+                Login
+              </Link>
+            )}
+          </motion.div>
         )}
       </AnimatePresence>
       </div>

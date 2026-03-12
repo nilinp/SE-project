@@ -12,22 +12,25 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setError("");
     if (!email || !password) {
       setError("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    setLoading(true);
+    const { error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      alert(error.message);
+    if (loginError) {
+      setError(loginError.message);
+      setLoading(false);
     } else {
-      alert("เข้าสู่ระบบสำเร็จ");
       router.push("/horoscope");
     }
   };
@@ -94,10 +97,18 @@ export default function Login() {
             </button>
           </div>
 
+          {error && (
+            <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
+              {error}
+            </p>
+          )}
+
           <input
             type="email"
             placeholder="Email"
-            onChange={ (e) => setEmail(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
             className="
             w-1/2 
             mb-5 
@@ -106,13 +117,16 @@ export default function Login() {
             rounded-lg 
             bg-gray-300 
             outline-none 
-            text-(--bg)"
+            text-(--bg)
+            disabled:opacity-50"
           />
 
           <input
             type="password"
             placeholder="Password"
-            onChange={ (e) => setPassword(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
             className="
             w-1/2 
             mb-5 
@@ -121,20 +135,33 @@ export default function Login() {
             rounded-lg 
             bg-gray-300 
             outline-none 
-            text-(--bg)"
+            text-(--bg)
+            disabled:opacity-50"
           />
 
-          <button onClick={handleLogin} className="
-          w-1/2 
-          py-3 
-          rounded-full 
-          bg-(--bg) 
-          text-white 
-          font-semibold 
-          hover:opacity-90 
-          transition
-          mb-3">
-            Sign in
+          <button 
+            onClick={handleLogin} 
+            disabled={loading}
+            className="
+            w-1/2 
+            py-3 
+            rounded-full 
+            bg-(--bg) 
+            text-white 
+            font-semibold 
+            hover:opacity-90 
+            transition
+            mb-3
+            disabled:opacity-50
+            flex
+            justify-center
+            items-center"
+          >
+            {loading ? (
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              "Sign in"
+            )}
           </button>
 
           <p className="text-sm mt-3 text-(--bg) text-[16px]">

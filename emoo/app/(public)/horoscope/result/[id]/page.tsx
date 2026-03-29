@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import tarot from "../../../../data/tarot.json";
+import { supabase } from "@/lib/supabase";
 
 
 
@@ -22,6 +23,29 @@ export default function ResultPage() {
 
     const [loveType, setLoveType] = useState("single");
     const router = useRouter();
+
+    /* ─── Save last viewed card to profile ─── */
+    useEffect(() => {
+        if (!card) return;
+        const save = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+            await supabase
+                .from("profiles")
+                .update({
+                    last_card: {
+                        card_id: card.card_id,
+                        name: card.name,
+                        image: card.image,
+                        keyword: card.keyword,
+                        category: category ?? "",
+                        viewed_at: new Date().toISOString(),
+                    },
+                })
+                .eq("id", session.user.id);
+        };
+        save();
+    }, [card?.card_id]);
 
     if (!card) return <div>Card not found</div>;
 

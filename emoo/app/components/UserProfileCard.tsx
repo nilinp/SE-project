@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
-import { Pencil, Check, X, Camera, Star, Sparkles, History, LogIn, Lock } from "lucide-react";
+import { Pencil, Check, X, Camera, Star, Sparkles, History, LogIn, Lock, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type LastCard = {
@@ -134,6 +134,13 @@ export default function UserProfileCard() {
       setEditingUsername(false);
     }
     setSaving(false);
+  };
+
+  /* ─── Logout ─── */
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.refresh(); // Or reload window
+    window.location.reload();
   };
 
   /* ─── Loading skeleton ─── */
@@ -299,6 +306,17 @@ export default function UserProfileCard() {
       {/* Background */}
       <div className="absolute inset-0 bg-cover bg-center rounded-[40px]" style={{ backgroundImage: "url('/bg/Profile-bg.jpg')" }} />
       <div className="absolute inset-0 bg-[#1E1A33]/70 backdrop-blur-[2px] rounded-[40px]" />
+
+      {/* Logout button (only for logged-in users) */}
+      {!isGuest && (
+        <button
+          onClick={handleLogout}
+          className="absolute top-5 right-5 z-20 p-2 text-[#ffecd9]/40 hover:text-[#ffecd9] hover:bg-white/10 rounded-full transition-all"
+          title="ออกจากระบบ"
+        >
+          <LogOut size={16} />
+        </button>
+      )}
 
       {/* ══════════════════════════════════════════ */}
       {/* STATE A: ยังไม่เคยดูไพ่ — centered layout */}

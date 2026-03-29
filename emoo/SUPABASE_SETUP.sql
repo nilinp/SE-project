@@ -46,3 +46,8 @@ SET email = au.email
 FROM auth.users au
 WHERE profiles.id = au.id
   AND profiles.email IS NULL;
+
+-- 8. Profiles RLS: anyone can read profiles (needed for login lookup)
+CREATE POLICY "Public read profiles"
+  ON profiles FOR SELECT
+  USING (true);

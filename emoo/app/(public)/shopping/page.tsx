@@ -6,13 +6,11 @@ import Image from "next/image";
 
 import TabSwitch from "@/app/components/tabswitch";
 import SearchBar from "@/app/components/searchbar";
-import products from "@/app/data/product.json";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useCartStore, CartStore } from "@/lib/cartstore";
 import React from "react";
-
-{/* Redundant mapping removed? or fix it */}
+import { supabase } from "@/lib/supabase";
 {/* {products.product.map((item) => (
   <Link key={item.id} href={`/shopping/${item.id}`}>
     <div className="card">
@@ -26,7 +24,7 @@ interface ProductItem {
   id: string;
   name: string;
   price: number;
-  image: string;
+  img: string;
   details: string;
 }
 
@@ -44,7 +42,27 @@ export default function Shopping() {
 
   const loopImage = [...banner, ...banner];
 
-  // animation banner
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("product")
+          .select("*")
+          .order("id", { ascending: true });
+        if (error) throw error;
+        setProducts(data || []);
+      } catch (err) {
+        console.error("Failed to load products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
   useEffect(() => {
     let isMounted = true;
     const timeout = setTimeout(() => {
@@ -86,7 +104,10 @@ export default function Shopping() {
         <div className="w-full lg:w-1/2 flex flex-col items-center">
 
           <div className="w-full mb-6 flex justify-center">
-            <SearchBar />
+            <SearchBar 
+              value={searchQuery} 
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)} 
+            />
           </div>
 
         </div>
@@ -118,8 +139,15 @@ export default function Shopping() {
       </div>
 
       {/* PRODUCT SECTION */}
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <span className="text-xl font-semibold text-(--sec)">กำลังโหลด...</span>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
-        {products.product.map((item: ProductItem) => (
+        {products
+          .filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map((item: ProductItem) => (
           <div
             key={item.id}
             className="
@@ -133,7 +161,7 @@ export default function Shopping() {
           
             <div className="relative w-full h-[300px] bg-white rounded-2xl overflow-hidden">
               <Image
-                src={item.image || "/placeholder.png"}
+                src={item.img || "/placeholder.png"}
                 alt={item.name}
                 fill
                 className="object-contain p-6"/>
@@ -159,27 +187,28 @@ export default function Shopping() {
                 </p>
 
                 <button 
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.preventDefault();
-                  addToCart({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    image: item.image,
-                    quantity: 1,
-                  });
-                }}
-                className="
-                w-[45px]
-                h-[45px]
-                rounded-full
-                bg-(--bg)
-                text-(--main)
-                flex
-                justify-center
-                items-center
-                cursor-pointer">
-                  <ShoppingCart className="w-[20px] h-[20px]"/>
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    e.preventDefault();
+                    addToCart({
+                      id: item.id,
+                      name: item.name,
+                      price: item.price,
+                      image: item.img || "/placeholder.png",
+                      quantity: 1,
+                    });
+                  }}
+                  className="
+                  w-[45px]
+                  h-[45px]
+                  rounded-full
+                  flex
+                  justify-center
+                  items-center
+                  cursor-pointer
+                  transition-colors
+                  bg-(--bg) text-(--main)
+                  ">
+                    <ShoppingCart className="w-[20px] h-[20px]"/>
                   {/* ปุ่ม + เล็ก */}
                   <span className="text-sm">+</span>
                 </button>
@@ -189,6 +218,7 @@ export default function Shopping() {
           </div>
         ))}
       </div>
+      )}
 
     </div>
 

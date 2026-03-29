@@ -1,34 +1,154 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import products from "@/app/data/product.json";
+import { useParams, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function EditProduct() {
   const { id } = useParams();
-  const product = products.product.find((p) => p.id === id);
+  const router = useRouter();
 
-  const [name, setName]           = useState(product?.name || "Name Product");
-  const [description, setDesc]    = useState("description");
-  const [price, setPrice]         = useState(product?.price || "");
-  const [amount, setAmount]       = useState(10);
+  const [name, setName]           = useState("");
+  const [details, setDetails]     = useState("");
+  const [price, setPrice]         = useState("");
   const [editPrice, setEditPrice] = useState(false);
-  const [images, setImages]       = useState<string[]>(product?.image ? [product.image] : []);
-  const [mainImage, setMainImage] = useState<string | null>(product?.image || null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [loading, setLoading]     = useState(true);
+  const [saving, setSaving]       = useState(false);
+
+  // Fetch current product data from Supabase
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("product")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+        
+        if (data) {
+          setName(data.name || "");
+          setDetails(data.details || "");
+          setPrice(data.price?.toString() || "");
+          setPreviewImage(data.img || null);
+        }
+      } catch (err) {
+        console.error("โหลดข้อมูลสินค้าไม่สำเร็จ", err);
+        alert("ไม่พบรหัสสินค้านี้");
+        router.push("/admin/shopping");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (id) {
+      fetchProduct();
+    }
+  }, [id, router]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    const urls = Array.from(files).map((f) => URL.createObjectURL(f));
-    setImages((prev) => [...prev, ...urls]);
-    if (!mainImage) setMainImage(urls[0]);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setImageFile(file);
+    setPreviewImage(URL.createObjectURL(file));
   };
 
-  const handleSave = () => {
-    alert("บันทึกสำเร็จ!");
+  const handleSave = async () => {
+    if (!name.trim() || !price) {
+      alert("กรุณากรอกชื่อและราคา");
+      return;
+    }
+    
+    setSaving(true);
+    
+    try {
+      let imageUrl = previewImage; // Default to existing image url
+
+      // Upload new image if selected
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("products")
+          .upload(filePath, imageFile);
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("products")
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+
+      // Record update
+      const { error: updateError } = await supabase
+        .from("product")
+        .update({
+          name: name.trim(),
+          details: details.trim(),
+          price: parseFloat(price),
+          img: imageUrl || null
+        })
+        .eq("id", id);
+
+      if (updateError) {
+        throw updateError;
+      }
+      
+      alert("แก้ไขสินค้าสำเร็จ!");
+      router.push("/admin/shopping");
+      
+    } catch (err) {
+      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  const handleDelete = async () => {
+    if (!confirm("คุณต้องการลบสินค้านี้ใช่หรือไม่?")) return;
+
+    setSaving(true);
+    try {
+      const { error, count } = await supabase
+        .from("product")
+        .delete({ count: 'exact' })
+        .eq("id", id);
+
+      if (error) throw error;
+      
+      if (count === 0) {
+        throw new Error("ลบออกจากฐานข้อมูลไม่ได้ (อาจติดเรื่องสิทธิ์ RLS)");
+      }
+      
+      alert("ลบสินค้าเรียบร้อยแล้ว");
+      router.push("/admin/shopping");
+    } catch (err: any) {
+      console.error(err);
+      alert(`ไม่สามารถลบสินค้าได้: ${err?.message || "Error"}`);
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#c4a882] flex items-center justify-center">
+        <p className="text-[#1e1b4b] text-2xl font-bold font-semibold animate-pulse">กำลังโหลด...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#c4a882] flex flex-col p-10 ml-16">
@@ -45,30 +165,27 @@ export default function EditProduct() {
 
           {/* Main Image */}
           <div className="w-[450px] h-[400px] bg-white rounded-2xl overflow-hidden relative flex-shrink-0">
-            {mainImage ? (
-              <Image src={mainImage} alt="main" fill className="object-cover rounded-2xl" />
+            {previewImage ? (
+              <Image src={previewImage} alt="main" fill className="object-cover rounded-2xl" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white text-lg opacity-60">
+              <div className="w-full h-full flex flex-col items-center justify-center text-[#1e1b4b] opacity-60 text-lg gap-4">
                 No Image
               </div>
             )}
           </div>
 
-          {/* Thumbnails */}
           <div className="flex flex-col gap-3">
-            {images.map((img, i) => (
-              <div
-                key={i}
-                onClick={() => setMainImage(img)}
-                className="w-16 h-16 rounded-xl overflow-hidden relative cursor-pointer border-2 border-transparent hover:border-[#1e1b4b] flex-shrink-0"
-              >
-                <Image src={img} alt={`thumb-${i}`} fill className="object-cover" />
-              </div>
-            ))}
             <label className="w-16 h-16 rounded-xl bg-[#1e1b4b] text-white text-3xl flex items-center justify-center cursor-pointer hover:opacity-80 flex-shrink-0">
-              +
-              <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
+              <span title="เปลี่ยนรูปสินค้า">📷</span>
+              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </label>
+            <button 
+              onClick={handleDelete}
+              disabled={saving}
+              title="ลบสินค้านี้"
+              className="w-16 h-16 rounded-xl bg-red-600 text-white text-3xl flex items-center justify-center cursor-pointer hover:bg-red-700 hover:opacity-80 flex-shrink-0 disabled:opacity-50">
+              🗑️
+            </button>
           </div>
         </div>
 
@@ -84,16 +201,18 @@ export default function EditProduct() {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder="ชื่อสินค้า"
                 className="text-3xl font-bold text-[#1e1b4b] bg-transparent outline-none border-b border-[#1e1b4b] w-full"
               />
               <span className="text-xl">✏️</span>
             </div>
 
-            {/* Description */}
+            {/* Details */}
             <div className="flex items-center gap-3">
               <input
-                value={description}
-                onChange={(e) => setDesc(e.target.value)}
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                placeholder="รายละเอียดเพิ่มเติม"
                 className="text-base text-[#1e1b4b] bg-transparent outline-none border-b border-[#1e1b4b] w-full"
               />
               <span className="text-base">✏️</span>
@@ -103,6 +222,7 @@ export default function EditProduct() {
             <div className="flex items-center gap-4 mt-4">
               {editPrice ? (
                 <input
+                  type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="0.00"
@@ -123,36 +243,17 @@ export default function EditProduct() {
               </button>
             </div>
 
-            {/* Amount */}
-            <div className="flex items-center gap-6">
-              <span className="text-[#1e1b4b] font-semibold text-lg">Amount</span>
-              <div className="flex items-center border border-[#1e1b4b] rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setAmount((p) => Math.max(0, p - 1))}
-                  className="px-4 py-2 text-[#1e1b4b] font-bold text-lg hover:bg-[#1e1b4b] hover:text-white transition"
-                >
-                  −
-                </button>
-                <span className="px-6 py-2 font-bold text-[#1e1b4b] text-lg border-x border-[#1e1b4b]">
-                  {amount}
-                </span>
-                <button
-                  onClick={() => setAmount((p) => p + 1)}
-                  className="px-4 py-2 text-[#1e1b4b] font-bold text-lg hover:bg-[#1e1b4b] hover:text-white transition"
-                >
-                  +
-                </button>
-              </div>
-            </div>
+             {/* Amount removed */}
           </div>
 
           {/* Save Button */}
-          <div className="flex justify-end mt-8">
+          <div className="flex justify-end mt-8 gap-4">
             <button
               onClick={handleSave}
-              className="px-14 py-3 bg-[#1e1b4b] text-white font-semibold text-lg rounded-xl hover:opacity-80 transition"
+              disabled={saving}
+              className="px-14 py-3 bg-[#1e1b4b] text-white font-semibold text-lg rounded-xl hover:bg-[#2d2a6e] hover:shadow-lg transition disabled:opacity-50"
             >
-              Save
+              {saving ? "กำลังบันทึก..." : "Save"}
             </button>
           </div>
         </div>

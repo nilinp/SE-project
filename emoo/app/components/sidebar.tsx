@@ -80,20 +80,26 @@ export default function Sidebar() {
             className="cursor-pointer hover:text-(--main) transition" />
           </Link>
           
-          <Link href="/shopping">
+          <button
+            onClick={() => user ? router.push("/shopping") : router.push("/login")}
+            title={user ? "ร้านค้า" : "กรุณาเข้าสู่ระบบก่อนใช้งานร้านค้า"}
+          >
             <Store
             size={28}
-            className="cursor-pointer hover:text-(--main) transition" />
-          </Link>
+            className={`cursor-pointer hover:text-(--main) transition ${!user ? "opacity-40" : ""}`} />
+          </button>
           
-          <Link href="/cart">
+          <button
+            onClick={() => user ? router.push("/cart") : router.push("/login")}
+            title={user ? "ตะกร้า" : "กรุณาเข้าสู่ระบบก่อนใช้งานตะกร้า"}
+          >
             <div className="relative">
               <ShoppingCart 
               size={28}
-              className="cursor-pointer hover:text-(--main) transition" />
+              className={`cursor-pointer hover:text-(--main) transition ${!user ? "opacity-40" : ""}`} />
 
               <AnimatePresence>
-                {totalItems > 0 && (
+                {user && totalItems > 0 && (
                 <motion.span 
                   key={totalItems}
                   initial={{ scale: 0 }}
@@ -119,7 +125,7 @@ export default function Sidebar() {
                 )}
               </AnimatePresence>
             </div>
-          </Link>
+          </button>
         </div>
       </div>
 

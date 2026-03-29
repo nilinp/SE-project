@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence, color } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import TabSwitch from "@/app/components/tabswitch";
 import SearchBar from "@/app/components/searchbar";
 import rawData from "@/app/data/luckycolor.json";
+import UserProfileCard from "@/app/components/UserProfileCard";
 
 type LuckyDay = {
   name: string;
@@ -66,7 +67,7 @@ export default function Horoscope() {
     lg:px-16
     lg:ml-24
     pt-10
-    gap-20">
+    gap-10">
       {/* LEFT SECTION */}
       <div className="w-full lg:w-2/3 flex flex-col items-center">
 
@@ -206,155 +207,135 @@ export default function Horoscope() {
             )}
         </div>
       </div>
-        {/* RIGHT SECTION */}
-        <div className="w-full lg:w-1/2 flex flex-col items-center">
-          <div className="w-full mb-10 flex justify-center">
-            <SearchBar />
-          </div>
-          {/* 🃏 Tarot Card */}
-          <div className="
-            relative 
-            w-[280px] 
-            h-[420px] 
-            sm:w-[340px] 
-            sm:h-[520px] 
-            lg:w-[380px] 
-            lg:h-[600px] 
-            rounded-[40px] 
-            max-w-full
-            overflow-hidden">
-              {/* พื้นหลังดาว */}
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: "url('/bg/Profile-bg.jpg')" }} />
 
-              {/* overlay */}
-              <div className="absolute inset-0 bg-[#1E1A33]/60" />
-
-              {/* มุมเว้า */}
-              <div
-                className="
-                absolute 
-                left-0 
-                top-1/2 
-                -translate-y-1/2 
-                -translate-x-1/2
-                w-24 
-                h-24 
-                bg-(--bg) 
-                rounded-full"
-              /> 
-          </div>
+      {/* RIGHT SECTION */}
+      <div className="w-full lg:w-1/3 flex flex-col items-center">
+        <div className="w-full mb-10 flex justify-center">
+          <SearchBar />
         </div>
+        {/* 👤 User Profile Card */}
+        <div className="
+          relative
+          w-[280px]
+          h-[320px]
+          sm:w-[340px]
+          sm:h-[420px]
+          lg:w-[380px]
+          lg:h-[500px]
+          rounded-[40px]
+          overflow-hidden">
+          <UserProfileCard />
+        </div>
+      </div>
 
-        <AnimatePresence>
-          {open && (
+      <AnimatePresence>
+        {open && (
+          <motion.div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => setOpen(false)} > 
+
             <motion.div
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => setOpen(false)} > 
+              className="
+              bg-[#3E354F] 
+              w-[90%] 
+              max-w-5xl 
+              max-h-[85vh] 
+              overflow-y-auto
+              p-12 
+              rounded-3xl 
+              shadow-2xl 
+              relative"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()} >
+                {/* CLOSE BUTTON */}
+                <button
+                  onClick={() => setOpen(false)}
+                  className="absolute top-6 right-6 text-white text-2xl" >
+                  ✕
+                </button>
 
-              <motion.div
-                className="
-                bg-[#3E354F] 
-                w-[90%] 
-                max-w-5xl 
-                max-h-[85vh] 
-                overflow-y-auto
-                p-12 
-                rounded-3xl 
-                shadow-2xl 
-                relative"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                onClick={(e) => e.stopPropagation()} >
-                  {/* CLOSE BUTTON */}
-                  <button
-                    onClick={() => setOpen(false)}
-                    className="absolute top-6 right-6 text-white text-2xl" >
-                    ✕
-                  </button>
+                <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7]">
+                  Lucky Color
+                </h1>
 
-                  <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7]">
-                    Lucky Color
-                  </h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  {luckyData.lucky_color.map((day) => (
+                    <div
+                      key={day.name}
+                      className="bg-[#4B415E] p-8 rounded-2xl shadow-xl border border-[#6B5E7A]" >
+                        {/* Day Title */}
+                        <h2 className="text-2xl font-bold text-[#F3E2C7] mb-6">
+                          {day.name}
+                        </h2>
+                        {/* Categories Grid */}
+                        <div className="grid grid-cols-2 gap-6">
+                          
+                          {Object.entries(day)
+                            .filter(([key]) => key !== "name")
+                            .map(([category, colors]) => {
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    {luckyData.lucky_color.map((day) => (
-                      <div
-                        key={day.name}
-                        className="bg-[#4B415E] p-8 rounded-2xl shadow-xl border border-[#6B5E7A]" >
-                          {/* Day Title */}
-                          <h2 className="text-2xl font-bold text-[#F3E2C7] mb-6">
-                            {day.name}
-                          </h2>
-                          {/* Categories Grid */}
-                          <div className="grid grid-cols-2 gap-6">
-                            
-                            {Object.entries(day)
-                              .filter(([key]) => key !== "name")
-                              .map(([category, colors]) => {
+                            const isUnlucky = category === "unlucky";
 
-                              const isUnlucky = category === "unlucky";
+                            return (
+                              <div key={category} className={`
+                                flex 
+                                flex-col 
+                                gap-3 
+                                p-4 
+                                rounded-xl 
+                                transition 
+                                duration-300
+                                ${isUnlucky
+                                ? "bg-red-500/10 border-2 border-red-500 "
+                                : "bg-white/5 border border-white/10"
+                              }`}>
 
-                              return (
-                                <div key={category} className={`
-                                  flex 
-                                  flex-col 
-                                  gap-3 
-                                  p-4 
-                                  rounded-xl 
-                                  transition 
-                                  duration-300
-                                  ${isUnlucky
-                                  ? "bg-red-500/10 border-2 border-red-500 "
-                                  : "bg-white/5 border border-white/10"
-                                }`}>
+                              <p className={`
+                                capitalize 
+                                text-sm 
+                                font-semibold 
+                                ${isUnlucky ? "text-red-400" : "text-[#CBBBA3]" }`}>
+                                {isUnlucky ? "⚠ unlucky" : category}
+                              </p>
 
-                                <p className={`
-                                  capitalize 
-                                  text-sm 
-                                  font-semibold 
-                                  ${isUnlucky ? "text-red-400" : "text-[#CBBBA3]" }`}>
-                                  {isUnlucky ? "⚠ unlucky" : category}
-                                </p>
-
-                                <div className="flex gap-3">
-                                {(colors as string[]).map((color, index) => (
-                                  <div
-                                    key={index}
-                                    className={`
-                                      w-10 
-                                      h-10 
-                                      rounded-full 
-                                      shadow-md 
-                                      border
-                                      ${isUnlucky ? "border-red-400" : "border-white/30"}
-                                      hover:scale-110 
-                                      transition duration-300`}
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-
+                              <div className="flex gap-3">
+                              {(colors as string[]).map((color, index) => (
+                                <div
+                                  key={index}
+                                  className={`
+                                    w-10 
+                                    h-10 
+                                    rounded-full 
+                                    shadow-md 
+                                    border
+                                    ${isUnlucky ? "border-red-400" : "border-white/30"}
+                                    hover:scale-110 
+                                    transition duration-300`}
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
                             </div>
-                          );
-                        })}
 
                           </div>
-                      </div>
-                    ))}
-                  </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                        );
+                      })}
 
-      </div>
+                        </div>
+                    </div>
+                  ))}
+                </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+    </div>
   );
 }

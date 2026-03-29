@@ -6,34 +6,75 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
+const ADMIN_USERNAME = "adminlnwza";
+const ADMIN_PASSWORD = "123321789";
+
 export default function Login() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     setError("");
-    if (!email || !password) {
+    if (!username.trim() || !password) {
       setError("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
 
+    // ─── Admin shortcut ───
+    if (username.trim() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      router.push("/admin");
+      return;
+    }
+
     setLoading(true);
+
+    // ─── Look up email from profiles table via username ───
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", username.trim())
+      .single();
+
+    if (profileError || !profileData) {
+      setError("ไม่พบชื่อผู้ใช้นี้ในระบบ");
+      setLoading(false);
+      return;
+    }
+
+    // ─── Get email from auth.users via user id ───
+    // We need the email associated with this profile id.
+    // Since profiles.id = auth.users.id, we sign in via the email stored in session.
+    // Strategy: try signing in with a dummy email placeholder — instead we look up via RPC or use stored email.
+    // Best approach: store email in profiles table during register.
+    const { data: emailData, error: emailError } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("username", username.trim())
+      .single();
+
+    if (emailError || !emailData?.email) {
+      setError("ไม่สามารถดึงข้อมูลผู้ใช้ได้ กรุณาลองใหม่อีกครั้ง");
+      setLoading(false);
+      return;
+    }
+
     const { error: loginError } = await supabase.auth.signInWithPassword({
-      email,
+      email: emailData.email,
       password,
     });
 
     if (loginError) {
-      setError(loginError.message);
+      setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
       setLoading(false);
     } else {
       router.push("/horoscope");
     }
   };
+
   return (
     <div className="
     min-h-screen 
@@ -104,11 +145,12 @@ export default function Login() {
           )}
 
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="ชื่อผู้ใช้ (Username)"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
+            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             className="
             w-1/2 
             mb-5 
@@ -123,10 +165,11 @@ export default function Login() {
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="รหัสผ่าน (Password)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
+            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             className="
             w-1/2 
             mb-5 
@@ -160,18 +203,18 @@ export default function Login() {
             {loading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              "Sign in"
+              "เข้าสู่ระบบ"
             )}
           </button>
 
           <p className="text-sm mt-3 text-(--bg) text-[16px]">
-            Don’t have an account?{" "}
+            ยังไม่มีบัญชี?{" "}
             <Link href="/register" className="
             font-bold
             hover:underline
             cursor-pointer
             ">
-              Register
+              สมัครสมาชิก
             </Link> 
           </p>
         </div>

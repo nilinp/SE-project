@@ -57,15 +57,12 @@ export default function Register() {
       return;
     }
 
+    // บันทึก email ลง profiles เพื่อให้ login ด้วย username ได้
     if (data.user) {
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: data.user.id,
-        username,
-      });
-      
-      if (profileError) {
-        console.error("Profile creation error:", profileError);
-      }
+      await supabase
+        .from("profiles")
+        .update({ email })
+        .eq("id", data.user.id);
     }
 
     alert("สมัครสมาชิกสำเร็จ");

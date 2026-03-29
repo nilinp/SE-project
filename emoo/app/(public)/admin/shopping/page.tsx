@@ -5,13 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import SearchBar from "@/app/components/searchbar";
 
+import { supabase } from "@/lib/supabase";
+
 interface Product {
   id: string;
   name: string;
   price: number;
-  amount: number;
-  image: string;
-  description: string;
+  img: string;
+  details: string;
 }
 
 export default function AdminShopping() {
@@ -19,13 +20,17 @@ export default function AdminShopping() {
   const [search, setSearch]     = useState("");
   const [loading, setLoading]   = useState(true);
 
-  // ดึงข้อมูลจาก Backend
+  // ดึงข้อมูลจาก Backend Supabase
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/products");
-        const data = await res.json();
-        setProducts(data);
+        const { data, error } = await supabase
+          .from("product")
+          .select("*")
+          .order("id", { ascending: true });
+          
+        if (error) throw error;
+        setProducts(data || []);
       } catch (err) {
         console.error("โหลดสินค้าไม่สำเร็จ", err);
       } finally {
@@ -35,9 +40,36 @@ export default function AdminShopping() {
     fetchProducts();
   }, []);
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const filtered = products.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const confirmDelete = async (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      setErrorMsg(null);
+      const { error, count } = await supabase
+        .from("product")
+        .delete({ count: 'exact' })
+        .eq("id", id);
+      
+      if (error) throw error;
+      
+      if (count === 0) {
+        throw new Error("ลบออกจากฐานข้อมูลไม่ได้ (คาดว่าติดเรื่องสิทธิ์ RLS ในฐานข้อมูล)");
+      }
+      
+      // Update UI
+      setProducts(products.filter((p) => p.id !== id));
+      setDeletingId(null);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(`ไม่สามารถลบสินค้าได้: ${err?.message || "Error"}`);
+    }
+  };
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#c4a882]">
@@ -64,7 +96,7 @@ export default function AdminShopping() {
         </div>
 
         <div className="flex items-center w-full justify-center relative">
-          <SearchBar />
+          <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
           <Link href="/admin/shopping/add" className="absolute right-0">
             <button className="w-10 h-10 bg-[#1e1b4b] text-white rounded-lg text-2xl flex items-center justify-center hover:opacity-80 transition">
               +
@@ -72,6 +104,17 @@ export default function AdminShopping() {
           </Link>
         </div>
       </div>
+
+      {errorMsg && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 relative font-semibold" role="alert">
+          <p>{errorMsg}</p>
+          <button 
+            className="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" 
+            onClick={() => setErrorMsg(null)}>
+            ปิด (X)
+          </button>
+        </div>
+      )}
 
       {/* Product Grid */}
       {filtered.length === 0 ? (
@@ -85,17 +128,44 @@ export default function AdminShopping() {
               <div className="relative w-[370px] rounded-2xl overflow-hidden bg-[#d4b896] mx-auto">
                 <div className="relative w-full h-[300px]">
                   <Image
-                    src={item.image || "/placeholder.png"}
+                    src={item.img || "/placeholder.png"}
                     alt={item.name}
                     fill
                     className="object-cover"
                   />
                 </div>
-                <Link href={`/admin/shopping/edit/${item.id}`}>
-                  <button className="absolute top-3 right-3 bg-white text-[#1e1b4b] font-semibold px-4 py-1 rounded-full text-sm hover:opacity-80 transition shadow">
-                    Edit
-                  </button>
-                </Link>
+                <div className="absolute top-3 right-3 flex gap-2">
+                  {deletingId === item.id ? (
+                    <>
+                      <button 
+                        type="button"
+                        onClick={(e) => confirmDelete(item.id, e)}
+                        className="bg-red-600 text-white font-semibold px-4 py-1 rounded-full text-sm hover:bg-red-700 transition shadow cursor-pointer relative z-10">
+                        ยืนยันลบ
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); setDeletingId(null); }}
+                        className="bg-gray-400 text-white font-semibold px-4 py-1 rounded-full text-sm hover:bg-gray-500 transition shadow cursor-pointer relative z-10">
+                        ยกเลิก
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button 
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); setDeletingId(item.id); }}
+                        className="bg-red-600 text-white font-semibold px-4 py-1 rounded-full text-sm hover:bg-red-700 transition shadow cursor-pointer relative z-10">
+                        Delete
+                      </button>
+                      <Link href={`/admin/shopping/edit/${item.id}`}>
+                        <button type="button" className="bg-white text-[#1e1b4b] font-semibold px-4 py-1 rounded-full text-sm hover:opacity-80 transition shadow cursor-pointer relative z-10">
+                          Edit
+                        </button>
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
               <p className="mt-2 font-bold text-[#1e1b4b] text-base text-center">{item.name}</p>
               <p className="text-[#1e1b4b] font-semibold text-sm">${item.price}</p>

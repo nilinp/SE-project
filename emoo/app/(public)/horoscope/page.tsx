@@ -26,6 +26,7 @@ const luckyData = rawData as LuckyData;
 
 export default function Horoscope() {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [today, setToday] = useState<string | null>(null);
 
   useEffect(() => {
@@ -211,7 +212,7 @@ export default function Horoscope() {
       {/* RIGHT SECTION */}
       <div className="w-full lg:w-1/3 flex flex-col items-center">
         <div className="w-full mb-10 flex justify-center">
-          <SearchBar />
+          <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         {/* 👤 User Profile Card */}
         <div className="

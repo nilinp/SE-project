@@ -26,7 +26,7 @@ export default function TabSwitch() {
   };
 
   return (
-    <div className="relative flex bg-(--main) p-1 rounded-full w-65">
+    <div className="relative flex bg-(--main) p-1 rounded-full w-96">
 
       <div
         className={`

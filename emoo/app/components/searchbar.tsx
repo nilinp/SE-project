@@ -1,11 +1,19 @@
 import { Search, SearchIcon } from "lucide-react";
 
-export default function SearchBar() {
+interface SearchBarProps {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+}
+
+export default function SearchBar({ value, onChange, placeholder = "Search..." }: SearchBarProps) {
     return (
         <div className="relative w-96">
             <input
                 type="text"
-                placeholder="Search..."
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
                 className="
             bg-(--main)
             px-6

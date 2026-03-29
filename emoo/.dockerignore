@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Next.js build output
+.next
+out
+
+# Environment files (เพิ่มใน .env.local ด้วยมือบน server)
+.env.local
+.env*.local
+
+# OS / Editor
+.DS_Store
+.idea
+*.swp
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

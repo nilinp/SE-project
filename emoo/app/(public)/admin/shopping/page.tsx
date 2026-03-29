@@ -39,7 +39,11 @@ export default function AdminShopping() {
     item.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) return <p className="p-10 text-white">กำลังโหลด...</p>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#c4a882]">
+      <p className="text-[#1e1b4b] text-2xl font-semibold">กำลังโหลด...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#c4a882] px-8 py-6">

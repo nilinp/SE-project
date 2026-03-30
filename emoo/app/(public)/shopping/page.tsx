@@ -90,7 +90,7 @@ export default function Shopping() {
     <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10">
 
       {/* TOP SECTION */}
-      <div className="flex flex-col lg:flex-row lg:items-start justify-center gap-20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-center gap-20">
 
         {/* LEFT SECTION */}
         <div className="w-full lg:w-2/3 flex flex-col items-center">

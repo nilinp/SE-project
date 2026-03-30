@@ -72,36 +72,27 @@ export default function AdminShopping() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#c4a882]">
-      <p className="text-[#1e1b4b] text-2xl font-semibold">กำลังโหลด...</p>
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-(--sec) text-2xl font-semibold">กำลังโหลด...</p>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#c4a882] px-8 py-6">
+    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10">
 
-      {/* Tab + Search + Add */}
-      <div className="flex flex-col items-center gap-4 mb-8">
+      {/* TOP SECTION — same layout as user shopping */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-center gap-20">
 
-        {/* Tab Toggle */}
-        <div className="flex bg-[#f5e6d0] rounded-full p-1">
-          <Link href="/admin">
-            <button className="px-6 py-2 rounded-full font-semibold text-sm text-gray-500">
-              Horoscope
-            </button>
-          </Link>
-          <button className="px-6 py-2 rounded-full font-semibold text-sm bg-[#2d2a6e] text-white">
-            Shopping
-          </button>
-        </div>
-
-        <div className="flex items-center w-full justify-center relative">
-          <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
-          <Link href="/admin/shopping/add" className="absolute right-0">
-            <button className="w-10 h-10 bg-[#1e1b4b] text-white rounded-lg text-2xl flex items-center justify-center hover:opacity-80 transition">
-              +
-            </button>
-          </Link>
+        {/* Search + Add */}
+        <div className="w-full lg:w-1/2 flex flex-col items-center">
+          <div className="w-full mb-6 flex justify-center items-center gap-4">
+            <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Link href="/admin/shopping/add">
+              <button className="w-10 h-10 bg-[#1e1b4b] text-white rounded-lg text-2xl flex items-center justify-center hover:opacity-80 transition shrink-0">
+                +
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -116,24 +107,35 @@ export default function AdminShopping() {
         </div>
       )}
 
-      {/* Product Grid */}
+      {/* PRODUCT SECTION — matches user shopping gap/spacing */}
       {filtered.length === 0 ? (
-        <p className="text-center text-[#1e1b4b] font-semibold mt-20">
-          ยังไม่มีสินค้าครับ กด + เพื่อเพิ่มสินค้า
+        <p className="text-center text-(--sec) font-semibold mt-20">
+          กด + เพื่อเพิ่มสินค้า
         </p>
       ) : (
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
           {filtered.map((item) => (
-            <div key={item.id} className="flex flex-col items-center">
-              <div className="relative w-[370px] rounded-2xl overflow-hidden bg-[#d4b896] mx-auto">
-                <div className="relative w-full h-[300px]">
-                  <Image
-                    src={item.img || "/placeholder.png"}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+            <div
+              key={item.id}
+              className="
+                w-[370px]
+                h-[480px]
+                p-6
+                bg-[white]
+                rounded-[30px]
+                shadow-[0_0_30px_rgba(0,0,0,0.05)]
+                flex flex-col
+                relative">
+
+              {/* Image */}
+              <div className="relative w-full h-[300px] bg-white rounded-2xl overflow-hidden">
+                <Image
+                  src={item.img || "/placeholder.png"}
+                  alt={item.name}
+                  fill
+                  className="object-contain p-6"/>
+                
+                {/* Admin Buttons overlay */}
                 <div className="absolute top-3 right-3 flex gap-2">
                   {deletingId === item.id ? (
                     <>
@@ -167,12 +169,28 @@ export default function AdminShopping() {
                   )}
                 </div>
               </div>
-              <p className="mt-2 font-bold text-[#1e1b4b] text-base text-center">{item.name}</p>
-              <p className="text-[#1e1b4b] font-semibold text-sm">${item.price}</p>
+
+              {/* Content — same style as user shopping */}
+              <div className="mt-5 text-(--sec) flex flex-col flex-grow">
+                <h3 className="text-2xl font-bold leading-tight min-h-[56px]">
+                  {item.name}
+                </h3>
+
+                <p className="text-sm mt-3 text-gray-700 min-h-[60px]">
+                  {item.details}
+                </p>
+
+                <div className="flex justify-between items-end mt-auto">
+                  <p className="text-2xl font-bold">
+                    {item.price} ฿
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       )}
+
     </div>
   );
 }

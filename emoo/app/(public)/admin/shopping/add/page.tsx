@@ -84,8 +84,7 @@ export default function AddProduct() {
         console.error("Insert error:", insertError);
         throw new Error("เพิ่มสินค้าไม่สำเร็จ");
       }
-      
-      alert("เพิ่มสินค้าสำเร็จ!");
+
       router.push("/admin/shopping");
       
     } catch (err) {
@@ -97,29 +96,52 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="min-h-screen bg-[#c4a882] flex flex-col p-10 ml-16">
+    <div className="min-h-screen flex flex-col p-10 ml-16">
 
-      {/* Back */}
-      <Link href="/admin/shopping" className="flex items-center gap-2 text-[#1e1b4b] font-semibold mb-8 hover:opacity-70 w-fit text-lg">
-        ← Back
-      </Link>
-
-      <div className="flex gap-10 flex-1">
+      <div className="flex gap-10 flex-1 mt-10">
 
         {/* LEFT: Main Image + Thumbnails */}
         <div className="flex gap-4">
-          <div className="w-[450px] h-[400px] bg-white rounded-2xl overflow-hidden relative flex-shrink-0">
+          <div className="
+          w-[450px] 
+          h-[400px] 
+          bg-gray-200
+          rounded-2xl 
+          overflow-hidden 
+          relative 
+          flex-shrink-0
+          items-center">
             {previewImage ? (
               <Image src={previewImage} alt="main" fill className="object-cover rounded-2xl" />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-4">
+              <div className="
+              w-full 
+              h-full 
+              flex 
+              flex-col 
+              items-center 
+              justify-center 
+              text-gray-400 
+              gap-4">
                 <span className="text-lg">No Image</span>
               </div>
             )}
           </div>
 
           <div className="flex flex-col gap-3">
-            <label className="w-16 h-16 rounded-xl bg-[#1e1b4b] text-white text-3xl flex items-center justify-center cursor-pointer hover:opacity-80 flex-shrink-0">
+            <label className="
+            w-16 
+            h-16 
+            rounded-xl 
+            bg-(--bg) 
+            text-(--main)
+            text-3xl 
+            flex 
+            items-center 
+            justify-center 
+            cursor-pointer 
+            hover:opacity-80 
+            flex-shrink-0">
               +
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </label>
@@ -127,10 +149,10 @@ export default function AddProduct() {
         </div>
 
         {/* Divider */}
-        <div className="w-0.5 bg-[#1e1b4b] opacity-60 mx-2" />
+        <div className="w-0.5 bg-(--bg) opacity-60 mx-2" />
 
         {/* RIGHT: Info */}
-        <div className="flex flex-col flex-1 justify-between py-2">
+        <div className="flex flex-col flex-1 justify-between py-2 ">
           <div className="flex flex-col gap-6">
 
             {/* Name */}
@@ -139,20 +161,37 @@ export default function AddProduct() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="ชื่อสินค้า"
-                className="text-3xl font-bold text-[#1e1b4b] bg-transparent outline-none border-b border-[#1e1b4b] w-full placeholder-[#1e1b4b]/50"
+                className="
+                text-3xl 
+                text-(--bg)
+                bg-transparent 
+                outline-none 
+                border-b border-(--bg) 
+                w-full 
+                placeholder-(--bg)/50"
               />
-              <span className="text-xl">✏️</span>
             </div>
 
             {/* Details */}
-            <div className="flex items-center gap-3">
-              <input
+            <div className="flex items-center gap-3 mt-3">
+              <textarea
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="รายละเอียดสินค้า"
-                className="text-base text-[#1e1b4b] bg-transparent outline-none border-b border-[#1e1b4b] w-full placeholder-[#1e1b4b]/50"
+                className="
+                text-base 
+                text-(--bg) 
+                bg-transparent 
+                outline-none 
+                border border-(--bg)
+                rounded-xl
+                p-3
+                w-full 
+                placeholder-(--bg)/50
+                min-h-[200px] 
+                resize-none  
+                block"
               />
-              <span className="text-base">✏️</span>
             </div>
 
             {/* Price */}
@@ -165,16 +204,32 @@ export default function AddProduct() {
                   placeholder="0.00"
                   autoFocus
                   onBlur={() => setEditPrice(false)}
-                  className="text-2xl font-bold text-[#1e1b4b] bg-transparent border-b border-[#1e1b4b] outline-none w-32"
+                  className="
+                  text-2xl 
+                  font-bold 
+                  text-(--bg) 
+                  bg-transparent 
+                  border-b border-(--bg) 
+                  outline-none 
+                  w-32"
                 />
               ) : (
-                <span className="text-2xl font-bold text-[#1e1b4b]">
-                  $ {price || "-"}
+                <span className="text-2xl font-bold text-(--bg)">
+                  ฿ {price || "-"}
                 </span>
               )}
               <button
                 onClick={() => setEditPrice(true)}
-                className="px-5 py-1.5 bg-[#1e1b4b] text-white text-sm rounded-lg hover:opacity-80 disabled:opacity-50"
+                className="
+                px-5 
+                py-1.5 
+                bg-(--bg) 
+                text-(--main) 
+                text-sm 
+                rounded-lg 
+                hover:opacity-80 
+                disabled:opacity-50
+                cursor-pointer"
               >
                 Edit
               </button>
@@ -188,7 +243,18 @@ export default function AddProduct() {
             <button
               onClick={handleAdd}
               disabled={loading}
-              className="px-14 py-3 bg-[#1e1b4b] text-white font-semibold text-lg rounded-xl hover:opacity-80 transition disabled:opacity-50"
+              className="
+              px-14 
+              py-3 
+              bg-(--bg) 
+              text-(--main) 
+              font-semibold 
+              text-lg 
+              rounded-xl 
+              hover:opacity-80 
+              transition 
+              disabled:opacity-50
+              cursor-pointer"
             >
               {loading ? "กำลังบันทึก..." : "Add"}
             </button>

@@ -101,18 +101,6 @@ export default function Register() {
                 </p>
             </div>
             
-            <div className="flex gap-10 mb-6 text-(--bg)">
-                <button className="hover:scale-110 transition">
-                    <Image src="/icon/google.png" alt="google" width={30} height={30}/>
-                </button>
-                <button className="hover:scale-110 transition">
-                    <Image src="/icon/facebook.svg" alt="facebook" width={30} height={30}/>
-                </button>
-                <button className="hover:scale-110 transition">
-                    <Image src="/icon/linkedin.png" alt="linkedin" width={30} height={30}/>
-                </button>
-            </div>
-
             {error && (
                 <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
                     {error}

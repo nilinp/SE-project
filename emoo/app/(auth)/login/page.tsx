@@ -26,6 +26,21 @@ export default function Login() {
 
     // ─── Admin shortcut ───
     if (username.trim() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      // Save admin username in localStorage for profile display
+      localStorage.setItem("admin_username", ADMIN_USERNAME);
+
+      // Record login history
+      try {
+        await supabase.from("admin_login_history").insert({
+          username: ADMIN_USERNAME,
+          email: "admin@emoo.app",
+          ip_address: "local",
+          user_agent: navigator.userAgent,
+        });
+      } catch (e) {
+        console.warn("Could not record admin login:", e);
+      }
+
       router.push("/admin");
       return;
     }
@@ -109,18 +124,6 @@ export default function Login() {
             LOGIN
             </h2>
           </div>
-          
-          <div className="flex gap-10 mb-6 text-(--bg)">
-            <button className="hover:scale-110 transition">
-              <Image src="/icon/google.png" alt="google" width={30} height={30}/>
-            </button>
-            <button className="hover:scale-110 transition">
-              <Image src="/icon/facebook.svg" alt="facebook" width={30} height={30}/>
-            </button>
-            <button className="hover:scale-110 transition">
-              <Image src="/icon/linkedin.png" alt="linkedin" width={30} height={30}/>
-            </button>
-          </div>
 
           {error && (
             <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
@@ -130,7 +133,7 @@ export default function Login() {
 
           <input
             type="text"
-            placeholder="ชื่อผู้ใช้ (Username)"
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
@@ -149,7 +152,7 @@ export default function Login() {
 
           <input
             type="password"
-            placeholder="รหัสผ่าน (Password)"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
@@ -187,18 +190,18 @@ export default function Login() {
             {loading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              "เข้าสู่ระบบ"
+              "Sign in"
             )}
           </button>
 
           <p className="text-sm mt-3 text-(--bg) text-[16px]">
-            ยังไม่มีบัญชี?{" "}
+            Don't have an account?{" "}
             <Link href="/register" className="
             font-bold
             hover:underline
             cursor-pointer
             ">
-              สมัครสมาชิก
+              Register
             </Link> 
           </p>
         </div>

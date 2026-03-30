@@ -106,7 +106,6 @@ export default function EditProduct() {
         throw updateError;
       }
       
-      alert("แก้ไขสินค้าสำเร็จ!");
       router.push("/admin/shopping");
       
     } catch (err) {
@@ -130,10 +129,9 @@ export default function EditProduct() {
       if (error) throw error;
       
       if (count === 0) {
-        throw new Error("ลบออกจากฐานข้อมูลไม่ได้ (อาจติดเรื่องสิทธิ์ RLS)");
+        throw new Error("ลบออกจากฐานข้อมูลไม่ได้");
       }
       
-      alert("ลบสินค้าเรียบร้อยแล้ว");
       router.push("/admin/shopping");
     } catch (err: any) {
       console.error(err);
@@ -142,21 +140,8 @@ export default function EditProduct() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#c4a882] flex items-center justify-center">
-        <p className="text-[#1e1b4b] text-2xl font-bold font-semibold animate-pulse">กำลังโหลด...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#c4a882] flex flex-col p-10 ml-16">
-
-      {/* Back */}
-      <Link href="/admin/shopping" className="flex items-center gap-2 text-[#1e1b4b] font-semibold mb-8 hover:opacity-70 w-fit text-lg">
-        ← Back
-      </Link>
+    <div className="min-h-screen bg-white flex flex-col p-10 ml-16">
 
       <div className="flex gap-10 flex-1">
 
@@ -168,7 +153,15 @@ export default function EditProduct() {
             {previewImage ? (
               <Image src={previewImage} alt="main" fill className="object-cover rounded-2xl" />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-[#1e1b4b] opacity-60 text-lg gap-4">
+              <div className="
+              w-[450px] 
+              h-[400px] 
+              bg-gray-200
+              rounded-2xl 
+              overflow-hidden 
+              relative 
+              flex-shrink-0
+              items-center">
                 No Image
               </div>
             )}

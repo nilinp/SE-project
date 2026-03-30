@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import {ImagePlus, Trash2} from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -143,11 +143,10 @@ export default function EditProduct() {
   return (
     <div className="min-h-screen bg-white flex flex-col p-10 ml-16">
 
-      <div className="flex gap-10 flex-1">
+      <div className="flex gap-10 flex-1 mt-10">
 
         {/* LEFT: Main Image + Thumbnails */}
         <div className="flex gap-4">
-
           {/* Main Image */}
           <div className="w-[450px] h-[400px] bg-white rounded-2xl overflow-hidden relative flex-shrink-0">
             {previewImage ? (
@@ -168,8 +167,10 @@ export default function EditProduct() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <label className="w-16 h-16 rounded-xl bg-[#1e1b4b] text-white text-3xl flex items-center justify-center cursor-pointer hover:opacity-80 flex-shrink-0">
-              <span title="เปลี่ยนรูปสินค้า">📷</span>
+            <label className="w-16 h-16 rounded-xl bg-(--bg) text-(--main) text-3xl flex items-center justify-center cursor-pointer hover:opacity-80 flex-shrink-0">
+              <span title="เปลี่ยนรูปสินค้า">
+                <ImagePlus/>
+              </span>
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </label>
             <button 
@@ -177,13 +178,13 @@ export default function EditProduct() {
               disabled={saving}
               title="ลบสินค้านี้"
               className="w-16 h-16 rounded-xl bg-red-600 text-white text-3xl flex items-center justify-center cursor-pointer hover:bg-red-700 hover:opacity-80 flex-shrink-0 disabled:opacity-50">
-              🗑️
+              <Trash2/>
             </button>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="w-0.5 bg-[#1e1b4b] opacity-60 mx-2" />
+        <div className="w-0.5 bg-(--bg) opacity-60 mx-2" />
 
         {/* RIGHT: Info */}
         <div className="flex flex-col flex-1 justify-between py-2">
@@ -195,20 +196,40 @@ export default function EditProduct() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="ชื่อสินค้า"
-                className="text-3xl font-bold text-[#1e1b4b] bg-transparent outline-none border-b border-[#1e1b4b] w-full"
+                className="
+                text-3xl 
+                leading-relaxed
+                text-(--bg)
+                bg-transparent 
+                outline-none 
+                border border-(--bg)
+                rounded-xl
+                p-3 
+                w-full 
+                placeholder-(--bg)/50"
               />
-              <span className="text-xl">✏️</span>
             </div>
 
             {/* Details */}
             <div className="flex items-center gap-3">
-              <input
+              <textarea
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
-                placeholder="รายละเอียดเพิ่มเติม"
-                className="text-base text-[#1e1b4b] bg-transparent outline-none border-b border-[#1e1b4b] w-full"
+                placeholder="รายละเอียดสินค้า"
+                className="
+                text-base 
+                text-(--bg) 
+                bg-transparent 
+                outline-none 
+                border border-(--bg)
+                rounded-xl
+                p-3
+                w-full 
+                placeholder-(--bg)/50
+                min-h-[200px] 
+                resize-none  
+                block"
               />
-              <span className="text-base">✏️</span>
             </div>
 
             {/* Price */}
@@ -221,16 +242,31 @@ export default function EditProduct() {
                   placeholder="0.00"
                   autoFocus
                   onBlur={() => setEditPrice(false)}
-                  className="text-2xl font-bold text-[#1e1b4b] bg-transparent border-b border-[#1e1b4b] outline-none w-32"
+                  className="
+                  text-2xl 
+                  font-bold 
+                  text-(--bg) 
+                  bg-transparent 
+                  border-b border-(--bg) 
+                  outline-none 
+                  w-32"
                 />
               ) : (
                 <span className="text-2xl font-bold text-[#1e1b4b]">
-                  ${price || "-"}
+                  ฿   {price || "-"}
                 </span>
               )}
               <button
                 onClick={() => setEditPrice(true)}
-                className="px-5 py-1.5 bg-[#1e1b4b] text-white text-sm rounded-lg hover:opacity-80"
+                className="
+                px-5 
+                py-1.5 
+                bg-(--bg) 
+                text-(--main) 
+                text-sm 
+                rounded-lg 
+                hover:opacity-80
+                cursor-pointer"
               >
                 Edit
               </button>
@@ -244,7 +280,19 @@ export default function EditProduct() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-14 py-3 bg-[#1e1b4b] text-white font-semibold text-lg rounded-xl hover:bg-[#2d2a6e] hover:shadow-lg transition disabled:opacity-50"
+              className="
+              px-14 
+              py-3 
+              bg-(--bg) 
+              text-(--main) 
+              font-semibold 
+              text-lg 
+              rounded-xl 
+              hover:bg-(--bg) 
+              hover:shadow-lg 
+              transition 
+              disabled:opacity-50
+              cursor-pointer"
             >
               {saving ? "กำลังบันทึก..." : "Save"}
             </button>

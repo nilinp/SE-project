@@ -163,10 +163,13 @@ export default function AddProduct() {
                 placeholder="ชื่อสินค้า"
                 className="
                 text-3xl 
+                leading-relaxed
                 text-(--bg)
                 bg-transparent 
                 outline-none 
-                border-b border-(--bg) 
+                border border-(--bg)
+                rounded-xl
+                p-3 
                 w-full 
                 placeholder-(--bg)/50"
               />

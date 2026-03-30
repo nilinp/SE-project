@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import TabSwitch from "@/app/components/tabswitch";
-import SearchBar from "@/app/components/searchbar";
 import rawData from "@/app/data/luckycolor.json";
 import UserProfileCard from "@/app/components/UserProfileCard";
 
@@ -211,9 +210,6 @@ export default function Horoscope() {
 
       {/* RIGHT SECTION */}
       <div className="w-full lg:w-1/3 flex flex-col items-center">
-        <div className="w-full mb-10 flex justify-center">
-          <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
         {/* 👤 User Profile Card */}
         <div className="
           relative

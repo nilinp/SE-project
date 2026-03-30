@@ -26,6 +26,21 @@ export default function Login() {
 
     // ─── Admin shortcut ───
     if (username.trim() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      // Save admin username in localStorage for profile display
+      localStorage.setItem("admin_username", ADMIN_USERNAME);
+
+      // Record login history
+      try {
+        await supabase.from("admin_login_history").insert({
+          username: ADMIN_USERNAME,
+          email: "admin@emoo.app",
+          ip_address: "local",
+          user_agent: navigator.userAgent,
+        });
+      } catch (e) {
+        console.warn("Could not record admin login:", e);
+      }
+
       router.push("/admin");
       return;
     }
@@ -35,35 +50,19 @@ export default function Login() {
     // ─── Look up email from profiles table via username ───
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
-      .select("id")
+      .select("id, email")
       .eq("username", username.trim())
       .single();
 
-    if (profileError || !profileData) {
-      setError("ไม่พบชื่อผู้ใช้นี้ในระบบ");
-      setLoading(false);
-      return;
-    }
-
-    // ─── Get email from auth.users via user id ───
-    // We need the email associated with this profile id.
-    // Since profiles.id = auth.users.id, we sign in via the email stored in session.
-    // Strategy: try signing in with a dummy email placeholder — instead we look up via RPC or use stored email.
-    // Best approach: store email in profiles table during register.
-    const { data: emailData, error: emailError } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("username", username.trim())
-      .single();
-
-    if (emailError || !emailData?.email) {
-      setError("ไม่สามารถดึงข้อมูลผู้ใช้ได้ กรุณาลองใหม่อีกครั้ง");
+    if (profileError || !profileData || !profileData.email) {
+      console.error("Profile lookup error:", profileError);
+      setError("ไม่พบชื่อผู้ใช้นี้ในระบบ (ตรวจสอบว่าได้รันโค้ด SQL เปิด RLS ให้ profiles อ่านได้หรือยัง)");
       setLoading(false);
       return;
     }
 
     const { error: loginError } = await supabase.auth.signInWithPassword({
-      email: emailData.email,
+      email: profileData.email,
       password,
     });
 
@@ -125,18 +124,6 @@ export default function Login() {
             LOGIN
             </h2>
           </div>
-          
-          <div className="flex gap-10 mb-6 text-(--bg)">
-            <button className="hover:scale-110 transition">
-              <Image src="/icon/google.png" alt="google" width={30} height={30}/>
-            </button>
-            <button className="hover:scale-110 transition">
-              <Image src="/icon/facebook.svg" alt="facebook" width={30} height={30}/>
-            </button>
-            <button className="hover:scale-110 transition">
-              <Image src="/icon/linkedin.png" alt="linkedin" width={30} height={30}/>
-            </button>
-          </div>
 
           {error && (
             <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
@@ -146,7 +133,7 @@ export default function Login() {
 
           <input
             type="text"
-            placeholder="ชื่อผู้ใช้ (Username)"
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
@@ -165,7 +152,7 @@ export default function Login() {
 
           <input
             type="password"
-            placeholder="รหัสผ่าน (Password)"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
@@ -203,18 +190,18 @@ export default function Login() {
             {loading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              "เข้าสู่ระบบ"
+              "Sign in"
             )}
           </button>
 
           <p className="text-sm mt-3 text-(--bg) text-[16px]">
-            ยังไม่มีบัญชี?{" "}
+            Don't have an account?{" "}
             <Link href="/register" className="
             font-bold
             hover:underline
             cursor-pointer
             ">
-              สมัครสมาชิก
+              Register
             </Link> 
           </p>
         </div>

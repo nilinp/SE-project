@@ -24,11 +24,21 @@ export default function ResultPage() {
     const [loveType, setLoveType] = useState("single");
     const router = useRouter();
 
-    /* ─── Save last viewed card to profile ─── */
+    /* ─── Save last viewed card to profile + track view ─── */
     useEffect(() => {
         if (!card) return;
         const save = async () => {
             const { data: { session } } = await supabase.auth.getSession();
+
+            // Track horoscope view (for admin chart) — works for all users
+            if (category) {
+                await supabase.from("horoscope_views").insert({
+                    user_id: session?.user?.id ?? null,
+                    category: category,
+                    card_id: Number(card.card_id),
+                });
+            }
+
             if (!session) return;
             await supabase
                 .from("profiles")

@@ -1,13 +1,20 @@
 "use client";
 
-import products from "@/app/data/product.json";
-import { notFound } from "next/navigation";
+import { useState, useEffect, use } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, use } from "react";
 import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/lib/cartstore";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+
+interface ProductItem {
+  id: string;
+  name: string;
+  price: number;
+  img: string;
+  details: string;
+}
 
 
 export default function ProductDetail({
@@ -18,11 +25,27 @@ export default function ProductDetail({
 
   const { id } = use(params);
 
-  const product = products.product.find(
-    (item) => item.id === id
-  );
+  const [product, setProduct] = useState<ProductItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!product) return notFound();
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("product")
+          .select("*")
+          .eq("id", id)
+          .single();
+        if (error) throw error;
+        setProduct(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
 
   const [quantity, setQuantity] = useState(1);
   const [showAlert, setShowAlert] = useState(false);
@@ -54,9 +77,19 @@ export default function ProductDetail({
 
       <div className="flex gap-20 mt-10 justify-center">
 
+        {loading ? (
+          <div className="flex justify-center items-center py-20 w-full h-[450px]">
+            <span className="text-xl font-semibold text-(--sec)">กำลังโหลด...</span>
+          </div>
+        ) : !product ? (
+          <div className="flex justify-center items-center py-20 w-full h-[450px]">
+             <span className="text-xl font-semibold text-(--sec)">ไม่พบสินค้า</span>
+          </div>
+        ) : (
+        <>
         <div className="w-[700px] h-[450px] relative">
           <Image
-            src={product.image}
+            src={product.img || "/placeholder.png"}
             alt={product.name}
             fill
             className="object-contain rounded-2xl"
@@ -67,7 +100,7 @@ export default function ProductDetail({
           <h1 className="text-4xl font-bold">{product.name}</h1>
           <p className="text-2xl mt-4">{product.price}฿</p>
           <p className="mt-4">{product.details}</p>
-          <p className="mt-4 text-gray-500">คลัง: </p>
+          <p className="mt-4 text-gray-500"> {/*คลัง:*/}</p>
 
           <div className="flex items-center gap-4 mt-6">
             <button
@@ -150,7 +183,7 @@ export default function ProductDetail({
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: product.image,
+                image: product.img || "/placeholder.png",
                 quantity: quantity,
               });
             }}
@@ -190,6 +223,8 @@ export default function ProductDetail({
             </button>
           </div>
         </div>
+        </>
+        )}
 
       </div>
     </div>

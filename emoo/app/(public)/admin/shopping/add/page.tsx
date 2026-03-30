@@ -218,7 +218,7 @@ export default function AddProduct() {
                 />
               ) : (
                 <span className="text-2xl font-bold text-(--bg)">
-                  ฿ {price || "-"}
+                  ฿   {price || "-"}
                 </span>
               )}
               <button

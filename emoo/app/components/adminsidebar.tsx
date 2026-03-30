@@ -56,14 +56,6 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      {/* Logout button at bottom */}
-      <button
-        onClick={handleLogout}
-        className="flex items-center justify-center text-white/50 hover:text-red-400 transition-colors duration-200 cursor-pointer"
-        title="ออกจากระบบ"
-      >
-        <LogOut size={28} />
-      </button>
     </aside>
   );
 }

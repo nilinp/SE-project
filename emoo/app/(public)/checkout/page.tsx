@@ -7,6 +7,9 @@ import Image from "next/image";
 export default function CheckoutPage() {
   const router = useRouter();
   const cart = useCartStore((state: CartStore) => state.cart);
+  const increase = useCartStore((state: CartStore) => state.increase);
+  const decrease = useCartStore((state: CartStore) => state.decrease);
+  const remove = useCartStore((state: CartStore) => state.remove);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
@@ -74,16 +77,42 @@ export default function CheckoutPage() {
                   <div className="flex-1 space-y-2">
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-xl text-white/90 leading-tight pr-4">{item.name}</h3>
-                      <button className="text-white/20 hover:text-red-400 transition-colors text-xl">✕</button>
+                      <button
+                        onClick={() => remove(item.id)}
+                        className="text-white/20 hover:text-red-400 transition-colors text-xl"
+                        >
+                        ✕
+                      </button>
                     </div>
                     <p className="text-indigo-400 font-black text-2xl">฿{item.price.toLocaleString()}</p>
                     {/* ตัวปรับจำนวนแบบมินิมอล */}
                     <div className="flex items-center gap-4 pt-2">
-                      <div className="flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/10">
-                        <button className="text-white/40 hover:text-white transition-colors">—</button>
-                        <span className="mx-4 text-sm font-bold">{item.quantity}</span>
-                        <button className="text-white/40 hover:text-white transition-colors">+</button>
-                      </div>
+                      <div className="flex items-center gap-3 pt-2">
+                        <div className="flex items-center bg-white/5 rounded-full px-3 py-1.5 border border-white/10 gap-3">
+
+                            {/* ปุ่มลด */}
+                            <button
+                            onClick={() => decrease(item.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-red-500/30 text-white transition"
+                            >
+                            —
+                            </button>
+
+                            {/* จำนวน */}
+                            <span className="text-sm font-bold min-w-[20px] text-center">
+                            {item.quantity}
+                            </span>
+
+                            {/* ปุ่มเพิ่ม */}
+                            <button
+                            onClick={() => increase(item.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-green-500/30 text-white transition"
+                            >
+                            +
+                            </button>
+
+                        </div>
+                        </div>
                     </div>
                   </div>
                 </div>

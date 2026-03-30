@@ -6,7 +6,6 @@ import tarot from "../../data/tarot.json";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/sidebar";
 
-
 type View = {
     id: string;
     card_id: number | string;
@@ -19,7 +18,6 @@ export default function HistoryPage() {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
-    // FIX: map ใช้ string key เท่านั้น
     const cardMap = useMemo(() => {
         const map: Record<string, any> = {};
         (tarot.cards as any[]).forEach((c) => {
@@ -28,15 +26,16 @@ export default function HistoryPage() {
         return map;
     }, []);
 
-    // fetch history
     const fetchHistory = async () => {
         try {
             const {
                 data: { session },
             } = await supabase.auth.getSession();
 
+            // ✅ ถ้าไม่ login → ไม่ต้องโหลด
             if (!session) {
                 setViews([]);
+                setLoading(false);
                 return;
             }
 
@@ -52,8 +51,6 @@ export default function HistoryPage() {
                 return;
             }
 
-            console.log("DATA FROM DB:", data); // 🔥 debug
-
             setViews(data || []);
         } catch (err) {
             console.error(err);
@@ -66,7 +63,6 @@ export default function HistoryPage() {
         fetchHistory();
     }, []);
 
-    // stats
     const stats = useMemo(() => {
         return views.reduce((acc: Record<string, number>, cur) => {
             acc[cur.category] = (acc[cur.category] || 0) + 1;
@@ -87,9 +83,10 @@ export default function HistoryPage() {
             <Sidebar />
 
             <div className="flex-1 md:ml-20 p-10 flex gap-8">
+
                 {/* LEFT */}
-                <div className="flex-1 bg-[#4A445F] rounded-2xl p-6">
-                    <h1 className="text-2xl font-bold mb-6">History</h1>
+                <div className="flex-[2] bg-[#4A445F] rounded-2xl p-8">
+                    <h1 className="text-3xl font-bold mb-8">History</h1>
 
                     {views.length === 0 && (
                         <p className="text-gray-400">
@@ -99,64 +96,48 @@ export default function HistoryPage() {
 
                     <div className="space-y-6">
                         {views.map((view) => {
-                            // FIX สำคัญตรงนี้
                             const card = cardMap[String(view.card_id)];
-
-                            // 🔥 debug ถ้าไม่ขึ้น
-                            if (!card) {
-                                console.log("NOT FOUND CARD:", view.card_id);
-                                return null;
-                            }
+                            if (!card) return null;
 
                             return (
                                 <div
                                     key={view.id}
-                                    className="flex gap-4 items-center border-b border-white/10 pb-4"
+                                    className="flex gap-6 items-center bg-[#5A5470] rounded-xl p-5 shadow-lg hover:scale-[1.02] transition duration-300"
                                 >
                                     {/* ไพ่ */}
                                     <img
                                         src={card.image}
-                                        className="w-20 h-32 object-cover rounded-md"
+                                        className="w-28 h-44 object-cover rounded-lg shadow-md"
                                     />
 
                                     {/* info */}
-                                    <div className="flex-1">
+                                    <div className="flex-1 space-y-2">
                                         <p className="text-sm text-gray-300 capitalize">
-                                            {view.category}
+                                            🔮 {view.category}
                                         </p>
 
-                                        <h2 className="text-lg font-semibold">
+                                        <h2 className="text-xl font-bold text-yellow-200">
                                             {card.name}
                                         </h2>
 
-                                        <p className="text-xs text-gray-400">
-                                            {new Date(
-                                                view.created_at
-                                            ).toLocaleDateString()}
+                                        <p className="text-sm text-gray-400">
+                                            🕒{" "}
+                                            {new Date(view.created_at).toLocaleString("th-TH", {
+                                                dateStyle: "medium",
+                                                timeStyle: "short",
+                                            })}
                                         </p>
 
-                                        {/* buttons */}
-                                        <div className="flex gap-2 mt-2">
+                                        <div className="mt-3">
                                             <button
                                                 onClick={() =>
                                                     router.push(
-                                                        `/result/${card.card_id}?category=${view.category}&type=meaning`
+                                                        `/horoscope/result/${card.card_id}?category=${view.category}`
                                                     )
                                                 }
-                                                className="bg-yellow-200 text-black px-3 py-1 rounded-md text-sm hover:opacity-80"
+                                                className="px-4 py-2 rounded-lg bg-yellow-200 text-black text-sm font-medium hover:scale-105 transition"
                                             >
-                                                Meaning
-                                            </button>
-
-                                            <button
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/result/${card.card_id}?category=${view.category}&type=predict`
-                                                    )
-                                                }
-                                                className="bg-purple-300 text-black px-3 py-1 rounded-md text-sm hover:opacity-80"
-                                            >
-                                                Predict
+                                                🔁 ดูความหมายอีกครั้ง
                                             </button>
                                         </div>
                                     </div>
@@ -167,13 +148,12 @@ export default function HistoryPage() {
                 </div>
 
                 {/* RIGHT */}
-                <div className="w-80 bg-gradient-to-b from-[#3B3560] to-[#1F1A33] rounded-2xl p-6 shadow-xl">
-
+                <div className="w-72 bg-gradient-to-b from-[#3B3560] to-[#1F1A33] rounded-2xl p-6 shadow-xl">
                     <div className="bg-white/10 rounded-xl p-4 space-y-2">
-                        <Stat label="Love" value={stats.love} />
-                        <Stat label="Money" value={stats.money} />
-                        <Stat label="Study" value={stats.study} />
-                        <Stat label="Travel" value={stats.travel} />
+                        <Stat label="Love" value={stats.love ?? 0} />
+                        <Stat label="Money" value={stats.money ?? 0} />
+                        <Stat label="Study" value={stats.study ?? 0} />
+                        <Stat label="Travel" value={stats.travel ?? 0} />
                     </div>
                 </div>
             </div>
@@ -181,7 +161,6 @@ export default function HistoryPage() {
     );
 }
 
-// ✅ reusable
 function Stat({ label, value }: { label: string; value?: number }) {
     return (
         <div className="flex justify-between">

@@ -88,7 +88,17 @@ export default function AdminShopping() {
           <div className="w-full mb-6 flex justify-center items-center gap-4">
             <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
             <Link href="/admin/shopping/add">
-              <button className="w-10 h-10 bg-[#1e1b4b] text-white rounded-lg text-2xl flex items-center justify-center hover:opacity-80 transition shrink-0">
+              <button className="
+              w-10 h-10  
+              bg-(--bg)   
+              text-(--main)
+              rounded-lg 
+              text-2xl 
+              flex items-center justify-center 
+              hover:opacity-80 
+              transition 
+              shrink-0
+              cursor-pointer">
                 +
               </button>
             </Link>

@@ -284,16 +284,67 @@ export default function UserProfileCard() {
           />
           {usernameError && <p className="text-red-400 text-xs">{usernameError}</p>}
           <div className="flex gap-2">
-            <button onClick={handleSaveUsername} disabled={saving} className="flex items-center gap-1 px-3 py-1 rounded-lg bg-[#ffecd9] text-[#1E1A33] text-xs font-semibold hover:opacity-80 transition disabled:opacity-50">
-              {saving ? <div className="w-3 h-3 border-2 border-[#1E1A33] border-t-transparent rounded-full animate-spin" /> : <><Check size={12} /> บันทึก</>}
+            <button 
+            onClick={handleSaveUsername} 
+            disabled={saving} 
+            className="
+            flex 
+            items-center 
+            gap-1 
+            px-3 
+            py-1 
+            rounded-lg 
+            bg-[#ffecd9] 
+            text-[#1E1A33] 
+            text-xs 
+            font-semibold 
+            hover:opacity-80 
+            transition 
+            disabled:opacity-50
+            cursor-pointer
+            ">
+              {saving ? <div 
+              className="
+              w-3 
+              h-3 
+              border-2 
+              border-[#1E1A33] 
+              border-t-transparent 
+              rounded-full 
+              animate-spin" /> : <><Check size={12} /> บันทึก</>}
             </button>
-            <button onClick={() => { setEditingUsername(false); setNewUsername(profile?.username ?? ""); setUsernameError(""); }} className="flex items-center gap-1 px-3 py-1 rounded-lg bg-white/10 text-[#ffecd9] text-xs font-semibold hover:bg-white/20 transition">
+            <button 
+            onClick={() => { setEditingUsername(false); setNewUsername(profile?.username ?? ""); setUsernameError(""); }} 
+            className="
+            flex 
+            items-center 
+            gap-1 
+            px-3 
+            py-1 
+            rounded-lg 
+            bg-white/10 
+            text-[#ffecd9] 
+            text-xs 
+            font-semibold 
+            hover:bg-white/20 
+            transition
+            cursor-pointer
+            ">
               <X size={12} /> ยกเลิก
             </button>
           </div>
         </div>
       ) : (
-        <button onClick={() => setEditingUsername(true)} className="group/name flex items-center gap-2 hover:opacity-80 transition">
+        <button onClick={() => setEditingUsername(true)} 
+        className="
+        group/name 
+        flex 
+        items-center 
+        gap-2 
+        hover:opacity-80 
+        transition
+        cursor-pointer
+        ">
           <span className={`${textSize} font-bold text-[#ffecd9] drop-shadow`}>{profile?.username || "ไม่มีชื่อ"}</span>
           <Pencil size={13} className="text-[#ffecd9]/50 group-hover/name:text-[#ffecd9] transition" />
         </button>
@@ -311,7 +362,19 @@ export default function UserProfileCard() {
       {!isGuest && (
         <button
           onClick={handleLogout}
-          className="absolute top-5 right-5 z-20 p-2 text-[#ffecd9]/40 hover:text-[#ffecd9] hover:bg-white/10 rounded-full transition-all"
+          className="
+          absolute 
+          top-5 
+          right-5 
+          z-20 
+          p-2 
+          text-[#ffecd9]/40 
+          hover:text-[#ffecd9] 
+          hover:bg-white/10 
+          rounded-full 
+          transition-all
+          cursor-pointer
+          "
           title="ออกจากระบบ"
         >
           <LogOut size={16} />
@@ -342,7 +405,25 @@ export default function UserProfileCard() {
 
           <button
             onClick={() => router.push("/history")}
-            className="flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 border border-[#ffecd9]/20 text-[#ffecd9]/70 text-sm font-medium hover:bg-white/20 hover:text-[#ffecd9] transition-all duration-200"
+            className="
+            flex 
+            items-center 
+            gap-2 
+            px-5 
+            py-2 
+            rounded-full 
+            bg-white/10 
+            border 
+            border-[#ffecd9]/20 
+            text-[#ffecd9]/70 
+            text-sm 
+            font-medium 
+            hover:bg-white/20 
+            hover:text-[#ffecd9] 
+            transition-all 
+            duration-200
+            cursor-pointer
+            "
           >
             <History size={14} />
             ดูประวัติทั้งหมด
@@ -399,7 +480,25 @@ export default function UserProfileCard() {
             <div className="mt-4 flex justify-center">
               <button
                 onClick={() => router.push("/history")}
-                className="flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 border border-[#ffecd9]/20 text-[#ffecd9]/70 text-sm font-medium hover:bg-white/20 hover:text-[#ffecd9] transition-all duration-200"
+                className="
+                flex 
+                items-center 
+                gap-2 
+                px-5 
+                py-2 
+                rounded-full 
+                bg-white/10 
+                border 
+                border-[#ffecd9]/20 
+                text-[#ffecd9]/70 
+                text-sm 
+                font-medium 
+                hover:bg-white/20 
+                hover:text-[#ffecd9] 
+                transition-all 
+                duration-200
+                cursor-pointer
+                "
               >
                 <History size={14} />
                 ดูประวัติทั้งหมด

@@ -7,6 +7,31 @@ import Image from "next/image";
 import { ArrowBigLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
+type Order = {
+  device_id: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  address: string;
+  district: string;
+  province: string;
+  zipcode: string;
+  items: CartItem[];
+  total: number;
+  status: string;
+};
+
+type FormErrors = {
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  address?: string;
+  subdistrict?: string;
+  district?: string;
+  province?: string;
+  zipcode?: string;
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const cart = useCartStore((state: CartStore) => state.cart);
@@ -20,6 +45,7 @@ export default function CheckoutPage() {
     address: "", subdistrict: "", district: "",
     province: "", zipcode: "",
   });
+  const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
 
   const getDeviceId = () => {
@@ -32,14 +58,78 @@ export default function CheckoutPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    // เคลียร์ error ทันทีที่ผู้ใช้เริ่มแก้ไขข้อมูลใหม่
+    if (errors[name as keyof FormErrors]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  // ฟังก์ชันแยกสำหรับเช็คแต่ละฟิลด์ และระบุประเภทข้อมูลที่ต้องการ
+  const validateField = (name: string, value: string): string | undefined => {
+    switch (name) {
+      case "first_name":
+        if (!value.trim()) return "กรุณากรอกชื่อ (ต้องเป็นตัวอักษร)";
+        break;
+      case "last_name":
+        if (!value.trim()) return "กรุณากรอกนามสกุล (ต้องเป็นตัวอักษร)";
+        break;
+      case "phone":
+        if (!value.trim()) return "กรุณากรอกเบอร์โทรศัพท์";
+        if (!/^[0-9]+$/.test(value)) return "ข้อมูลไม่ถูกต้อง: ต้องเป็นตัวเลขเท่านั้น";
+        if (!/^0[0-9]{9}$/.test(value)) return "ข้อมูลไม่ถูกต้อง: ต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 0";
+        break;
+      case "address":
+        if (!value.trim()) return "กรุณากรอกที่อยู่ (ข้อความ)";
+        break;
+      case "subdistrict":
+        if (!value.trim()) return "กรุณากรอกแขวง/ตำบล (ข้อความ)";
+        break;
+      case "district":
+        if (!value.trim()) return "กรุณากรอกเขต/อำเภอ (ข้อความ)";
+        break;
+      case "province":
+        if (!value.trim()) return "กรุณากรอกจังหวัด (ข้อความ)";
+        break;
+      case "zipcode":
+        if (!value.trim()) return "กรุณากรอกรหัสไปรษณีย์";
+        if (!/^[0-9]+$/.test(value)) return "ข้อมูลไม่ถูกต้อง: ต้องเป็นตัวเลขเท่านั้น";
+        if (!/^[0-9]{5}$/.test(value)) return "ข้อมูลไม่ถูกต้อง: ต้องเป็นตัวเลข 5 หลัก";
+        break;
+      default:
+        return undefined;
+    }
+  };
+
+  // ตรวจสอบข้อมูลเมื่อผู้ใช้พิมพ์เสร็จและคลิกออกนอกช่อง (Blur)
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const errorMsg = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
+  };
+
+  // ตรวจสอบข้อมูลทั้งหมดก่อนกด Confirm
+  const validateAll = (): boolean => {
+    const newErrors: FormErrors = {};
+    Object.keys(form).forEach((key) => {
+      const fieldName = key as keyof typeof form;
+      const errorMsg = validateField(fieldName, form[fieldName]);
+      if (errorMsg) {
+        newErrors[fieldName] = errorMsg;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleConfirm = async () => {
-    if (!form.first_name || !form.last_name || !form.phone || !form.address) {
-      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    if (!validateAll()) {
+      alert("กรุณาตรวจสอบข้อมูลให้ถูกต้องตามรูปแบบที่กำหนด");
       return;
     }
+
     if (cart.length === 0) {
       alert("ตะกร้าสินค้าว่างเปล่า");
       return;
@@ -49,28 +139,40 @@ export default function CheckoutPage() {
     try {
       const deviceId = getDeviceId();
 
+      const orderData: Order = {
+        device_id: deviceId,
+        first_name: form.first_name,
+        last_name: form.last_name,
+        phone: form.phone,
+        address: form.address,
+        district: form.district,
+        province: form.province,
+        zipcode: form.zipcode,
+        items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        total: subtotal,
+        status: "pending",
+      };
+
       const { data, error } = await supabase
         .from("orders")
-        .insert([{
-          device_id: deviceId,
-          first_name: form.first_name,
-          last_name: form.last_name,
-          phone: form.phone,
-          address: form.address,
-          district: form.district,
-          province: form.province,
-          zipcode: form.zipcode,
-          items: cart,
-          total: subtotal,
-          status: "pending",
-        }])
+        .insert([orderData])
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error(error);
+        alert("บันทึกไม่สำเร็จ: " + error.message);
+        return;
+      }
 
-      // เก็บ order id ไว้ใช้ในหน้า payment
       localStorage.setItem("order_id", data[0].id);
       router.push("/payment");
+
     } catch (err) {
       alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
       console.error(err);
@@ -79,10 +181,20 @@ export default function CheckoutPage() {
     }
   };
 
+  const inputClass = (field: keyof FormErrors) =>
+    `w-full bg-white/[0.03] border rounded-2xl px-5 py-4 outline-none transition-all ${
+      errors[field] ? "border-red-500 focus:border-red-400" : "border-white/10 focus:border-indigo-500"
+    }`;
+
+  const inputClassSm = (field: keyof FormErrors) =>
+    `w-full bg-white/[0.03] border rounded-xl px-4 py-3 outline-none transition-all ${
+      errors[field] ? "border-red-500 focus:border-red-400" : "border-white/10 focus:border-indigo-500"
+    }`;
+
   return (
     <div className="min-h-screen bg-[#1a1a2e] text-white py-16 px-8 lg:ml-24">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-start">
-        
+
         {/* ฝั่งซ้าย: แบบฟอร์ม */}
         <div className="flex-1 w-full space-y-12">
           <header>
@@ -100,20 +212,30 @@ export default function CheckoutPage() {
             <section className="space-y-6">
               <h2 className="text-lg font-bold text-indigo-400 uppercase tracking-widest italic">Customer Details</h2>
               <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">First Name/ชื่อ</label>
-                  <input name="first_name" value={form.first_name} onChange={handleChange} placeholder="ex. สมปอง"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input name="first_name" value={form.first_name} onChange={handleChange} onBlur={handleBlur} placeholder="ex. สมปอง"
+                    className={inputClass("first_name")} />
+                  {errors.first_name && <p className="text-red-400 text-xs mt-1 ml-1">{errors.first_name}</p>}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">Last Name/นามสกุล</label>
-                  <input name="last_name" value={form.last_name} onChange={handleChange} placeholder="ex. พนมนุ่ม"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input name="last_name" value={form.last_name} onChange={handleChange} onBlur={handleBlur} placeholder="ex. พนมนุ่ม"
+                    className={inputClass("last_name")} />
+                  {errors.last_name && <p className="text-red-400 text-xs mt-1 ml-1">{errors.last_name}</p>}
                 </div>
-                <div className="col-span-2 space-y-2">
+                <div className="col-span-2 space-y-1">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">Phone Number/เบอร์โทรศัพท์</label>
-                  <input name="phone" value={form.phone} onChange={handleChange} placeholder="ex. 081-XXX-XXXX"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="ex. 0812345678"
+                    maxLength={10}
+                    className={inputClass("phone")}
+                  />
+                  {errors.phone && <p className="text-red-400 text-xs mt-1 ml-1">{errors.phone}</p>}
                 </div>
               </div>
             </section>
@@ -121,31 +243,43 @@ export default function CheckoutPage() {
             <section className="space-y-6">
               <h2 className="text-lg font-bold text-indigo-400 uppercase tracking-widest italic">Customer Address</h2>
               <div className="space-y-6">
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">Street Address/ที่อยู่</label>
-                  <input name="address" value={form.address} onChange={handleChange} placeholder="ex. 123/4 หมู่ 5 ซอยสุขุมวิท 10"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input name="address" value={form.address} onChange={handleChange} onBlur={handleBlur} placeholder="ex. 123/4 หมู่ 5 ซอยสุขุมวิท 10"
+                    className={inputClass("address")} />
+                  {errors.address && <p className="text-red-400 text-xs mt-1 ml-1">{errors.address}</p>}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">Subdistrict/แขวง</label>
-                    <input name="subdistrict" value={form.subdistrict} onChange={handleChange} placeholder="ex. แขวงลาดยาว"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input name="subdistrict" value={form.subdistrict} onChange={handleChange} onBlur={handleBlur} placeholder="ex. แขวงลาดยาว"
+                      className={inputClassSm("subdistrict")} />
+                    {errors.subdistrict && <p className="text-red-400 text-xs mt-1 ml-1">{errors.subdistrict}</p>}
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">District/เขต</label>
-                    <input name="district" value={form.district} onChange={handleChange} placeholder="ex. เขตจตุจักร"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input name="district" value={form.district} onChange={handleChange} onBlur={handleBlur} placeholder="ex. เขตจตุจักร"
+                      className={inputClassSm("district")} />
+                    {errors.district && <p className="text-red-400 text-xs mt-1 ml-1">{errors.district}</p>}
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">Province/จังหวัด</label>
-                    <input name="province" value={form.province} onChange={handleChange} placeholder="ex. กรุงเทพฯ"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input name="province" value={form.province} onChange={handleChange} onBlur={handleBlur} placeholder="ex. กรุงเทพฯ"
+                      className={inputClassSm("province")} />
+                    {errors.province && <p className="text-red-400 text-xs mt-1 ml-1">{errors.province}</p>}
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">Postal Code/รหัสไปรษณีย์</label>
-                    <input name="zipcode" value={form.zipcode} onChange={handleChange} placeholder="ex. 10110"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input
+                      name="zipcode"
+                      value={form.zipcode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      placeholder="ex. 10900"
+                      maxLength={5}
+                      className={inputClassSm("zipcode")}
+                    />
+                    {errors.zipcode && <p className="text-red-400 text-xs mt-1 ml-1">{errors.zipcode}</p>}
                   </div>
                 </div>
               </div>
@@ -172,7 +306,13 @@ export default function CheckoutPage() {
                     </div>
                     <p className="text-indigo-400 font-black text-2xl">฿{item.price.toLocaleString()}</p>
                     <div className="flex items-center gap-3 w-fit mt-2">
-                      <button onClick={() => decrease(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-red-500/30 text-white transition">—</button>
+                      <button onClick={() => {
+                        if (item.quantity <= 1) {
+                          remove(item.id);
+                        } else {
+                          decrease(item.id);
+                        }
+                      }} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-red-500/30 text-white transition">—</button>
                       <span className="text-sm font-bold min-w-[20px] text-center">{item.quantity}</span>
                       <button onClick={() => increase(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-green-500/30 text-white transition">+</button>
                     </div>

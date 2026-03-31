@@ -198,7 +198,18 @@ export default function Horoscope() {
                 {/* View Button */}
                 <button
                   onClick={() => setOpen(true)}
-                  className="mt-4 px-6 py-2 rounded-full bg-(--main) text-(--bg) text-sm font-medium hover:opacity-70 transition"
+                  className="
+                  mt-4 
+                  px-6 
+                  py-2 
+                  rounded-full 
+                  bg-(--main) 
+                  text-(--bg) 
+                  text-sm 
+                  font-medium 
+                  hover:opacity-70 
+                  transition
+                  cursor-pointer"
                 >
                   View full →
                 </button>

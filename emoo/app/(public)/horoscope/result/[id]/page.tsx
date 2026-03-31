@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import tarot from "../../../../data/tarot.json";
 import { supabase } from "@/lib/supabase";
+import { History } from "lucide-react";
 
 
 
@@ -32,10 +33,12 @@ export default function ResultPage() {
 
     const [loveType, setLoveType] = useState("single");
     const router = useRouter();
+    const hasSaved = useRef(false);
 
     /* ─── Save last viewed card to profile + track view ─── */
     useEffect(() => {
-        if (!card || !category) return;
+        if (!card || !category || hasSaved.current) return;
+        hasSaved.current = true;
 
         const save = async () => {
             try {
@@ -44,11 +47,12 @@ export default function ResultPage() {
                 } = await supabase.auth.getSession();
 
                 // ✅ check ซ้ำก่อน insert
+                const cardIdInt = parseInt(card.card_id, 10);
                 const { data: existing } = await supabase
                     .from("horoscope_views")
                     .select("id")
                     .eq("user_id", session?.user?.id ?? null)
-                    .eq("card_id", card.card_id)
+                    .eq("card_id", cardIdInt)
                     .eq("category", category)
                     .limit(1);
 
@@ -57,7 +61,7 @@ export default function ResultPage() {
                         {
                             user_id: session?.user?.id ?? null,
                             category: category,
-                            card_id: card.card_id,
+                            card_id: cardIdInt,
                         },
                     ]);
                 }
@@ -348,7 +352,7 @@ export default function ResultPage() {
                             duration-300
                             "
                 >
-                    Next →
+                    <History/> ดูประวัติทั้งหมด
                 </button>
 
             </div>

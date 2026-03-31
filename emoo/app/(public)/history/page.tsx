@@ -5,13 +5,14 @@ import { supabase } from "@/lib/supabase";
 import tarot from "../../data/tarot.json";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/sidebar";
+import { Heart, DollarSign, BookOpen } from "lucide-react";
 
 
 type View = {
     id: string;
     card_id: number | string;
     category: string;
-    created_at: string;
+    viewed_at: string;
 };
 
 export default function HistoryPage() {
@@ -44,7 +45,7 @@ export default function HistoryPage() {
                 .from("horoscope_views")
                 .select("*")
                 .eq("user_id", session.user.id)
-                .order("created_at", { ascending: false })
+                .order("viewed_at", { ascending: false })
                 .limit(30);
 
             if (error) {
@@ -99,8 +100,8 @@ export default function HistoryPage() {
 
                     <div className="space-y-6">
                         {views.map((view) => {
-                            // FIX สำคัญตรงนี้
-                            const card = cardMap[String(view.card_id)];
+                            // FIX: zero-pad card_id to match tarot.json keys (e.g. 0 -> "00")
+                            const card = cardMap[String(view.card_id).padStart(2, "0")];
 
                             // 🔥 debug ถ้าไม่ขึ้น
                             if (!card) {
@@ -131,7 +132,7 @@ export default function HistoryPage() {
 
                                         <p className="text-xs text-gray-400">
                                             {new Date(
-                                                view.created_at
+                                                view.viewed_at
                                             ).toLocaleDateString()}
                                         </p>
 
@@ -140,21 +141,19 @@ export default function HistoryPage() {
                                             <button
                                                 onClick={() =>
                                                     router.push(
-                                                        `/result/${card.card_id}?category=${view.category}&type=meaning`
+                                                        `/horoscope/result/${card.card_id}?category=${view.category}`
                                                     )
                                                 }
-                                                className="bg-yellow-200 text-black px-3 py-1 rounded-md text-sm hover:opacity-80"
-                                            >
-                                                Meaning
-                                            </button>
-
-                                            <button
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/result/${card.card_id}?category=${view.category}&type=predict`
-                                                    )
-                                                }
-                                                className="bg-purple-300 text-black px-3 py-1 rounded-md text-sm hover:opacity-80"
+                                                className="
+                                                bg-purple-300 
+                                                text-(--bg)
+                                                px-3 
+                                                py-1 
+                                                rounded-md 
+                                                text-sm 
+                                                hover:opacity-80
+                                                cursor-pointer
+                                                "
                                             >
                                                 Predict
                                             </button>
@@ -167,13 +166,36 @@ export default function HistoryPage() {
                 </div>
 
                 {/* RIGHT */}
-                <div className="w-80 bg-gradient-to-b from-[#3B3560] to-[#1F1A33] rounded-2xl p-6 shadow-xl">
+                <div className="
+                w-80 
+                h-80
+                bg-gradient-to-b 
+                from-[#3B3560] 
+                to-[#1F1A33] 
+                rounded-2xl 
+                p-6 
+                shadow-xl
+                ">
 
-                    <div className="bg-white/10 rounded-xl p-4 space-y-2">
-                        <Stat label="Love" value={stats.love} />
-                        <Stat label="Money" value={stats.money} />
-                        <Stat label="Study" value={stats.study} />
-                        <Stat label="Travel" value={stats.travel} />
+                    <div className="flex flex-col gap-4 mt-4">
+                        <StatCard
+                            icon={<Heart size={20} style={{ color: "#f472b6" }} />}
+                            label="ความรัก"
+                            value={stats.love}
+                            iconBg="rgba(236,72,153,0.2)"
+                        />
+                        <StatCard
+                            icon={<DollarSign size={20} style={{ color: "#facc15" }} />}
+                            label="การเงิน"
+                            value={stats.money}
+                            iconBg="rgba(250,204,21,0.2)"
+                        />
+                        <StatCard
+                            icon={<BookOpen size={20} style={{ color: "#4ade80" }} />}
+                            label="การเรียน"
+                            value={stats.study}
+                            iconBg="rgba(74,222,128,0.15)"
+                        />
                     </div>
                 </div>
             </div>
@@ -181,12 +203,25 @@ export default function HistoryPage() {
     );
 }
 
-// ✅ reusable
-function Stat({ label, value }: { label: string; value?: number }) {
+// ✅ reusable stat card
+function StatCard({ icon, label, value, iconBg }: {
+    icon: React.ReactNode;
+    label: string;
+    value?: number;
+    iconBg: string;
+}) {
     return (
-        <div className="flex justify-between">
-            <span>{label}</span>
-            <span>{value || 0}</span>
+        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+            <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: iconBg }}
+            >
+                {icon}
+            </div>
+            <div className="flex-1">
+                <p className="text-xs text-gray-400">{label}</p>
+                <p className="text-xl font-bold text-white">{value || 0}</p>
+            </div>
         </div>
     );
 }

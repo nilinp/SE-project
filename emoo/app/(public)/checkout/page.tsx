@@ -93,11 +93,14 @@ export default function CheckoutPage() {
     setLoading(true);
     try {
       const deviceId = getDeviceId();
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id || null;
 
       const { data, error } = await supabase
         .from("orders")
         .insert([{
           device_id: deviceId,
+          user_id: userId,
           first_name: form.first_name,
           last_name: form.last_name,
           phone: form.phone,

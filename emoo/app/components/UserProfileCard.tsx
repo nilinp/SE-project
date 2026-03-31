@@ -168,13 +168,6 @@ export default function UserProfileCard() {
         <div className="absolute inset-0 bg-[#1E1A33]/80 backdrop-blur-[2px] rounded-[40px]" />
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 gap-4">
-          {/* Stars */}
-          <div className="flex gap-1 mb-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} size={10} className="text-[#FFD700] fill-[#FFD700] opacity-50" />
-            ))}
-          </div>
-
           {/* Guest avatar */}
           <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-[#ffecd9]/20 shadow-xl bg-gradient-to-br from-[#4B415E] to-[#28223C] flex items-center justify-center">
             <span className="text-4xl font-bold text-[#ffecd9]/60 select-none">?</span>
@@ -195,7 +188,25 @@ export default function UserProfileCard() {
           {/* Login button */}
           <button
             onClick={() => router.push("/login")}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#ffecd9]/15 border border-[#ffecd9]/30 text-[#ffecd9] text-sm font-semibold hover:bg-[#ffecd9]/25 hover:border-[#ffecd9]/60 transition-all duration-200"
+            className="
+            flex 
+            items-center 
+            gap-2 
+            px-6 
+            py-2.5 
+            rounded-full 
+            bg-[#ffecd9]/15 
+            border 
+            border-[#ffecd9]/30 
+            text-[#ffecd9] 
+            text-sm 
+            font-semibold 
+            hover:bg-[#ffecd9]/25 
+            hover:border-[#ffecd9]/60 
+            transition-all 
+            duration-200
+            cursor-pointer
+            "
           >
             <LogIn size={14} />
             เข้าสู่ระบบ

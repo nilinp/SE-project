@@ -17,6 +17,7 @@ export type CartStore = {
   decrease: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  removeItems: (ids: string[]) => void;
   loadCart: () => Promise<void>;
   _syncToDb: () => Promise<void>;
 };
@@ -25,17 +26,26 @@ export type CartStore = {
 const syncCartToDb = async (cart: CartItem[]) => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    if (!session) {
+      console.log("[Cart] No session, skip sync");
+      return;
+    }
 
-    await supabase
+    const { error } = await supabase
       .from("carts")
       .upsert({
         user_id: session.user.id,
         items: cart,
         updated_at: new Date().toISOString(),
       }, { onConflict: "user_id" });
+
+    if (error) {
+      console.error("[Cart] Sync error:", error);
+    } else {
+      console.log("[Cart] Synced", cart.length, "items to DB");
+    }
   } catch (err) {
-    console.error("Cart sync error:", err);
+    console.error("[Cart] Sync exception:", err);
   }
 };
 
@@ -46,7 +56,11 @@ export const useCartStore = create<CartStore>((set, get) => ({
   loadCart: async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        console.log("[Cart] loadCart: No session");
+        return;
+      }
+      console.log("[Cart] loadCart: user_id =", session.user.id);
 
       const { data, error } = await supabase
         .from("carts")
@@ -54,16 +68,21 @@ export const useCartStore = create<CartStore>((set, get) => ({
         .eq("user_id", session.user.id)
         .single();
 
+      console.log("[Cart] loadCart result:", { data, error });
+
       if (error && error.code !== "PGRST116") {
-        console.error("Load cart error:", error);
+        console.error("[Cart] loadCart error:", error);
         return;
       }
 
       if (data?.items && Array.isArray(data.items) && data.items.length > 0) {
+        console.log("[Cart] loadCart: loaded", data.items.length, "items");
         set({ cart: data.items as CartItem[] });
+      } else {
+        console.log("[Cart] loadCart: no items in DB");
       }
     } catch (err) {
-      console.error("Load cart error:", err);
+      console.error("[Cart] loadCart exception:", err);
     }
   },
 
@@ -124,5 +143,12 @@ export const useCartStore = create<CartStore>((set, get) => ({
   clearCart: () => {
     set({ cart: [] });
     setTimeout(() => syncCartToDb([]), 0);
+  },
+
+  removeItems: (ids: string[]) => {
+    set((state: CartStore) => ({
+      cart: state.cart.filter((item: CartItem) => !ids.includes(item.id)),
+    }));
+    setTimeout(() => syncCartToDb(get().cart), 0);
   },
 }));

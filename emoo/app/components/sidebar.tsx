@@ -81,15 +81,6 @@ export default function Sidebar() {
           </Link>
           
           <button
-            onClick={() => user ? router.push("/shopping") : router.push("/login")}
-            title={user ? "ร้านค้า" : "กรุณาเข้าสู่ระบบก่อนใช้งานร้านค้า"}
-          >
-            <Store
-            size={28}
-            className={`cursor-pointer hover:text-(--main) transition ${!user ? "opacity-40" : ""}`} />
-          </button>
-          
-          <button
             onClick={() => user ? router.push("/cart") : router.push("/login")}
             title={user ? "ตะกร้า" : "กรุณาเข้าสู่ระบบก่อนใช้งานตะกร้า"}
           >

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { K2D } from "next/font/google";
 import "./globals.css";
+import CartProvider from "./components/CartProvider";
 
 const k2d = K2D({
   subsets: ["latin", "thai"],
@@ -19,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="th">
       <body className={k2d.className}>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

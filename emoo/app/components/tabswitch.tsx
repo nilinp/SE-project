@@ -2,10 +2,23 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 export default function TabSwitch() {
   const router = useRouter();
   const pathname = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const current = pathname.startsWith("/horoscope") ? "horoscope" : "shopping";
 
@@ -60,6 +73,7 @@ export default function TabSwitch() {
             ? "text-(--main)"
             : "text-(--bg)"
           }`}
+          title={user ? "ร้านค้า" : "กรุณาเข้าสู่ระบบก่อนใช้งานร้านค้า"}
       >
         Shopping
       </button>

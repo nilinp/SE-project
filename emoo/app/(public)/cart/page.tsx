@@ -231,7 +231,10 @@ export default function CartPage() {
               </div>
 
               <button 
-                onClick={() => router.push("/checkout")}
+                onClick={() => {
+                  localStorage.setItem("checkout_items", JSON.stringify(selected));
+                  router.push("/checkout");
+                }}
                 className="mt-6 w-full bg-(--bg) text-white py-3 rounded-lg cursor-pointer hover:opacity-80 transition-colors duration-300">
                 ชำระเงิน
               </button>

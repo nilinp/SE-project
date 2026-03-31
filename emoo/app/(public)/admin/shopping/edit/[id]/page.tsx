@@ -5,10 +5,14 @@ import Image from "next/image";
 import {ImagePlus, Trash2} from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { usePopupStore } from "@/lib/popupstore";
+import PopupAlert from "@/app/components/PopupAlert";
 
 export default function EditProduct() {
   const { id } = useParams();
   const router = useRouter();
+  const { isOpen, title, message, type, showPopup, closePopup } = usePopupStore();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [name, setName]           = useState("");
   const [details, setDetails]     = useState("");
@@ -39,8 +43,7 @@ export default function EditProduct() {
         }
       } catch (err) {
         console.error("โหลดข้อมูลสินค้าไม่สำเร็จ", err);
-        alert("ไม่พบรหัสสินค้านี้");
-        router.push("/admin/shopping");
+        showPopup("ไม่พบสินค้า", "ไม่พบรหัสสินค้านี้ กำลังแสดงหน้าสินค้า", "error", () => router.push("/admin/shopping"));
       } finally {
         setLoading(false);
       }
@@ -61,7 +64,7 @@ export default function EditProduct() {
 
   const handleSave = async () => {
     if (!name.trim() || !price) {
-      alert("กรุณากรอกชื่อและราคา");
+      showPopup("ข้อมูลไม่ครบ", "กรุณากรอกชื่อและราคา", "error");
       return;
     }
     
@@ -109,7 +112,7 @@ export default function EditProduct() {
       router.push("/admin/shopping");
       
     } catch (err) {
-      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      showPopup("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลสินค้าได้ กรุณาลองใหม่", "error");
       console.error(err);
     } finally {
       setSaving(false);
@@ -117,8 +120,11 @@ export default function EditProduct() {
   };
 
   const handleDelete = async () => {
-    if (!confirm("คุณต้องการลบสินค้านี้ใช่หรือไม่?")) return;
+    setConfirmDelete(true);
+  };
 
+  const doDelete = async () => {
+    setConfirmDelete(false);
     setSaving(true);
     try {
       const { error, count } = await supabase
@@ -135,12 +141,13 @@ export default function EditProduct() {
       router.push("/admin/shopping");
     } catch (err: any) {
       console.error(err);
-      alert(`ไม่สามารถลบสินค้าได้: ${err?.message || "Error"}`);
+      showPopup("ไม่สามารถลบสินค้า", `ไม่สามารถลบสินค้าได้: ${err?.message || "Error"}`, "error");
       setSaving(false);
     }
-  }
+  };
 
   return (
+    <>
     <div className="min-h-screen bg-white flex flex-col p-10 ml-16">
 
       <div className="flex gap-10 flex-1 mt-10">
@@ -300,5 +307,38 @@ export default function EditProduct() {
         </div>
       </div>
     </div>
+
+      {/* Confirm Delete Modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl text-[var(--sec)]">
+            <h3 className="text-xl font-bold mb-2">ลบสินค้า?</h3>
+            <p className="text-gray-600 mb-6">คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้? การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="px-5 py-2.5 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors font-medium cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={doDelete}
+                className="px-5 py-2.5 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-medium cursor-pointer"
+              >
+                ลบสินค้า
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <PopupAlert
+        isOpen={isOpen}
+        title={title}
+        message={message}
+        type={type}
+        onClose={closePopup}
+      />
+    </>
   );
 }

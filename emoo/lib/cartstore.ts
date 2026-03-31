@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { supabase } from "@/lib/supabase";
 
 export type CartItem = {
@@ -22,133 +23,91 @@ export type CartStore = {
   _syncToDb: () => Promise<void>;
 };
 
-// Helper: sync cart to Supabase
 const syncCartToDb = async (cart: CartItem[]) => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      console.log("[Cart] No session, skip sync");
-      return;
-    }
-
-    const { error } = await supabase
+    if (!session) return;
+    await supabase
       .from("carts")
-      .upsert({
-        user_id: session.user.id,
-        items: cart,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: "user_id" });
-
-    if (error) {
-      console.error("[Cart] Sync error:", error);
-    } else {
-      console.log("[Cart] Synced", cart.length, "items to DB");
-    }
+      .upsert({ user_id: session.user.id, items: cart, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
   } catch (err) {
     console.error("[Cart] Sync exception:", err);
   }
 };
 
-export const useCartStore = create<CartStore>((set, get) => ({
-  cart: [],
-
-  // โหลดตะกร้าจาก DB ตอน login
-  loadCart: async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        console.log("[Cart] loadCart: No session");
-        return;
-      }
-      console.log("[Cart] loadCart: user_id =", session.user.id);
-
-      const { data, error } = await supabase
-        .from("carts")
-        .select("items")
-        .eq("user_id", session.user.id)
-        .single();
-
-      console.log("[Cart] loadCart result:", { data, error });
-
-      if (error && error.code !== "PGRST116") {
-        console.error("[Cart] loadCart error:", error);
-        return;
-      }
-
-      if (data?.items && Array.isArray(data.items) && data.items.length > 0) {
-        console.log("[Cart] loadCart: loaded", data.items.length, "items");
-        set({ cart: data.items as CartItem[] });
-      } else {
-        console.log("[Cart] loadCart: no items in DB");
-      }
-    } catch (err) {
-      console.error("[Cart] loadCart exception:", err);
-    }
-  },
-
-  _syncToDb: async () => {
-    await syncCartToDb(get().cart);
-  },
-
-  addToCart: (item: CartItem) => {
-    set((state: CartStore) => {
-      const exist = state.cart.find((p: CartItem) => p.id === item.id);
-      if (exist) {
-        return {
-          cart: state.cart.map((p: CartItem) =>
-            p.id === item.id ? { ...p, quantity: p.quantity + item.quantity } : p
-          ),
-        };
-      }
-      return { cart: [...state.cart, item] };
-    });
-    // sync หลัง state update
-    setTimeout(() => syncCartToDb(get().cart), 0);
-  },
-
-  increase: (id: string) => {
-    set((state: CartStore) => ({
-      cart: state.cart.map((p: CartItem) =>
-        p.id === id ? { ...p, quantity: p.quantity + 1 } : p
-      ),
-    }));
-    setTimeout(() => syncCartToDb(get().cart), 0);
-  },
-
-  decrease: (id: string) => {
-    set((state: CartStore) => ({
-      cart: state.cart.map((p: CartItem) =>
-        p.id === id ? { ...p, quantity: p.quantity - 1 } : p
-      ),
-    }));
-    setTimeout(() => syncCartToDb(get().cart), 0);
-  },
-
-  updateQuantity: (id: string, quantity: number) => {
-    set((state: CartStore) => ({
-      cart: state.cart.map((p: CartItem) =>
-        p.id === id ? { ...p, quantity } : p
-      ),
-    }));
-    setTimeout(() => syncCartToDb(get().cart), 0);
-  },
-
-  remove: (id: string) => {
-    set((state: CartStore) => ({
-      cart: state.cart.filter((item: CartItem) => item.id !== id),
-    }));
-    setTimeout(() => syncCartToDb(get().cart), 0);
-  },
-
-  clearCart: () => {
-    set({ cart: [] });
-    setTimeout(() => syncCartToDb([]), 0);
-  },
-
-  removeItems: (ids: string[]) => {
-    set((state: CartStore) => ({
-      cart: state.cart.filter((item: CartItem) => !ids.includes(item.id)),
-    }));
-    setTimeout(() => syncCartToDb(get().cart), 0);
-  },
-}));
+export const useCartStore = create<CartStore>()(
+  persist(
+    (set, get) => ({
+      cart: [],
+      loadCart: async () => {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) return;
+          const { data, error } = await supabase
+            .from("carts")
+            .select("items")
+            .eq("user_id", session.user.id)
+            .single();
+          
+          if (error && error.code !== "PGRST116") return;
+          if (data?.items && Array.isArray(data.items) && data.items.length > 0) {
+            // Merge with local cart gracefully
+            const localCart = get().cart;
+            if (localCart.length > 0) {
+              const merged = [...localCart];
+              data.items.forEach((item: any) => {
+                const existingIndex = merged.findIndex(i => i.id === item.id);
+                if (existingIndex >= 0) {
+                  merged[existingIndex].quantity = Math.max(merged[existingIndex].quantity, item.quantity);
+                } else {
+                  merged.push(item);
+                }
+              });
+              set({ cart: merged });
+              syncCartToDb(merged);
+            } else {
+              set({ cart: data.items as CartItem[] });
+            }
+          } else {
+            // DB empty, try to sync local to DB
+            if (get().cart.length > 0) syncCartToDb(get().cart);
+          }
+        } catch (err) {}
+      },
+      _syncToDb: async () => await syncCartToDb(get().cart),
+      addToCart: (item) => {
+        set((state) => {
+          const exist = state.cart.find((p) => p.id === item.id);
+          if (exist) return { cart: state.cart.map((p) => p.id === item.id ? { ...p, quantity: p.quantity + item.quantity } : p) };
+          return { cart: [...state.cart, item] };
+        });
+        setTimeout(() => syncCartToDb(get().cart), 0);
+      },
+      increase: (id) => {
+        set((state) => ({ cart: state.cart.map((p) => p.id === id ? { ...p, quantity: p.quantity + 1 } : p) }));
+        setTimeout(() => syncCartToDb(get().cart), 0);
+      },
+      decrease: (id) => {
+        set((state) => ({ cart: state.cart.map((p) => p.id === id ? { ...p, quantity: p.quantity - 1 } : p) }));
+        setTimeout(() => syncCartToDb(get().cart), 0);
+      },
+      updateQuantity: (id, quantity) => {
+        set((state) => ({ cart: state.cart.map((p) => p.id === id ? { ...p, quantity } : p) }));
+        setTimeout(() => syncCartToDb(get().cart), 0);
+      },
+      remove: (id) => {
+        set((state) => ({ cart: state.cart.filter((item) => item.id !== id) }));
+        setTimeout(() => syncCartToDb(get().cart), 0);
+      },
+      clearCart: () => {
+        set({ cart: [] });
+        setTimeout(() => syncCartToDb([]), 0);
+      },
+      removeItems: (ids) => {
+        set((state) => ({ cart: state.cart.filter((item) => !ids.includes(item.id)) }));
+        setTimeout(() => syncCartToDb(get().cart), 0);
+      },
+    }),
+    { name: "cart-storage" }
+  )
+);

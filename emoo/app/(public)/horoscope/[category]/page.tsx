@@ -12,10 +12,10 @@ export default function SelectCardPage() {
     const router = useRouter();
 
     const [selectedCard, setSelectedCard] = useState<number | null>(null);
+    const [hoveredCard, setHoveredCard] = useState<number | null>(null);
     const [isShuffling, setIsShuffling] = useState(false);
     const [mounted, setMounted] = useState(false);
 
-    // Only render cards on client to avoid hydration mismatch
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -25,6 +25,7 @@ export default function SelectCardPage() {
     const handleSelectCard = (index: number) => {
         if (selectedCard !== null || isShuffling) return;
         setSelectedCard(index);
+        setHoveredCard(null);
 
         const randomId = Math.floor(Math.random() * tarot.cards.length);
         setTimeout(() => {
@@ -46,7 +47,7 @@ export default function SelectCardPage() {
     };
 
     return (
-        <div className="relative min-h-screen bg-[#2F2847] text-white p-10 md:pl-28 overflow-hidden">
+        <div className="relative min-h-screen bg-[#2F2847] text-white p-10 md:pl-28" style={{ backgroundColor: "#2F2847" }}>
 
             {/* Back Button */}
             <button
@@ -57,7 +58,7 @@ export default function SelectCardPage() {
             </button>
 
             <h1 className="text-4xl text-center mb-4 font-semibold">
-                Select Card - {getThaiName()}
+                เลือกไพ่ — {getThaiName()}
             </h1>
 
             {/* Shuffle Button */}
@@ -87,7 +88,7 @@ export default function SelectCardPage() {
                 </button>
             </div>
 
-            <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="flex justify-center items-center min-h-full">
                 <div className="relative w-full max-w-[1200px] h-[450px]">
 
                     {mounted && Array.from({ length: total }).map((_, index) => {
@@ -102,59 +103,79 @@ export default function SelectCardPage() {
 
                         const isSelected = selectedCard === index;
                         const isOther = selectedCard !== null && selectedCard !== index;
+                        const isHovered = hoveredCard === index && selectedCard === null && !isShuffling;
 
                         return (
                             <motion.div
                                 key={index}
                                 onClick={() => handleSelectCard(index)}
+                                onHoverStart={() => {
+                                    if (selectedCard === null && !isShuffling) setHoveredCard(index);
+                                }}
+                                onHoverEnd={() => setHoveredCard(null)}
 
                                 initial={{ x, y, rotate: deg, scale: 1, opacity: 1 }}
 
                                 animate={
                                     isShuffling
-                                        ? { x: 0, y: -50, rotate: 0, scale: 0.9, opacity: 1 }
+                                        ? { x: 0, y: -30, rotate: 0, scale: 0.92, opacity: 1 }
                                         : isSelected
-                                            ? { x: 0, y: -100, rotate: 0, scale: 1.4, opacity: 1, zIndex: 500 }
+                                            ? { x: 0, y: -80, rotate: 0, scale: 1.35, opacity: 1, zIndex: 500 }
                                             : isOther
-                                                ? { x, y, rotate: deg, scale: 1, opacity: 0 }
+                                                ? { x, y, rotate: deg, scale: 0.95, opacity: 0, filter: "blur(4px)" }
                                                 : { x, y, rotate: deg, scale: 1, opacity: 1 }
                                 }
 
-                                whileHover={selectedCard === null && !isShuffling ? {
-                                    y: y - 30,
-                                    scale: 1.08,
-                                    zIndex: 200,
-                                    filter: "brightness(1.15)",
-                                } : {}}
-
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 120,
-                                    damping: 20,
-                                    mass: 0.8,
-                                }}
+                                transition={
+                                    isShuffling
+                                        ? { duration: 0.35, ease: [0.4, 0, 0.2, 1] }
+                                        : isSelected
+                                            ? { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }
+                                            : isOther
+                                                ? { duration: 0.4, ease: [0.4, 0, 1, 1] }
+                                                : { duration: 0.25, ease: [0.4, 0, 0.2, 1] }
+                                }
 
                                 className="absolute bottom-[-80px] left-1/2 -translate-x-1/2 cursor-pointer"
                                 style={{ transformOrigin: "bottom center" }}
                             >
-                                {isSelected && (
+                                {/* Hover glow outline */}
+                                {isHovered && (
                                     <motion.div
-                                        className="absolute inset-0 rounded-xl"
+                                        className="absolute inset-0 rounded-xl pointer-events-none"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.15 }}
                                         style={{
-                                            boxShadow: "0 0 40px rgba(168,85,247,0.5), 0 0 80px rgba(168,85,247,0.2)",
+                                            outline: "2.5px solid rgba(216, 180, 254, 0.95)",
+                                            outlineOffset: "3px",
+                                            boxShadow: "0 0 24px rgba(168,85,247,0.65), 0 0 8px rgba(216,180,254,0.5), inset 0 0 12px rgba(168,85,247,0.15)",
                                         }}
                                     />
                                 )}
+
+                                {/* Selected glow */}
+                                {isSelected && (
+                                    <motion.div
+                                        className="absolute inset-0 rounded-xl pointer-events-none"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                        style={{
+                                            boxShadow: "0 0 30px rgba(168,85,247,0.55), 0 0 60px rgba(168,85,247,0.2)",
+                                        }}
+                                    />
+                                )}
+
                                 <img
                                     src="/card/back.jpg"
                                     alt="card"
                                     className="w-32 h-48 rounded-xl"
                                     style={{
                                         boxShadow: `
-${index < total / 2 ? "-8px 6px 12px rgba(0,0,0,0.35)" : "8px 6px 12px rgba(0,0,0,0.35)"},
-0 25px 40px rgba(0,0,0,0.4)
+${index < total / 2 ? "-6px 5px 10px rgba(0,0,0,0.3)" : "6px 5px 10px rgba(0,0,0,0.3)"},
+0 20px 35px rgba(0,0,0,0.35)
 `
                                     }}
                                 />

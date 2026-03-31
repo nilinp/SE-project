@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
-import { ArrowBigLeft } from "lucide-react";
+import { ArrowBigLeft, QrCode, CreditCard } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { usePopupStore } from "@/lib/popupstore";
+import PopupAlert from "@/app/components/PopupAlert";
 
 export default function PaymentPage() {
   const router = useRouter();
+  const { isOpen, title, message, type, showPopup, closePopup } = usePopupStore();
   const cart = useCartStore((state: CartStore) => state.cart);
   const removeItems = useCartStore((state: CartStore) => state.removeItems);
 
@@ -32,9 +35,9 @@ export default function PaymentPage() {
   };
 
   const handleConfirm = async () => {
-    if (!method) { alert("กรุณาเลือกวิธีชำระเงิน"); return; }
+    if (!method) { showPopup("เลือกวิธีชำระเงิน", "กรุณาเลือกวิธีชำระเงิน", "error"); return; }
     if (method === "credit" && (!card.number || !card.name || !card.expiry || !card.cvv)) {
-      alert("กรุณากรอกข้อมูลบัตรให้ครบถ้วน"); return;
+      showPopup("ข้อมูลบัตรไม่ครบ", "กรุณากรอกข้อมูลบัตรให้ครบถ้วน", "error"); return;
     }
 
     setLoading(true);
@@ -58,10 +61,9 @@ export default function PaymentPage() {
       localStorage.removeItem("purchased_item_ids");
       localStorage.removeItem("checkout_items");
 
-      alert("ชำระเงินสำเร็จ! 🎉");
-      router.push("/");
+      showPopup("ชำระเงินสำเร็จ", "ชำระเงินเรียบร้อยแล้ว! 🎉 ขอบคุณที่ใช้บริการ", "success", () => router.push("/"));
     } catch (err) {
-      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      showPopup("เกิดข้อผิดพลาด", "ไม่สามารถชำระเงินได้ กรุณาลองใหม่", "error");
       console.error(err);
     } finally {
       setLoading(false);
@@ -69,6 +71,7 @@ export default function PaymentPage() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-[#1a1a2e] text-white py-16 px-8 lg:ml-24">
       <div className="max-w-4xl mx-auto space-y-10">
 
@@ -79,7 +82,7 @@ export default function PaymentPage() {
           >
             <ArrowBigLeft size={28} />
           </button>
-          <h1 className="text-5xl font-black mb-3 tracking-tighter">Payment</h1>
+          <h1 className="text-5xl font-black mb-3 tracking-tighter">ชำระเงิน</h1>
           <p className="text-white/40 text-sm tracking-wide uppercase">เลือกวิธีชำระเงิน</p>
         </header>
 
@@ -101,18 +104,29 @@ export default function PaymentPage() {
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setMethod("qr")}
-              className={`p-6 rounded-2xl border-2 transition-all text-left ${method === "qr" ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/[0.02] hover:border-white/30"}`}
+              className={`
+                p-6 
+                rounded-2xl border-2 
+                transition-all 
+                cursor-pointer
+                text-left
+                ${method === "qr" ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/[0.02] hover:border-white/30"}`}
             >
-              <p className="text-3xl mb-2">📱</p>
-              <p className="font-bold text-lg">QR Code</p>
-              <p className="text-white/40 text-sm mt-1">โอนผ่าน Mobile Banking</p>
+              <p className="font-bold text-lg"> <QrCode size={40}/> QR Code</p>
+              <p className="text-white/40 text-sm mt-1">ชำระผ่าน Mobile Banking</p>
             </button>
             <button
               onClick={() => setMethod("credit")}
-              className={`p-6 rounded-2xl border-2 transition-all text-left ${method === "credit" ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/[0.02] hover:border-white/30"}`}
+              className={`
+                p-6 
+                rounded-2xl 
+                border-2 
+                transition-all 
+                text-left 
+                cursor-pointer
+                ${method === "credit" ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/[0.02] hover:border-white/30"}`}
             >
-              <p className="text-3xl mb-2">💳</p>
-              <p className="font-bold text-lg">บัตรเครดิต / เดบิต</p>
+              <p className="font-bold text-lg"><CreditCard size={40}/> บัตรเครดิต / เดบิต</p>
               <p className="text-white/40 text-sm mt-1">Visa, Mastercard</p>
             </button>
           </div>
@@ -126,7 +140,7 @@ export default function PaymentPage() {
               <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=payment-${total}`} alt="QR Code" className="w-48 h-48" />
             </div>
             <p className="text-indigo-400 font-black text-3xl">฿{total.toLocaleString()}</p>
-            <p className="text-white/40 text-sm">หลังโอนแล้วกดยืนยันด้านล่าง</p>
+            <p className="text-white/40 text-sm">หลังชำระแล้วกดยืนยันด้านล่าง</p>
           </div>
         )}
 
@@ -165,7 +179,19 @@ export default function PaymentPage() {
             <button
               onClick={handleConfirm}
               disabled={loading}
-              className="bg-transparent border-2 border-white hover:bg-white/10 text-white py-4 rounded-2xl font-black text-2xl transition-all active:scale-[0.98] disabled:opacity-50"
+              className="
+              bg-transparent 
+              border-2 border-white 
+              hover:bg-white/10 
+              text-white 
+              py-4 
+              rounded-2xl 
+              font-black 
+              text-2xl 
+              transition-all 
+              active:scale-[0.98] 
+              disabled:opacity-50
+              cursor-pointer"
               style={{ paddingLeft: '6rem', paddingRight: '6rem' }}
             >
               {loading ? "กำลังดำเนินการ..." : "ยืนยันการชำระเงิน"}
@@ -174,5 +200,14 @@ export default function PaymentPage() {
         )}
       </div>
     </div>
+
+      <PopupAlert
+        isOpen={isOpen}
+        title={title}
+        message={message}
+        type={type}
+        onClose={closePopup}
+      />
+    </>
   );
 }

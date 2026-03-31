@@ -5,8 +5,8 @@ import { supabase } from "@/lib/supabase";
 import tarot from "../../data/tarot.json";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/sidebar";
-import { Heart, DollarSign, BookOpen } from "lucide-react";
-
+import { Heart, DollarSign, BookOpen, ArrowBigLeft, ShoppingBag, Sparkles, Package } from "lucide-react";
+import Image from "next/image";
 
 type View = {
     id: string;
@@ -15,12 +15,34 @@ type View = {
     viewed_at: string;
 };
 
+type OrderItem = {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    quantity: number;
+};
+
+type Order = {
+    id: string;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    address: string;
+    items: OrderItem[];
+    total: number;
+    status: string;
+    payment_method: string | null;
+    created_at: string;
+};
+
 export default function HistoryPage() {
     const [views, setViews] = useState<View[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [tab, setTab] = useState<"horoscope" | "orders">("horoscope");
     const router = useRouter();
 
-    // FIX: map ใช้ string key เท่านั้น
     const cardMap = useMemo(() => {
         const map: Record<string, any> = {};
         (tarot.cards as any[]).forEach((c) => {
@@ -29,7 +51,11 @@ export default function HistoryPage() {
         return map;
     }, []);
 
-    // fetch history
+    const getDeviceId = () => {
+        return localStorage.getItem("device_id") || "";
+    };
+
+    // fetch horoscope history
     const fetchHistory = async () => {
         try {
             const {
@@ -53,18 +79,41 @@ export default function HistoryPage() {
                 return;
             }
 
-            console.log("DATA FROM DB:", data); // 🔥 debug
-
             setViews(data || []);
         } catch (err) {
             console.error(err);
-        } finally {
-            setLoading(false);
+        }
+    };
+
+    // fetch order history
+    const fetchOrders = async () => {
+        try {
+            const deviceId = getDeviceId();
+            if (!deviceId) {
+                setOrders([]);
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from("orders")
+                .select("*")
+                .eq("device_id", deviceId)
+                .order("created_at", { ascending: false })
+                .limit(30);
+
+            if (error) {
+                console.error("Fetch orders error:", error);
+                return;
+            }
+
+            setOrders(data || []);
+        } catch (err) {
+            console.error(err);
         }
     };
 
     useEffect(() => {
-        fetchHistory();
+        Promise.all([fetchHistory(), fetchOrders()]).then(() => setLoading(false));
     }, []);
 
     // stats
@@ -74,6 +123,13 @@ export default function HistoryPage() {
             return acc;
         }, {});
     }, [views]);
+
+    const orderStats = useMemo(() => {
+        const totalSpent = orders.filter(o => o.status === "paid").reduce((sum, o) => sum + (o.total || 0), 0);
+        const totalOrders = orders.length;
+        const paidOrders = orders.filter(o => o.status === "paid").length;
+        return { totalSpent, totalOrders, paidOrders };
+    }, [orders]);
 
     if (loading) {
         return (
@@ -88,114 +144,242 @@ export default function HistoryPage() {
             <Sidebar />
 
             <div className="flex-1 md:ml-20 p-10 flex gap-8">
+
+                {/* Back Button */}
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-1 text-[#ffecd9] hover:opacity-70 transition cursor-pointer self-start mt-1"
+                >
+                    <ArrowBigLeft size={28} />
+                </button>
+
                 {/* LEFT */}
                 <div className="flex-1 bg-[#4A445F] rounded-2xl p-6">
-                    <h1 className="text-2xl font-bold mb-6">History</h1>
+                    {/* Tab Switcher */}
+                    <div className="flex items-center gap-4 mb-6">
+                        <button
+                            onClick={() => setTab("horoscope")}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
+                                tab === "horoscope"
+                                    ? "bg-purple-500 text-white shadow-lg"
+                                    : "bg-white/10 text-white/60 hover:bg-white/20"
+                            }`}
+                        >
+                            <Sparkles size={16} />
+                            ดูดวง
+                        </button>
+                        <button
+                            onClick={() => setTab("orders")}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
+                                tab === "orders"
+                                    ? "bg-indigo-500 text-white shadow-lg"
+                                    : "bg-white/10 text-white/60 hover:bg-white/20"
+                            }`}
+                        >
+                            <ShoppingBag size={16} />
+                            สั่งซื้อ
+                        </button>
+                    </div>
 
-                    {views.length === 0 && (
-                        <p className="text-gray-400">
-                            ยังไม่มีประวัติการดูดวง
-                        </p>
+                    {/* Horoscope Tab */}
+                    {tab === "horoscope" && (
+                        <>
+                            {views.length === 0 && (
+                                <p className="text-gray-400">
+                                    ยังไม่มีประวัติการดูดวง
+                                </p>
+                            )}
+
+                            <div className="space-y-6">
+                                {views.map((view) => {
+                                    const card = cardMap[String(view.card_id).padStart(2, "0")];
+                                    if (!card) return null;
+
+                                    return (
+                                        <div
+                                            key={view.id}
+                                            className="flex gap-4 items-center border-b border-white/10 pb-4"
+                                        >
+                                            <img
+                                                src={card.image}
+                                                className="w-20 h-32 object-cover rounded-md"
+                                            />
+                                            <div className="flex-1">
+                                                <p className="text-sm text-gray-300 capitalize">
+                                                    {view.category}
+                                                </p>
+                                                <h2 className="text-lg font-semibold">
+                                                    {card.name}
+                                                </h2>
+                                                <p className="text-xs text-gray-400">
+                                                    {new Date(view.viewed_at).toLocaleDateString("th-TH", {
+                                                        year: "numeric",
+                                                        month: "long",
+                                                        day: "numeric",
+                                                    })}
+                                                </p>
+                                                <div className="flex gap-2 mt-2">
+                                                    <button
+                                                        onClick={() =>
+                                                            router.push(
+                                                                `/horoscope/result/${card.card_id}?category=${view.category}`
+                                                            )
+                                                        }
+                                                        className="bg-purple-300 text-[var(--bg)] px-3 py-1 rounded-md text-sm hover:opacity-80 cursor-pointer"
+                                                    >
+                                                        Predict
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </>
                     )}
 
-                    <div className="space-y-6">
-                        {views.map((view) => {
-                            // FIX: zero-pad card_id to match tarot.json keys (e.g. 0 -> "00")
-                            const card = cardMap[String(view.card_id).padStart(2, "0")];
+                    {/* Orders Tab */}
+                    {tab === "orders" && (
+                        <>
+                            {orders.length === 0 && (
+                                <p className="text-gray-400">
+                                    ยังไม่มีประวัติการสั่งซื้อ
+                                </p>
+                            )}
 
-                            // 🔥 debug ถ้าไม่ขึ้น
-                            if (!card) {
-                                console.log("NOT FOUND CARD:", view.card_id);
-                                return null;
-                            }
-
-                            return (
-                                <div
-                                    key={view.id}
-                                    className="flex gap-4 items-center border-b border-white/10 pb-4"
-                                >
-                                    {/* ไพ่ */}
-                                    <img
-                                        src={card.image}
-                                        className="w-20 h-32 object-cover rounded-md"
-                                    />
-
-                                    {/* info */}
-                                    <div className="flex-1">
-                                        <p className="text-sm text-gray-300 capitalize">
-                                            {view.category}
-                                        </p>
-
-                                        <h2 className="text-lg font-semibold">
-                                            {card.name}
-                                        </h2>
-
-                                        <p className="text-xs text-gray-400">
-                                            {new Date(
-                                                view.viewed_at
-                                            ).toLocaleDateString()}
-                                        </p>
-
-                                        {/* buttons */}
-                                        <div className="flex gap-2 mt-2">
-                                            <button
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/horoscope/result/${card.card_id}?category=${view.category}`
-                                                    )
-                                                }
-                                                className="
-                                                bg-purple-300 
-                                                text-(--bg)
-                                                px-3 
-                                                py-1 
-                                                rounded-md 
-                                                text-sm 
-                                                hover:opacity-80
-                                                cursor-pointer
-                                                "
+                            <div className="space-y-4">
+                                {orders.map((order) => (
+                                    <div
+                                        key={order.id}
+                                        className="bg-white/5 border border-white/10 rounded-xl p-5"
+                                    >
+                                        {/* Header */}
+                                        <div className="flex justify-between items-center mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <Package size={18} className="text-indigo-400" />
+                                                <span className="text-xs text-gray-400">
+                                                    {new Date(order.created_at).toLocaleDateString("th-TH", {
+                                                        year: "numeric",
+                                                        month: "long",
+                                                        day: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    })}
+                                                </span>
+                                            </div>
+                                            <span
+                                                className={`text-xs font-bold px-3 py-1 rounded-full ${
+                                                    order.status === "paid"
+                                                        ? "bg-green-500/20 text-green-400"
+                                                        : "bg-yellow-500/20 text-yellow-400"
+                                                }`}
                                             >
-                                                Predict
-                                            </button>
+                                                {order.status === "paid" ? "ชำระแล้ว" : "รอชำระ"}
+                                            </span>
+                                        </div>
+
+                                        {/* Items */}
+                                        <div className="space-y-3">
+                                            {(order.items || []).map((item: OrderItem, idx: number) => (
+                                                <div key={idx} className="flex gap-3 items-center">
+                                                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-white/10 flex-shrink-0">
+                                                        <Image
+                                                            src={item.image || "/placeholder.png"}
+                                                            alt={item.name}
+                                                            width={56}
+                                                            height={56}
+                                                            className="object-cover w-full h-full"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium truncate">{item.name}</p>
+                                                        <p className="text-xs text-gray-400">
+                                                            x{item.quantity} · ฿{item.price.toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                    <p className="text-sm font-bold text-indigo-300">
+                                                        ฿{(item.price * item.quantity).toLocaleString()}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Footer */}
+                                        <div className="flex justify-between items-center mt-4 pt-3 border-t border-white/10">
+                                            <span className="text-xs text-gray-400">
+                                                {order.payment_method === "qr"
+                                                    ? "📱 QR Code"
+                                                    : order.payment_method === "credit"
+                                                    ? "💳 บัตรเครดิต"
+                                                    : "—"}
+                                            </span>
+                                            <span className="text-lg font-bold text-white">
+                                                รวม ฿{(order.total || 0).toLocaleString()}
+                                            </span>
                                         </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
 
-                {/* RIGHT */}
-                <div className="
-                w-80 
-                h-80
-                bg-gradient-to-b 
-                from-[#3B3560] 
-                to-[#1F1A33] 
-                rounded-2xl 
-                p-6 
-                shadow-xl
-                ">
+                {/* RIGHT - Stats */}
+                <div className="w-80 space-y-6">
+                    {/* Horoscope Stats */}
+                    <div className="bg-gradient-to-b from-[#3B3560] to-[#1F1A33] rounded-2xl p-6 shadow-xl">
+                        <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">สถิติดูดวง</h3>
+                        <div className="flex flex-col gap-4">
+                            <StatCard
+                                icon={<Heart size={20} style={{ color: "#f472b6" }} />}
+                                label="ความรัก"
+                                value={stats.love}
+                                iconBg="rgba(236,72,153,0.2)"
+                            />
+                            <StatCard
+                                icon={<DollarSign size={20} style={{ color: "#facc15" }} />}
+                                label="การเงิน"
+                                value={stats.money}
+                                iconBg="rgba(250,204,21,0.2)"
+                            />
+                            <StatCard
+                                icon={<BookOpen size={20} style={{ color: "#4ade80" }} />}
+                                label="การเรียน"
+                                value={stats.study}
+                                iconBg="rgba(74,222,128,0.15)"
+                            />
+                        </div>
+                    </div>
 
-                    <div className="flex flex-col gap-4 mt-4">
-                        <StatCard
-                            icon={<Heart size={20} style={{ color: "#f472b6" }} />}
-                            label="ความรัก"
-                            value={stats.love}
-                            iconBg="rgba(236,72,153,0.2)"
-                        />
-                        <StatCard
-                            icon={<DollarSign size={20} style={{ color: "#facc15" }} />}
-                            label="การเงิน"
-                            value={stats.money}
-                            iconBg="rgba(250,204,21,0.2)"
-                        />
-                        <StatCard
-                            icon={<BookOpen size={20} style={{ color: "#4ade80" }} />}
-                            label="การเรียน"
-                            value={stats.study}
-                            iconBg="rgba(74,222,128,0.15)"
-                        />
+                    {/* Order Stats */}
+                    <div className="bg-gradient-to-b from-[#2D3561] to-[#1A1F33] rounded-2xl p-6 shadow-xl">
+                        <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">สถิติสั่งซื้อ</h3>
+                        <div className="flex flex-col gap-4">
+                            <StatCard
+                                icon={<ShoppingBag size={20} style={{ color: "#818cf8" }} />}
+                                label="คำสั่งซื้อทั้งหมด"
+                                value={orderStats.totalOrders}
+                                iconBg="rgba(129,140,248,0.2)"
+                            />
+                            <StatCard
+                                icon={<Package size={20} style={{ color: "#34d399" }} />}
+                                label="ชำระแล้ว"
+                                value={orderStats.paidOrders}
+                                iconBg="rgba(52,211,153,0.2)"
+                            />
+                            <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                                <div
+                                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                    style={{ backgroundColor: "rgba(250,204,21,0.2)" }}
+                                >
+                                    <DollarSign size={20} style={{ color: "#facc15" }} />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-xs text-gray-400">ยอดรวม</p>
+                                    <p className="text-lg font-bold text-white">฿{orderStats.totalSpent.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,7 +387,6 @@ export default function HistoryPage() {
     );
 }
 
-// ✅ reusable stat card
 function StatCard({ icon, label, value, iconBg }: {
     icon: React.ReactNode;
     label: string;

@@ -144,76 +144,83 @@ export default function Shopping() {
           <span className="text-xl font-semibold text-(--sec)">กำลังโหลด...</span>
         </div>
       ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
         {products
           .filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
           .map((item: ProductItem) => (
           <div
             key={item.id}
             className="
-              w-[370px]
-              h-[480px]
-              p-6
-              bg-[white]
-              rounded-[30px]
-              shadow-[0_0_30px_rgba(0,0,0,0.05)]
-              flex flex-col">
+              w-5/4.5
+              h-[400px]
+              bg-white
+              rounded-2xl
+              shadow-[0_2px_20px_rgba(0,0,0,0.06)]
+              overflow-hidden
+              flex flex-col
+              transition-shadow
+              hover:shadow-[0_4px_30px_rgba(0,0,0,0.1)]
+            ">
           
-            <div className="relative w-full h-[300px] bg-white rounded-2xl overflow-hidden">
-              <Image
-                src={item.img || "/placeholder.png"}
-                alt={item.name}
-                fill
-                className="object-contain p-6"/>
-            </div>
+            {/* Product Image */}
+            <Link href={`/shopping/${item.id}`}>
+              <div className="relative w-full aspect-[4/3] bg-gray-50">
+                <Image
+                  src={item.img || "/placeholder.png"}
+                  alt={item.name}
+                  fill
+                  className="object-cover"/>
+              </div>
+            </Link>
 
             {/* Content */}
-            <div className="mt-5 text-(--sec) flex flex-col flex-grow">
+            <div className="px-5 pt-4 pb-5 flex flex-col flex-grow text-[var(--sec)]">
               <Link href={`/shopping/${item.id}`}>   
-                <h3 className="text-2xl font-bold leading-tight min-h-[56px] hover:underline">
+                <h3 className="text-lg font-bold leading-snug hover:underline line-clamp-2">
                   {item.name}
                 </h3>
               </Link>
 
-              {/* รายละเอียด */}
-              <p className="text-sm mt-3 text-gray-700 min-h-[60px]">
+              <p className="text-sm text-gray-400 mt-1 line-clamp-1">
                 {item.details}
               </p>
 
-              {/* ราคา */}
-              <div className="flex justify-between items-end mt-auto">
-                <p className="text-2xl font-bold">
-                  {item.price} ฿
-                </p>
-
-                <button 
-                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    e.preventDefault();
-                    addToCart({
-                      id: item.id,
-                      name: item.name,
-                      price: item.price,
-                      image: item.img || "/placeholder.png",
-                      quantity: 1,
-                    });
-                  }}
-                  className="
-                  w-[45px]
-                  h-[45px]
-                  rounded-full
-                  flex
-                  justify-center
-                  items-center
-                  cursor-pointer
-                  transition-colors
-                  bg-(--bg) text-(--main)
-                  ">
-                    <ShoppingCart className="w-[20px] h-[20px]"/>
-                  {/* ปุ่ม + เล็ก */}
-                  <span className="text-sm">+</span>
-                </button>
-
+              {/* Price */}
+              <div className="flex items-baseline gap-2 mt-4">
+                <span className="text-2xl font-bold">{item.price}</span>
+                <span className="text-sm text-gray-400">บาท</span>
               </div>
+
+              {/* Add to Cart Button */}
+              <button 
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.preventDefault();
+                  addToCart({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    image: item.img || "/placeholder.png",
+                    quantity: 1,
+                  });
+                }}
+                className="
+                  w-full
+                  flex items-center justify-center gap-2
+                  mt-4
+                  py-3
+                  rounded-full
+                  font-bold
+                  text-sm
+                  cursor-pointer
+                  transition-all duration-200
+                  hover:opacity-90
+                  hover:shadow-lg
+                  active:scale-[0.98]
+                  bg-[var(--bg)] text-[var(--main)]
+                ">
+                  <ShoppingCart size={18} />
+                  เพิ่มลงตะกร้า
+              </button>
             </div>
           </div>
         ))}

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import tarot from "../../../../data/tarot.json";
 import { supabase } from "@/lib/supabase";
-import { History } from "lucide-react";
+import { History, ArrowBigLeft } from "lucide-react";
 
 
 
@@ -95,6 +95,14 @@ export default function ResultPage() {
     return (
 
         <div className="min-h-screen bg-[#2F2847] text-white p-12">
+
+            {/* Back Button */}
+            <button
+                onClick={() => router.back()}
+                className="flex items-center gap-1 text-[#ffecd9] hover:opacity-70 transition cursor-pointer mb-4"
+            >
+                <ArrowBigLeft size={28} />
+            </button>
 
             <div className="max-w-6xl mx-auto flex gap-16 items-start">
 
@@ -326,11 +334,14 @@ export default function ResultPage() {
             </div>
 
             {/* Next Button */}
-            <div className="max-w-6xl mx-auto flex justify-end mt-10">
+            <div className="max-w-6xl mx-auto flex justify-end mt-2">
 
                 <button
                     onClick={() => router.push("/history")}
                     className="
+                            flex
+                            items-center
+                            gap-2
                             px-8
                             py-3
                             rounded-xl
@@ -352,7 +363,7 @@ export default function ResultPage() {
                             duration-300
                             "
                 >
-                    <History/> ดูประวัติทั้งหมด
+                    <History size={16} /> ดูประวัติทั้งหมด
                 </button>
 
             </div>

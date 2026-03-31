@@ -92,13 +92,7 @@ export default function Register() {
             rounded-tr-4xl
             rounded-br-4xl
             ">
-            <div className="
-            bg-white
-<<<<<<< HEAD
-            p-10
-=======
-            pt-4 pb-2 px-10
->>>>>>> backend
+            <div className="            pt-4 pb-2 px-10
             flex flex-col items-center
             ">
               <Image
@@ -111,14 +105,7 @@ export default function Register() {
               <h2 className="text-5xl font-bold text-(--bg) text-center">
                     สมัครสมาชิก
                 </h2>
-<<<<<<< HEAD
                 <p className="text-(--bg) text-center mt-3">
-=======
-                <p className="
-                text-(--bg) 
-                text-center 
-                mt-3">
->>>>>>> backend
                     สร้างบัญชีของคุณวันนี้ เพื่อเริ่มต้นเส้นทางแห่งโชคชะตาไปกับเรา
                 </p>
             </div>
@@ -180,11 +167,7 @@ export default function Register() {
                 outline-none text-(--bg)
                 disabled:opacity-50"
             />
-<<<<<<< HEAD
-            <p className="text-xs text-red-400 w-1/2 mb-5 ml-1">*ต้องมีอย่างน้อย 8 ตัว</p>
-=======
             <p className="text-xs text-red-400 w-1/2 mb-3 ml-1">*ต้องมีอย่างน้อย 8 ตัว</p>
->>>>>>> backend
 
             <button 
                 onClick={handleRegister} 

@@ -5,21 +5,10 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import tarot from "../../../../data/tarot.json";
 import { supabase } from "@/lib/supabase";
 import { History, ArrowBigLeft } from "lucide-react";
-
+import { getDeviceId } from "@/lib/deviceId";
 
 
 export default function ResultPage() {
-
-    const getDeviceId = () => {
-        let id = localStorage.getItem("device_id");
-
-        if (!id) {
-            id = crypto.randomUUID();
-            localStorage.setItem("device_id", id);
-        }
-
-        return id;
-    };
     
     const { id } = useParams();
     const searchParams = useSearchParams();

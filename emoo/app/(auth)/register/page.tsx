@@ -5,9 +5,12 @@ import Image from "next/image";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { usePopupStore } from "@/lib/popupstore";
+import PopupAlert from "@/app/components/PopupAlert";
 
 export default function Register() {
   const router = useRouter();
+  const { isOpen, title, message, type, showPopup, closePopup } = usePopupStore();
   
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -65,11 +68,11 @@ export default function Register() {
         .eq("id", data.user.id);
     }
 
-    alert("สมัครสมาชิกสำเร็จ");
-    router.push("/login");
+    showPopup("สมัครสำเร็จ", "สมัครสมาชิกสำเร็จ ยินดีต้อนรับ! กรุณาเข้าสู่ระบบ", "success", () => router.push("/login"));
   };
 
   return (
+    <>
     <div className="
     min-h-screen 
     w-screen 
@@ -212,5 +215,14 @@ export default function Register() {
 
         </div>
     </div>
+
+      <PopupAlert
+        isOpen={isOpen}
+        title={title}
+        message={message}
+        type={type}
+        onClose={closePopup}
+      />
+    </>
   );
 }

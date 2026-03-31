@@ -5,8 +5,12 @@ import { supabase } from "@/lib/supabase";
 import tarot from "../../data/tarot.json";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/sidebar";
-import { Heart, DollarSign, BookOpen, ArrowBigLeft, ShoppingBag, Sparkles, Package, QrCode, CreditCard } from "lucide-react";
+import { Heart, DollarSign, BookOpen, ArrowBigLeft, ShoppingBag, Sparkles, Package, QrCode, CreditCard, X } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePopupStore } from "@/lib/popupstore";
+import PopupAlert from "@/app/components/PopupAlert";
+import { getDeviceId } from "@/lib/deviceId";
 
 type View = {
     id: string;
@@ -43,6 +47,20 @@ export default function HistoryPage() {
     const [tab, setTab] = useState<"horoscope" | "orders">("horoscope");
     const router = useRouter();
 
+    // Payment Popup state
+    const [payingOrder, setPayingOrder] = useState<Order | null>(null);
+    const [method, setMethod] = useState<"qr" | "credit" | null>(null);
+    const [card, setCard] = useState({ number: "", name: "", expiry: "", cvv: "" });
+    const [paying, setPaying] = useState(false);
+
+    const { isOpen, title, message, type, showPopup, closePopup } = usePopupStore();
+
+    const categoryLabel: Record<string, string> = {
+        love: "ความรัก",
+        money: "การเงิน",
+        study: "การเรียน",
+    };
+
     const cardMap = useMemo(() => {
         const map: Record<string, any> = {};
         (tarot.cards as any[]).forEach((c) => {
@@ -51,11 +69,6 @@ export default function HistoryPage() {
         return map;
     }, []);
 
-    const getDeviceId = () => {
-        return localStorage.getItem("device_id") || "";
-    };
-
-    // fetch horoscope history
     const fetchHistory = async () => {
         try {
             const {
@@ -131,6 +144,61 @@ export default function HistoryPage() {
         return { totalSpent, totalOrders, paidOrders };
     }, [orders]);
 
+    // Open payment popup
+    const openPayment = (order: Order) => {
+        setPayingOrder(order);
+        setMethod(null);
+        setCard({ number: "", name: "", expiry: "", cvv: "" });
+    };
+
+    // Close payment popup
+    const closePayment = () => {
+        if (paying) return;
+        setPayingOrder(null);
+        setMethod(null);
+        setCard({ number: "", name: "", expiry: "", cvv: "" });
+    };
+
+    // Confirm payment
+    const handlePayConfirm = async () => {
+        if (!payingOrder) return;
+        if (!method) {
+            showPopup("เลือกวิธีชำระเงิน", "กรุณาเลือกวิธีชำระเงิน", "error");
+            return;
+        }
+        if (method === "credit" && (!card.number || !card.name || !card.expiry || !card.cvv)) {
+            showPopup("ข้อมูลบัตรไม่ครบ", "กรุณากรอกข้อมูลบัตรให้ครบถ้วนทุกช่อง", "error");
+            return;
+        }
+
+        setPaying(true);
+        try {
+            const { error } = await supabase
+                .from("orders")
+                .update({ status: "paid", payment_method: method })
+                .eq("id", payingOrder.id);
+
+            if (error) throw error;
+
+            // Update local state
+            setOrders(prev =>
+                prev.map(o =>
+                    o.id === payingOrder.id
+                        ? { ...o, status: "paid", payment_method: method }
+                        : o
+                )
+            );
+
+            closePayment();
+            showPopup("ชำระเงินสำเร็จ", "ชำระเงินเรียบร้อยแล้ว! 🎉 ขอบคุณที่ใช้บริการ", "success");
+        } catch (err) {
+            showPopup("เกิดข้อผิดพลาด", "ไม่สามารถชำระเงินได้ กรุณาลองใหม่", "error");
+            console.error(err);
+        } finally {
+            setPaying(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-[#2F2847] flex items-center justify-center text-white">
@@ -140,6 +208,7 @@ export default function HistoryPage() {
     }
 
     return (
+        <>
         <div className="min-h-screen bg-[#2F2847] text-white flex">
             <Sidebar />
 
@@ -205,8 +274,8 @@ export default function HistoryPage() {
                                                 className="w-20 h-32 object-cover rounded-md"
                                             />
                                             <div className="flex-1">
-                                                <p className="text-sm text-gray-300 capitalize">
-                                                    {view.category}
+                                                <p className="text-sm text-gray-300">
+                                                    {categoryLabel[view.category] || view.category}
                                                 </p>
                                                 <h2 className="text-lg font-semibold">
                                                     {card.name}
@@ -317,6 +386,16 @@ export default function HistoryPage() {
                                                         <CreditCard className="w-5 h-5" />
                                                         <span>บัตรเครดิต</span>
                                                     </>
+                                                    : order.status !== "paid"
+                                                    ? (
+                                                        <button
+                                                            onClick={() => openPayment(order)}
+                                                            className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all active:scale-95 cursor-pointer"
+                                                        >
+                                                            <CreditCard size={14} />
+                                                            ชำระเงิน
+                                                        </button>
+                                                    )
                                                     : "—"}
                                             </span>
                                             <span className="text-lg font-bold text-white">
@@ -390,6 +469,176 @@ export default function HistoryPage() {
                 </div>
             </div>
         </div>
+
+        {/* ===== Payment Popup ===== */}
+        <AnimatePresence>
+            {payingOrder && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    onClick={(e) => { if (e.target === e.currentTarget) closePayment(); }}
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="bg-[#1a1a2e] text-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
+                    >
+                        {/* Popup Header */}
+                        <div className="flex justify-between items-center px-8 pt-8 pb-4">
+                            <div>
+                                <h2 className="text-3xl font-black tracking-tighter">ชำระเงิน</h2>
+                                <p className="text-white/40 text-xs uppercase tracking-widest mt-1">เลือกวิธีชำระเงิน</p>
+                            </div>
+                            <button
+                                onClick={closePayment}
+                                disabled={paying}
+                                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition cursor-pointer disabled:opacity-50"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className="px-8 pb-8 space-y-5 max-h-[80vh] overflow-y-auto">
+                            {/* ยอดที่ต้องชำระ */}
+                            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5 flex justify-between items-center">
+                                <div>
+                                    <p className="text-white/40 text-xs uppercase tracking-widest font-bold">ยอดที่ต้องชำระ</p>
+                                    <p className="text-4xl font-black text-indigo-400 mt-1">฿{(payingOrder.total || 0).toLocaleString()}</p>
+                                </div>
+                                <div className="text-right text-white/30 text-xs">
+                                    <p>{(payingOrder.items || []).length} รายการ</p>
+                                    <p className="text-green-400 font-bold mt-1">ฟรีค่าจัดส่ง</p>
+                                </div>
+                            </div>
+
+                            {/* เลือกวิธีชำระ */}
+                            <div>
+                                <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">วิธีชำระเงิน</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => setMethod("qr")}
+                                        className={`p-5 rounded-2xl border-2 transition-all text-left cursor-pointer ${method === "qr" ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/[0.02] hover:border-white/30"}`}
+                                    >
+                                        <p className="font-bold text-sm"> <QrCode size={40}/> QR Code</p>
+                                        <p className="text-white/40 text-xs mt-0.5">ชำระผ่าน Mobile Banking</p>
+                                    </button>
+                                    <button
+                                        onClick={() => setMethod("credit")}
+                                        className={`p-5 rounded-2xl border-2 transition-all text-left cursor-pointer ${method === "credit" ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/[0.02] hover:border-white/30"}`}
+                                    >
+                                        <p className="font-bold text-sm"> <CreditCard size={40}/> บัตรเครดิต / เดบิต</p>
+                                        <p className="text-white/40 text-xs mt-0.5">Visa, Mastercard</p>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* QR Code */}
+                            {method === "qr" && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4"
+                                >
+                                    <p className="text-white/40 text-xs uppercase tracking-widest font-bold">สแกน QR เพื่อชำระเงิน</p>
+                                    <div className="bg-white p-3 rounded-xl">
+                                        <img
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=payment-${payingOrder.total}`}
+                                            alt="QR Code"
+                                            className="w-44 h-44"
+                                        />
+                                    </div>
+                                    <p className="text-indigo-400 font-black text-2xl">฿{(payingOrder.total || 0).toLocaleString()}</p>
+                                    <p className="text-white/40 text-xs">หลังโอนแล้วกดยืนยันด้านล่าง</p>
+                                </motion.div>
+                            )}
+
+                            {/* Credit Card Form */}
+                            {method === "credit" && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 space-y-4"
+                                >
+                                    <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest">ข้อมูลบัตร</p>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-white/30 uppercase ml-1">หมายเลขบัตร</label>
+                                        <input
+                                            name="number"
+                                            value={card.number}
+                                            onChange={(e) => setCard({ ...card, number: e.target.value })}
+                                            placeholder="0000 0000 0000 0000"
+                                            maxLength={19}
+                                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-white/30 uppercase ml-1">ชื่อบนบัตร</label>
+                                        <input
+                                            name="name"
+                                            value={card.name}
+                                            onChange={(e) => setCard({ ...card, name: e.target.value })}
+                                            placeholder="FIRSTNAME LASTNAME"
+                                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-white/30 uppercase ml-1">วันหมดอายุ</label>
+                                            <input
+                                                name="expiry"
+                                                value={card.expiry}
+                                                onChange={(e) => setCard({ ...card, expiry: e.target.value })}
+                                                placeholder="MM/YY"
+                                                maxLength={5}
+                                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-white/30 uppercase ml-1">CVV</label>
+                                            <input
+                                                name="cvv"
+                                                value={card.cvv}
+                                                onChange={(e) => setCard({ ...card, cvv: e.target.value })}
+                                                placeholder="000"
+                                                maxLength={3}
+                                                type="password"
+                                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"
+                                            />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Confirm Button */}
+                            {method && (
+                                <motion.button
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    onClick={handlePayConfirm}
+                                    disabled={paying}
+                                    className="w-full bg-transparent border-2 border-white hover:bg-white/10 text-white py-4 rounded-2xl font-black text-xl transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                                >
+                                    {paying ? "กำลังดำเนินการ..." : "ยืนยันการชำระเงิน"}
+                                </motion.button>
+                            )}
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
+        <PopupAlert
+            isOpen={isOpen}
+            title={title}
+            message={message}
+            type={type}
+            onClose={closePopup}
+        />
+        </>
     );
 }
 

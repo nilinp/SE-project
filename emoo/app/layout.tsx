@@ -3,6 +3,8 @@ import { K2D } from "next/font/google";
 import "./globals.css";
 import CartProvider from "./components/CartProvider";
 
+import GlobalPopupProvider from "./components/GlobalPopupProvider";
+
 const k2d = K2D({
   subsets: ["latin", "thai"],
   weight: ["100","200","300","400","500","600","700","800"],
@@ -21,7 +23,9 @@ export default function RootLayout({
     <html lang="th">
       <body className={k2d.className}>
         <CartProvider>
-          {children}
+          <GlobalPopupProvider>
+            {children}
+          </GlobalPopupProvider>
         </CartProvider>
       </body>
     </html>

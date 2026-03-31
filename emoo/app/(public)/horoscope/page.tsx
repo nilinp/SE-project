@@ -160,7 +160,7 @@ export default function Horoscope() {
                 {/* สี */}
                 <div className="flex flex-wrap justify-center gap-4">
                   {[
-                  ...todayColor.work.map(c => ({ color: c, type: "การงาน" })),
+                  ...todayColor.work.map(c => ({ color: c, type: "การงาน/การเรียน" })),
                   ...todayColor.lucky.map(c => ({ color: c, type: "โชคลาภ" })),
                   ...todayColor.money.map(c => ({ color: c, type: "การเงิน" })),
                   ...todayColor.love.map(c => ({ color: c, type: "ความรัก" })),

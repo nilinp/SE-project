@@ -114,7 +114,7 @@ export default function CartPage() {
                     className="w-5 h-5 accent-(--bg) cursor-pointer"
                   />
                   <Image
-                    src={item.image}
+                    src={item.image || (item as any).img || "/placeholder.png"}
                     alt={item.name}
                     width={250}
                     height={250}
@@ -210,7 +210,7 @@ export default function CartPage() {
                     .map((item: CartItem) => (
                       <div key={item.id} className="flex gap-3 justify-between items-start">
                         <Image
-                          src={item.image}
+                          src={item.image || (item as any).img || "/placeholder.png"}
                           alt={item.name}
                           width={50}
                           height={50}

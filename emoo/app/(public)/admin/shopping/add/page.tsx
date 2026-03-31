@@ -5,9 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { usePopupStore } from "@/lib/popupstore";
+import PopupAlert from "@/app/components/PopupAlert";
 
 export default function AddProduct() {
   const router = useRouter();
+  const { isOpen, title, message, type, showPopup, closePopup } = usePopupStore();
   const [name, setName]           = useState("");
   const [details, setDetails]     = useState("");
   const [price, setPrice]         = useState("");
@@ -26,7 +29,7 @@ export default function AddProduct() {
 
   const handleAdd = async () => {
     if (!name.trim() || !price) {
-      alert("กรุณากรอกชื่อและราคา");
+      showPopup("ข้อมูลไม่ครบ", "กรุณากรอกชื่อและราคา", "error");
       return;
     }
     
@@ -88,7 +91,7 @@ export default function AddProduct() {
       router.push("/admin/shopping");
       
     } catch (err) {
-      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      showPopup("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลสินค้าได้ กรุณาลองใหม่", "error");
       console.error(err);
     } finally {
       setLoading(false);
@@ -96,8 +99,8 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-10 ml-16">
-
+    <>
+      <div className="min-h-screen flex flex-col p-10 ml-16">
       <div className="flex gap-10 flex-1 mt-10">
 
         {/* LEFT: Main Image + Thumbnails */}
@@ -264,6 +267,15 @@ export default function AddProduct() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+
+      <PopupAlert
+        isOpen={isOpen}
+        title={title}
+        message={message}
+        type={type}
+        onClose={closePopup}
+      />
+    </>
   );
 }

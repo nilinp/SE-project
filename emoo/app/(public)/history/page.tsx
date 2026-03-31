@@ -102,17 +102,29 @@ export default function HistoryPage() {
     const fetchOrders = async () => {
         try {
             const deviceId = getDeviceId();
-            if (!deviceId) {
+            const { data: { session } } = await supabase.auth.getSession();
+            const userId = session?.user?.id;
+
+            if (!deviceId && !userId) {
                 setOrders([]);
                 return;
             }
 
-            const { data, error } = await supabase
+            let query = supabase
                 .from("orders")
                 .select("*")
-                .eq("device_id", deviceId)
                 .order("created_at", { ascending: false })
                 .limit(30);
+
+            if (userId && deviceId) {
+                query = query.or(`user_id.eq.${userId},device_id.eq.${deviceId}`);
+            } else if (userId) {
+                query = query.eq("user_id", userId);
+            } else {
+                query = query.eq("device_id", deviceId);
+            }
+
+            const { data, error } = await query;
 
             if (error) {
                 console.error("Fetch orders error:", error);

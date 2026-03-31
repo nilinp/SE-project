@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import tarot from "../../data/tarot.json";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/sidebar";
-import { Heart, DollarSign, BookOpen, ArrowBigLeft, ShoppingBag, Sparkles, Package } from "lucide-react";
+import { Heart, DollarSign, BookOpen, ArrowBigLeft, ShoppingBag, Sparkles, Package, QrCode, CreditCard } from "lucide-react";
 import Image from "next/image";
 
 type View = {
@@ -227,7 +227,7 @@ export default function HistoryPage() {
                                                         }
                                                         className="bg-purple-300 text-[var(--bg)] px-3 py-1 rounded-md text-sm hover:opacity-80 cursor-pointer"
                                                     >
-                                                        Predict
+                                                        ดูคำทำนาย
                                                     </button>
                                                 </div>
                                             </div>
@@ -306,11 +306,17 @@ export default function HistoryPage() {
 
                                         {/* Footer */}
                                         <div className="flex justify-between items-center mt-4 pt-3 border-t border-white/10">
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-gray-400 flex items-center gap-2">
                                                 {order.payment_method === "qr"
-                                                    ? "📱 QR Code"
+                                                    ? <>
+                                                        <QrCode className="w-5 h-5" /> 
+                                                        <span>QR Code</span>
+                                                    </>
                                                     : order.payment_method === "credit"
-                                                    ? "💳 บัตรเครดิต"
+                                                    ? <>
+                                                        <CreditCard className="w-5 h-5" />
+                                                        <span>บัตรเครดิต</span>
+                                                    </>
                                                     : "—"}
                                             </span>
                                             <span className="text-lg font-bold text-white">

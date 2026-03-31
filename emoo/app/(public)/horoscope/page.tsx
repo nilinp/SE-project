@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import TabSwitch from "@/app/components/tabswitch";
 import rawData from "@/app/data/luckycolor.json";
 import UserProfileCard from "@/app/components/UserProfileCard";
+import { Eye, X } from "lucide-react";
 
 type LuckyDay = {
   name: string;
@@ -168,7 +169,18 @@ export default function Horoscope() {
                 .map((item, index) => (
                   <div key={index} className="relative group">
                     <div
-                      className="w-12 h-12 rounded-full shadow-lg border border-white/30 hover:scale-110 transition duration-300"
+                      className="
+                      w-12 
+                      h-12 
+                      rounded-full 
+                      shadow-lg 
+                      border 
+                      border-white/30 
+                      hover:scale-110 
+                      transition 
+                      duration-300
+                      cursor-pointer
+                      "
                       style={{ backgroundColor: item.color }}
                     />
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-(--bg) text-(--main) text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
@@ -188,7 +200,16 @@ export default function Horoscope() {
                     {todayColor.unlucky.map((color, index) => (
                       <div
                         key={index}
-                        className="w-10 h-10 rounded-full border-2 border-red-400 shadow-md hover:scale-110 transition"
+                        className="
+                        w-10 
+                        h-10 
+                        rounded-full 
+                        border-2 
+                        border-red-400 
+                        shadow-md 
+                        hover:scale-110 
+                        transition
+                        cursor-pointer"
                         style={{ backgroundColor: color }}
                       />
                     ))}
@@ -209,9 +230,11 @@ export default function Horoscope() {
                   font-medium 
                   hover:opacity-70 
                   transition
-                  cursor-pointer"
+                  cursor-pointer
+                  flex items-center gap-2
+                  "
                 >
-                  View full →
+                  ดูทั้งหมด <Eye size={16} />
                 </button>
                 
               </div>
@@ -265,12 +288,12 @@ export default function Horoscope() {
                 {/* CLOSE BUTTON */}
                 <button
                   onClick={() => setOpen(false)}
-                  className="absolute top-6 right-6 text-white text-2xl" >
-                  ✕
+                  className="absolute top-6 right-6 text-white text-2xl cursor-pointer hover:text-red-400 transition" >
+                  <X size={36}/>
                 </button>
 
                 <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7]">
-                  Lucky Color
+                  ตารางสีมงคล
                 </h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -290,6 +313,13 @@ export default function Horoscope() {
                             .map(([category, colors]) => {
 
                             const isUnlucky = category === "unlucky";
+                            const categoryLabel: Record<string, string> = {
+                              work: "การเรียน",
+                              lucky: "โชคลาภ",
+                              money: "การเงิน",
+                              love: "ความรัก",
+                              unlucky: "กาลกิณี",
+                            };
 
                             return (
                               <div key={category} className={`
@@ -300,17 +330,17 @@ export default function Horoscope() {
                                 rounded-xl 
                                 transition 
                                 duration-300
+                                cursor-pointer
                                 ${isUnlucky
                                 ? "bg-red-500/10 border-2 border-red-500 "
                                 : "bg-white/5 border border-white/10"
                               }`}>
 
                               <p className={`
-                                capitalize 
                                 text-sm 
                                 font-semibold 
                                 ${isUnlucky ? "text-red-400" : "text-[#CBBBA3]" }`}>
-                                {isUnlucky ? "⚠ unlucky" : category}
+                                {isUnlucky ? "⚠ " : ""}{categoryLabel[category] || category}
                               </p>
 
                               <div className="flex gap-3">

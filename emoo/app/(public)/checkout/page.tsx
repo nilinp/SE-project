@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -38,7 +38,19 @@ export default function CheckoutPage() {
   const increase = useCartStore((state: CartStore) => state.increase);
   const decrease = useCartStore((state: CartStore) => state.decrease);
   const remove = useCartStore((state: CartStore) => state.remove);
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // โหลดรายการที่เลือกจาก localStorage
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  useEffect(() => {
+    const stored = localStorage.getItem("checkout_items");
+    if (stored) {
+      setSelectedIds(JSON.parse(stored));
+    }
+  }, []);
+
+  // กรองเฉพาะสินค้าที่เลือก
+  const checkoutItems = cart.filter((item) => selectedIds.includes(item.id));
+  const subtotal = checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const [form, setForm] = useState({
     first_name: "", last_name: "", phone: "",
@@ -129,9 +141,14 @@ export default function CheckoutPage() {
       alert("กรุณาตรวจสอบข้อมูลให้ถูกต้องตามรูปแบบที่กำหนด");
       return;
     }
+<<<<<<< HEAD
 
     if (cart.length === 0) {
       alert("ตะกร้าสินค้าว่างเปล่า");
+=======
+    if (checkoutItems.length === 0) {
+      alert("ไม่มีสินค้าที่เลือกชำระเงิน");
+>>>>>>> backend
       return;
     }
 
@@ -161,7 +178,23 @@ export default function CheckoutPage() {
 
       const { data, error } = await supabase
         .from("orders")
+<<<<<<< HEAD
         .insert([orderData])
+=======
+        .insert([{
+          device_id: deviceId,
+          first_name: form.first_name,
+          last_name: form.last_name,
+          phone: form.phone,
+          address: form.address,
+          district: form.district,
+          province: form.province,
+          zipcode: form.zipcode,
+          items: checkoutItems,
+          total: subtotal,
+          status: "pending",
+        }])
+>>>>>>> backend
         .select();
 
       if (error) {
@@ -170,7 +203,12 @@ export default function CheckoutPage() {
         return;
       }
 
+<<<<<<< HEAD
+=======
+      // เก็บ order id และ selected items ไว้ใช้ในหน้า payment
+>>>>>>> backend
       localStorage.setItem("order_id", data[0].id);
+      localStorage.setItem("purchased_item_ids", JSON.stringify(selectedIds));
       router.push("/payment");
 
     } catch (err) {
@@ -293,7 +331,7 @@ export default function CheckoutPage() {
             <h2 className="text-3xl font-black mb-10 tracking-tight">Order Summary</h2>
 
             <div className="space-y-6 mb-12 max-h-[400px] overflow-y-auto pr-4">
-              {cart.map((item: CartItem) => (
+              {checkoutItems.map((item: CartItem) => (
                 <div key={item.id} className="flex gap-6 items-start group py-4 border-b border-white/5">
                   <div className="w-36 h-36 bg-white/5 rounded-2xl overflow-hidden flex-shrink-0">
                     <Image src={item.image} alt={item.name} width={144} height={144}

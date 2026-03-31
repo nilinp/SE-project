@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { useCartStore } from "@/lib/cartstore";
 
 const ADMIN_USERNAME = "adminlnwza";
 const ADMIN_PASSWORD = "123321789";
@@ -70,6 +71,8 @@ export default function Login() {
       setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
       setLoading(false);
     } else {
+      // โหลดตะกร้าจาก DB
+      await useCartStore.getState().loadCart();
       router.push("/horoscope");
     }
   };

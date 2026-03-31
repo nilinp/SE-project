@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import { ArrowBigLeft } from "lucide-react";
@@ -9,8 +9,19 @@ import { supabase } from "@/lib/supabase";
 export default function PaymentPage() {
   const router = useRouter();
   const cart = useCartStore((state: CartStore) => state.cart);
-  const clearCart = useCartStore((state: CartStore) => state.clearCart);
-  const total = cart.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
+  const removeItems = useCartStore((state: CartStore) => state.removeItems);
+
+  // โหลดรายการที่กำลังจะชำระ
+  const [purchasedIds, setPurchasedIds] = useState<string[]>([]);
+  useEffect(() => {
+    const stored = localStorage.getItem("purchased_item_ids");
+    if (stored) {
+      setPurchasedIds(JSON.parse(stored));
+    }
+  }, []);
+
+  const checkoutItems = cart.filter((item) => purchasedIds.includes(item.id));
+  const total = checkoutItems.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
   const [method, setMethod] = useState<"qr" | "credit" | null>(null);
   const [card, setCard] = useState({ number: "", name: "", expiry: "", cvv: "" });
@@ -39,8 +50,14 @@ export default function PaymentPage() {
         if (error) throw error;
       }
 
+      // ลบเฉพาะสินค้าที่ซื้อออกจากตะกร้า
+      removeItems(purchasedIds);
+
+      // ล้าง localStorage
       localStorage.removeItem("order_id");
-      clearCart();
+      localStorage.removeItem("purchased_item_ids");
+      localStorage.removeItem("checkout_items");
+
       alert("ชำระเงินสำเร็จ! 🎉");
       router.push("/");
     } catch (err) {
@@ -73,7 +90,7 @@ export default function PaymentPage() {
             <p className="text-5xl font-black text-indigo-400 mt-1">฿{total.toLocaleString()}</p>
           </div>
           <div className="text-right text-white/30 text-sm">
-            <p>{cart.length} รายการ</p>
+            <p>{checkoutItems.length} รายการ</p>
             <p className="text-green-400 font-bold mt-1">ฟรีค่าจัดส่ง</p>
           </div>
         </div>

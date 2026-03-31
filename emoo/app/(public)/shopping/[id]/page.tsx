@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cartstore";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 interface ProductItem {
   id: string;
@@ -49,7 +50,14 @@ export default function ProductDetail({
 
   const [quantity, setQuantity] = useState(1);
   const [showAlert, setShowAlert] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const addToCart = useCartStore((state) => state.addToCart);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  }, []);
 
   const triggerAlert = () => {
     setShowAlert(true);
@@ -189,6 +197,10 @@ export default function ProductDetail({
           <div className="mt-8">
             <button 
               onClick={() => {
+                if (!user) {
+                  router.push("/login");
+                  return;
+                }
                 if (quantity <= 0) {
                   triggerAlert();
                   return;

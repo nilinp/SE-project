@@ -193,7 +193,8 @@ export default function Login() {
             disabled:opacity-50
             flex
             justify-center
-            items-center"
+            items-center
+            cursor-pointer"
           >
             {loading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

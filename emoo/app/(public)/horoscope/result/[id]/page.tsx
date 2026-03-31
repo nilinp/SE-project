@@ -8,9 +8,18 @@ import { supabase } from "@/lib/supabase";
 
 
 export default function ResultPage() {
-    
-    
 
+    const getDeviceId = () => {
+        let id = localStorage.getItem("device_id");
+
+        if (!id) {
+            id = crypto.randomUUID();
+            localStorage.setItem("device_id", id);
+        }
+
+        return id;
+    };
+    
     const { id } = useParams();
     const searchParams = useSearchParams();
     const category = searchParams.get("category");
@@ -26,37 +35,57 @@ export default function ResultPage() {
 
     /* ─── Save last viewed card to profile + track view ─── */
     useEffect(() => {
-        if (!card) return;
+        if (!card || !category) return;
+
         const save = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+            try {
+                const {
+                    data: { session },
+                } = await supabase.auth.getSession();
 
-            // Track horoscope view (for admin chart) — works for all users
-            if (category) {
-                await supabase.from("horoscope_views").insert({
-                    user_id: session?.user?.id ?? null,
-                    category: category,
-                    card_id: Number(card.card_id),
-                });
+                // ✅ check ซ้ำก่อน insert
+                const { data: existing } = await supabase
+                    .from("horoscope_views")
+                    .select("id")
+                    .eq("user_id", session?.user?.id ?? null)
+                    .eq("card_id", card.card_id)
+                    .eq("category", category)
+                    .limit(1);
+
+                if (!existing || existing.length === 0) {
+                    await supabase.from("horoscope_views").insert([
+                        {
+                            user_id: session?.user?.id ?? null,
+                            category: category,
+                            card_id: card.card_id,
+                        },
+                    ]);
+                }
+
+                // ✅ save last card (เฉพาะ login)
+                if (session) {
+                    await supabase
+                        .from("profiles")
+                        .update({
+                            last_card: {
+                                card_id: card.card_id,
+                                name: card.name,
+                                image: card.image,
+                                keyword: card.keyword,
+                                category: category,
+                                viewed_at: new Date().toISOString(),
+                            },
+                        })
+                        .eq("id", session.user.id);
+                }
+            } catch (err) {
+                console.error("Save history error:", err);
             }
-
-            if (!session) return;
-            await supabase
-                .from("profiles")
-                .update({
-                    last_card: {
-                        card_id: card.card_id,
-                        name: card.name,
-                        image: card.image,
-                        keyword: card.keyword,
-                        category: category ?? "",
-                        viewed_at: new Date().toISOString(),
-                    },
-                })
-                .eq("id", session.user.id);
         };
-        save();
-    }, [card?.card_id]);
 
+        save();
+    }, [card?.card_id, category]);
+    
     if (!card) return <div>Card not found</div>;
 
     return (

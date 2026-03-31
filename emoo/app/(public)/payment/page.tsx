@@ -7,22 +7,50 @@ import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 export default function PaymentPage() {
   const router = useRouter();
   const cart = useCartStore((state: CartStore) => state.cart);
+  const clearCart = useCartStore((state: CartStore) => state.clearCart);
   const total = cart.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
   const [method, setMethod] = useState<"qr" | "credit" | null>(null);
   const [card, setCard] = useState({ number: "", name: "", expiry: "", cvv: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCard({ ...card, [e.target.name]: e.target.value });
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!method) { alert("กรุณาเลือกวิธีชำระเงิน"); return; }
     if (method === "credit" && (!card.number || !card.name || !card.expiry || !card.cvv)) {
       alert("กรุณากรอกข้อมูลบัตรให้ครบถ้วน"); return;
     }
-    alert("ชำระเงินสำเร็จ! 🎉");
-    router.push("/");
+
+    setLoading(true);
+    try {
+      const orderId = localStorage.getItem("order_id");
+
+      if (orderId) {
+        // อัพเดต status และ payment_method ใน order
+        const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: "paid",
+            payment_method: method,
+          }),
+        });
+        if (!res.ok) throw new Error("อัพเดต order ไม่สำเร็จ");
+      }
+
+      localStorage.removeItem("order_id");
+      clearCart();
+      alert("ชำระเงินสำเร็จ! 🎉");
+      router.push("/");
+    } catch (err) {
+      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -115,14 +143,14 @@ export default function PaymentPage() {
           <div className="flex justify-center pt-4">
             <button
               onClick={handleConfirm}
-              className="bg-transparent border-2 border-white hover:bg-white/10 text-white py-4 rounded-2xl font-black text-2xl transition-all active:scale-[0.98]"
+              disabled={loading}
+              className="bg-transparent border-2 border-white hover:bg-white/10 text-white py-4 rounded-2xl font-black text-2xl transition-all active:scale-[0.98] disabled:opacity-50"
               style={{ paddingLeft: '6rem', paddingRight: '6rem' }}
             >
-              ยืนยันการชำระเงิน
+              {loading ? "กำลังดำเนินการ..." : "ยืนยันการชำระเงิน"}
             </button>
           </div>
         )}
-
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -11,6 +12,54 @@ export default function CheckoutPage() {
   const decrease = useCartStore((state: CartStore) => state.decrease);
   const remove = useCartStore((state: CartStore) => state.remove);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const [form, setForm] = useState({
+    first_name: "", last_name: "", phone: "",
+    address: "", subdistrict: "", district: "",
+    province: "", zipcode: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleConfirm = async () => {
+    if (!form.first_name || !form.last_name || !form.phone || !form.address) {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
+    if (cart.length === 0) {
+      alert("ตะกร้าสินค้าว่างเปล่า");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          items: cart,
+          total: subtotal,
+          status: "pending",
+        }),
+      });
+
+      if (!res.ok) throw new Error("สร้าง order ไม่สำเร็จ");
+      const data = await res.json();
+      
+      // เก็บ order id ไว้ใช้ในหน้า payment
+      localStorage.setItem("order_id", data.data[0].id);
+      router.push("/payment");
+    } catch (err) {
+      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#1a1a2e] text-white py-16 px-8 lg:ml-24">
@@ -29,15 +78,18 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">First Name/ชื่อ</label>
-                  <input placeholder="ex. สมปอง" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input name="first_name" value={form.first_name} onChange={handleChange} placeholder="ex. สมปอง"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">Last Name/นามสกุล</label>
-                  <input placeholder="ex. พนมนุ่ม" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input name="last_name" value={form.last_name} onChange={handleChange} placeholder="ex. พนมนุ่ม"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
                 </div>
                 <div className="col-span-2 space-y-2">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">Phone Number/เบอร์โทรศัพท์</label>
-                  <input placeholder="ex. 081-XXX-XXXX" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input name="phone" value={form.phone} onChange={handleChange} placeholder="ex. 081-XXX-XXXX"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
                 </div>
               </div>
             </section>
@@ -47,24 +99,29 @@ export default function CheckoutPage() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">Street Address/ที่อยู่</label>
-                  <input placeholder="ex. 123/4 หมู่ 5 ซอยสุขุมวิท 10" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
+                  <input name="address" value={form.address} onChange={handleChange} placeholder="ex. 123/4 หมู่ 5 ซอยสุขุมวิท 10"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 focus:border-indigo-500 outline-none transition-all" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">Subdistrict/แขวง</label>
-                    <input placeholder="ex. แขวงลาดยาว" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input name="subdistrict" value={form.subdistrict} onChange={handleChange} placeholder="ex. แขวงลาดยาว"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">District/เขต</label>
-                    <input placeholder="ex. เขตจตุจักร" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input name="district" value={form.district} onChange={handleChange} placeholder="ex. เขตจตุจักร"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">Province/จังหวัด</label>
-                    <input placeholder="ex. กรุงเทพฯ" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input name="province" value={form.province} onChange={handleChange} placeholder="ex. กรุงเทพฯ"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">Postal Code/รหัสไปรษณีย์</label>
-                    <input placeholder="ex. 10110" className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
+                    <input name="zipcode" value={form.zipcode} onChange={handleChange} placeholder="ex. 10110"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 outline-none" />
                   </div>
                 </div>
               </div>
@@ -74,37 +131,26 @@ export default function CheckoutPage() {
 
         {/* ฝั่งขวา: Order Summary */}
         <div className="flex-1 w-full lg:sticky lg:top-10">
-          <div className="bg-white/[0.02] border border-white/10 rounded-[3rem] p-10 lg:p-14 backdrop-blur-xl shadow-2xl relative">
+          <div className="bg-white/[0.02] border border-white/10 rounded-[3rem] p-10 lg:p-14 backdrop-blur-xl shadow-2xl">
             <h2 className="text-3xl font-black mb-10 tracking-tight">Order Summary</h2>
 
             <div className="space-y-6 mb-12 max-h-[400px] overflow-y-auto pr-4">
               {cart.map((item: CartItem) => (
-                <div key={item.id} className="flex gap-6 items-start group relative py-4 border-b border-white/5">
-                  <div className="w-36 h-36 bg-white/5 rounded-2xl overflow-hidden flex-shrink-0 shadow-inner">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      width={144}
-                      height={144}
-                      className="object-cover w-full h-full rounded-2xl group-hover:scale-110 transition-transform duration-500"
-                    />
+                <div key={item.id} className="flex gap-6 items-start group py-4 border-b border-white/5">
+                  <div className="w-36 h-36 bg-white/5 rounded-2xl overflow-hidden flex-shrink-0">
+                    <Image src={item.image} alt={item.name} width={144} height={144}
+                      className="object-cover w-full h-full rounded-2xl group-hover:scale-110 transition-transform duration-500" />
                   </div>
                   <div className="flex-1 space-y-2 pl-4">
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-xl text-white/90 leading-tight pr-4">{item.name}</h3>
-                      <button onClick={() => remove(item.id)} className="text-white/20 hover:text-red-400 transition-colors text-xl">
-                        ✕
-                      </button>
+                      <button onClick={() => remove(item.id)} className="text-white/20 hover:text-red-400 transition-colors text-xl">✕</button>
                     </div>
                     <p className="text-indigo-400 font-black text-2xl">฿{item.price.toLocaleString()}</p>
                     <div className="flex items-center gap-3 w-fit mt-2">
-                      <button onClick={() => decrease(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-red-500/30 text-white transition">
-                        —
-                      </button>
+                      <button onClick={() => decrease(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-red-500/30 text-white transition">—</button>
                       <span className="text-sm font-bold min-w-[20px] text-center">{item.quantity}</span>
-                      <button onClick={() => increase(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-green-500/30 text-white transition">
-                        +
-                      </button>
+                      <button onClick={() => increase(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-green-500/30 text-white transition">+</button>
                     </div>
                   </div>
                 </div>
@@ -126,21 +172,20 @@ export default function CheckoutPage() {
                   <p className="text-5xl font-black text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.4)]">
                     ฿{subtotal.toLocaleString()}
                   </p>
-                  <p className="text-[10px] text-white/20 uppercase font-bold mt-1 tracking-[0.2em]">Including VAT</p>
                 </div>
               </div>
             </div>
 
             <button
-              onClick={() => router.push("/payment")}
-              className="mx-auto block bg-transparent border-2 border-white hover:bg-white/10 text-white mt-20 py-4 rounded-2xl font-black text-2xl transition-all active:scale-[0.98] text-center"
+              onClick={handleConfirm}
+              disabled={loading}
+              className="mx-auto block bg-transparent border-2 border-white hover:bg-white/10 text-white mt-20 py-4 rounded-2xl font-black text-2xl transition-all active:scale-[0.98] disabled:opacity-50"
               style={{ paddingLeft: '6rem', paddingRight: '6rem' }}
             >
-              Confirm Order
+              {loading ? "กำลังบันทึก..." : "Confirm Order"}
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );

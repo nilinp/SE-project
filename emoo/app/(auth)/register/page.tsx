@@ -91,7 +91,11 @@ export default function Register() {
             ">
             <div className="
             bg-white
+<<<<<<< HEAD
             p-10
+=======
+            pt-4 pb-2 px-10
+>>>>>>> backend
             flex flex-col items-center
             ">
               <Image
@@ -104,13 +108,20 @@ export default function Register() {
               <h2 className="text-5xl font-bold text-(--bg) text-center">
                     สมัครสมาชิก
                 </h2>
+<<<<<<< HEAD
                 <p className="text-(--bg) text-center mt-3">
+=======
+                <p className="
+                text-(--bg) 
+                text-center 
+                mt-3">
+>>>>>>> backend
                     สร้างบัญชีของคุณวันนี้ เพื่อเริ่มต้นเส้นทางแห่งโชคชะตาไปกับเรา
                 </p>
             </div>
             
             {error && (
-                <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
+                <p className="text-red-500 mb-2 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
                     {error}
                 </p>
             )}
@@ -122,7 +133,7 @@ export default function Register() {
             disabled={loading}
             className="
             w-1/2 
-            mb-5 
+            mb-5
             px-4 
             py-3 
             rounded-lg 
@@ -166,7 +177,11 @@ export default function Register() {
                 outline-none text-(--bg)
                 disabled:opacity-50"
             />
+<<<<<<< HEAD
             <p className="text-xs text-red-400 w-1/2 mb-5 ml-1">*ต้องมีอย่างน้อย 8 ตัว</p>
+=======
+            <p className="text-xs text-red-400 w-1/2 mb-3 ml-1">*ต้องมีอย่างน้อย 8 ตัว</p>
+>>>>>>> backend
 
             <button 
                 onClick={handleRegister} 
@@ -183,10 +198,18 @@ export default function Register() {
                 disabled:opacity-50
                 flex
                 justify-center
-                items-center"
+                items-center
+                cursor-pointer"
             >
                 {loading ? (
-                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="
+                  w-6 
+                  h-6 
+                  border-2 
+                  border-white 
+                  border-t-transparent 
+                  rounded-full 
+                  animate-spin"></div>
                 ) : (
                   "สมัครสมาชิก"
                 )}

@@ -8,7 +8,6 @@ import { ArrowBigLeft, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { usePopupStore } from "@/lib/popupstore";
 import PopupAlert from "@/app/components/PopupAlert";
-import { getDeviceId } from "@/lib/deviceId";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -18,13 +17,25 @@ export default function CheckoutPage() {
   const decrease = useCartStore((state: CartStore) => state.decrease);
   const remove = useCartStore((state: CartStore) => state.remove);
 
-  // โหลดรายการที่เลือกจาก localStorage
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // โหลดรายการที่เลือกจาก localStorage และตรวจสอบว่า login อยู่
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   useEffect(() => {
     const stored = localStorage.getItem("checkout_items");
     if (stored) {
       setSelectedIds(JSON.parse(stored));
     }
+
+    // ตรวจสอบสถานะ login
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        showPopup("กรุณาเข้าสู่ระบบ", "คุณต้องเข้าสู่ระบบก่อนทำการสั่งซื้อ", "error");
+        setTimeout(() => router.push("/login"), 1500);
+      } else {
+        setUserId(session.user.id);
+      }
+    });
   }, []);
 
   // กรองเฉพาะสินค้าที่เลือก
@@ -90,16 +101,17 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!userId) {
+      showPopup("กรุณาเข้าสู่ระบบ", "คุณต้องเข้าสู่ระบบก่อนทำการสั่งซื้อ", "error");
+      setTimeout(() => router.push("/login"), 1500);
+      return;
+    }
+
     setLoading(true);
     try {
-      const deviceId = getDeviceId();
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id || null;
-
       const { data, error } = await supabase
         .from("orders")
         .insert([{
-          device_id: deviceId,
           user_id: userId,
           first_name: form.first_name,
           last_name: form.last_name,

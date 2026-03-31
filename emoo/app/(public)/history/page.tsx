@@ -10,7 +10,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePopupStore } from "@/lib/popupstore";
 import PopupAlert from "@/app/components/PopupAlert";
-import { getDeviceId } from "@/lib/deviceId";
 
 type View = {
     id: string;
@@ -44,6 +43,7 @@ export default function HistoryPage() {
     const [views, setViews] = useState<View[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [tab, setTab] = useState<"horoscope" | "orders">("horoscope");
     const router = useRouter();
 
@@ -101,30 +101,20 @@ export default function HistoryPage() {
     // fetch order history
     const fetchOrders = async () => {
         try {
-            const deviceId = getDeviceId();
             const { data: { session } } = await supabase.auth.getSession();
             const userId = session?.user?.id;
 
-            if (!deviceId && !userId) {
+            if (!userId) {
                 setOrders([]);
                 return;
             }
 
-            let query = supabase
+            const { data, error } = await supabase
                 .from("orders")
                 .select("*")
+                .eq("user_id", userId)
                 .order("created_at", { ascending: false })
                 .limit(30);
-
-            if (userId && deviceId) {
-                query = query.or(`user_id.eq.${userId},device_id.eq.${deviceId}`);
-            } else if (userId) {
-                query = query.eq("user_id", userId);
-            } else {
-                query = query.eq("device_id", deviceId);
-            }
-
-            const { data, error } = await query;
 
             if (error) {
                 console.error("Fetch orders error:", error);
@@ -138,6 +128,9 @@ export default function HistoryPage() {
     };
 
     useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setIsLoggedIn(!!session);
+        });
         Promise.all([fetchHistory(), fetchOrders()]).then(() => setLoading(false));
     }, []);
 
@@ -322,7 +315,21 @@ export default function HistoryPage() {
                     {/* Orders Tab */}
                     {tab === "orders" && (
                         <>
-                            {orders.length === 0 && (
+                            {!isLoggedIn && (
+                                <div className="flex flex-col items-center justify-center py-12 gap-4">
+                                    <ShoppingBag size={48} className="text-indigo-400/50" />
+                                    <p className="text-gray-400 text-center">
+                                        กรุณาเข้าสู่ระบบเพื่อดูประวัติการสั่งซื้อ
+                                    </p>
+                                    <button
+                                        onClick={() => router.push("/login")}
+                                        className="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold px-6 py-2.5 rounded-lg transition-all cursor-pointer"
+                                    >
+                                        เข้าสู่ระบบ
+                                    </button>
+                                </div>
+                            )}
+                            {isLoggedIn && orders.length === 0 && (
                                 <p className="text-gray-400">
                                     ยังไม่มีประวัติการสั่งซื้อ
                                 </p>

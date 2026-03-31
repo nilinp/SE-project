@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import Image from "next/image";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, ArrowBigLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -83,6 +83,12 @@ export default function CartPage() {
             flex 
             items-baseline 
             gap-2">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center text-[var(--bg)] hover:opacity-70 transition cursor-pointer mr-2"
+            >
+              <ArrowBigLeft size={28} />
+            </button>
             <h1 className="text-3xl font-bold">ตะกร้าของคุณ</h1>
             {totalItems > 0 && (
               <span className="text-gray-500 font-medium">({totalItems})</span>

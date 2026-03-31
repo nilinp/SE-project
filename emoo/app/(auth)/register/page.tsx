@@ -92,12 +92,20 @@ export default function Register() {
             <div className="
             bg-white
             p-10
+            flex flex-col items-center
             ">
-                <h2 className=" text-5xl font-bold text-(--bg)">
-                    CREATE ACCOUNT
+              <Image
+                src="/icon.png"
+                alt="logo"
+                width={150}
+                height={150}
+                className="mb-2"
+              />
+              <h2 className="text-5xl font-bold text-(--bg) text-center">
+                    สมัครสมาชิก
                 </h2>
                 <p className="text-(--bg) text-center mt-3">
-                    Create your account to start your fortune journey
+                    สร้างบัญชีของคุณวันนี้ เพื่อเริ่มต้นเส้นทางแห่งโชคชะตาไปกับเรา
                 </p>
             </div>
             
@@ -108,7 +116,7 @@ export default function Register() {
             )}
 
             <input
-            placeholder="Name"
+            placeholder="ชื่อผู้ใช้"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
@@ -126,7 +134,7 @@ export default function Register() {
 
             <input
                 type="email"
-                placeholder="Email"
+                placeholder="อีเมล"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
@@ -144,13 +152,13 @@ export default function Register() {
 
             <input
                 type="password"
-                placeholder="Password"
+                placeholder="รหัสผ่าน"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 className="
                 w-1/2 
-                mb-6 
+                mb-1 
                 px-4 
                 py-3 
                 rounded-lg 
@@ -158,6 +166,7 @@ export default function Register() {
                 outline-none text-(--bg)
                 disabled:opacity-50"
             />
+            <p className="text-xs text-red-400 w-1/2 mb-5 ml-1">*ต้องมีอย่างน้อย 8 ตัว</p>
 
             <button 
                 onClick={handleRegister} 
@@ -179,14 +188,14 @@ export default function Register() {
                 {loading ? (
                   <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  "Sign up"
+                  "สมัครสมาชิก"
                 )}
             </button>
 
             <p className="text-sm mt-6 text-(--bg) text-[16px]">
-                Already have an account?{" "}
-                <Link href="/login" className="font-bold hover:underline">
-                    Login
+                มีบัญชีอยู่แล้ว?{" "}
+                <Link href="/login" className="font-bold hover:underline cursor-pointer">
+                    เข้าสู่ระบบ
                 </Link>
             </p>
 

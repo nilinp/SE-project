@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
+import { ArrowBigLeft } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -29,16 +31,12 @@ export default function PaymentPage() {
       const orderId = localStorage.getItem("order_id");
 
       if (orderId) {
-        // อัพเดต status และ payment_method ใน order
-        const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: "paid",
-            payment_method: method,
-          }),
-        });
-        if (!res.ok) throw new Error("อัพเดต order ไม่สำเร็จ");
+        const { error } = await supabase
+          .from("orders")
+          .update({ status: "paid", payment_method: method })
+          .eq("id", orderId);
+
+        if (error) throw error;
       }
 
       localStorage.removeItem("order_id");
@@ -58,6 +56,12 @@ export default function PaymentPage() {
       <div className="max-w-4xl mx-auto space-y-10">
 
         <header>
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-1 text-white/60 hover:text-white transition cursor-pointer mb-4"
+          >
+            <ArrowBigLeft size={28} />
+          </button>
           <h1 className="text-5xl font-black mb-3 tracking-tighter">Payment</h1>
           <p className="text-white/40 text-sm tracking-wide uppercase">เลือกวิธีชำระเงิน</p>
         </header>

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { ArrowBigLeft } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -19,6 +21,15 @@ export default function CheckoutPage() {
     province: "", zipcode: "",
   });
   const [loading, setLoading] = useState(false);
+
+  const getDeviceId = () => {
+    let id = localStorage.getItem("device_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("device_id", id);
+    }
+    return id;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,22 +47,29 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
+      const deviceId = getDeviceId();
+
+      const { data, error } = await supabase
+        .from("orders")
+        .insert([{
+          device_id: deviceId,
+          first_name: form.first_name,
+          last_name: form.last_name,
+          phone: form.phone,
+          address: form.address,
+          district: form.district,
+          province: form.province,
+          zipcode: form.zipcode,
           items: cart,
           total: subtotal,
           status: "pending",
-        }),
-      });
+        }])
+        .select();
 
-      if (!res.ok) throw new Error("สร้าง order ไม่สำเร็จ");
-      const data = await res.json();
-      
+      if (error) throw error;
+
       // เก็บ order id ไว้ใช้ในหน้า payment
-      localStorage.setItem("order_id", data.data[0].id);
+      localStorage.setItem("order_id", data[0].id);
       router.push("/payment");
     } catch (err) {
       alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
@@ -68,6 +86,12 @@ export default function CheckoutPage() {
         {/* ฝั่งซ้าย: แบบฟอร์ม */}
         <div className="flex-1 w-full space-y-12">
           <header>
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-1 text-white/60 hover:text-white transition cursor-pointer mb-4"
+            >
+              <ArrowBigLeft size={28} />
+            </button>
             <h1 className="text-5xl font-black mb-3 tracking-tighter text-white">Checkout</h1>
             <p className="text-white/40 text-sm tracking-wide uppercase">Shipping & Customer Information</p>
           </header>

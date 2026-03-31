@@ -2,8 +2,8 @@
 
 import { useState, useEffect, use } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ArrowBigLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cartstore";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -56,6 +56,8 @@ export default function ProductDetail({
     setTimeout(() => setShowAlert(false), 3000);
   };
 
+  const router = useRouter();
+
   return (
     <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10 bg-(white) text-(--sec) relative">
       
@@ -73,7 +75,13 @@ export default function ProductDetail({
         )}
       </AnimatePresence>
 
-      <Link href="/shopping">← Back</Link>
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-1 text-[var(--bg)] hover:opacity-70 transition cursor-pointer mb-4"
+      >
+        <ArrowBigLeft size={28} />
+      </button>
 
       <div className="flex gap-20 mt-10 justify-center">
 
@@ -87,139 +95,129 @@ export default function ProductDetail({
           </div>
         ) : (
         <>
-        <div className="w-[700px] h-[450px] relative">
+        <div className="w-[500px] h-100 relative bg-gray-50 rounded-2xl overflow-hidden">
           <Image
             src={product.img || "/placeholder.png"}
             alt={product.name}
             fill
-            className="object-contain rounded-2xl"
+            className="object-cover"
           />
         </div>
 
-        <div>
-          <h1 className="text-4xl font-bold">{product.name}</h1>
-          <p className="text-2xl mt-4">{product.price}฿</p>
-          <p className="mt-4">{product.details}</p>
-          <p className="mt-4 text-gray-500"> {/*คลัง:*/}</p>
+        <div className="flex-1 max-w-xl">
+          <h1 className="text-3xl font-bold leading-tight">{product.name}</h1>
 
-          <div className="flex items-center gap-4 mt-6">
-            <button
-              onClick={() =>
-                setQuantity(quantity > 1 ? quantity - 1 : 1)
-              }
-              className="
-                px-4 py-2 
-                bg-gray-300
-                flex 
-                items-center justify-center 
-                rounded-full 
-                hover:bg-gray-200 
-                transition-colors
-                cursor-pointer"
-            >
-              -
-            </button>
+          {/* Details */}
+          <p className="mt-4 text-sm text-gray-500 leading-relaxed">
+            {product.details}
+          </p>
 
-            <input
-              type="text"
-              inputMode="numeric"
-              value={quantity}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const val = e.target.value.replace(/[^0-9]/g, '');
-                if (val === "" || val === "0") {
-                  setQuantity(0);
-                  return;
-                }
-                const num = parseInt(val, 10);
-                if (!isNaN(num) && num > 0) {
-                  setQuantity(num);
-                }
-              }}
-              onBlur={() => {
-                if (quantity <= 0) {
-                  setQuantity(1);
-                  triggerAlert();
-                }
-              }}
-              className="
-                w-12 
-                text-center 
-                bg-gray-100/80 
-                rounded-md 
-                py-1 
-                font-medium 
-                hover:bg-gray-200 
-                focus:bg-white 
-                focus:ring-1 
-                focus:ring-(--bg) 
-                transition-colors 
-                focus:outline-none"
-            />
-
-            <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="
-                px-4 py-2 
-                bg-gray-300
-                flex 
-                items-center justify-center 
-                rounded-full 
-                hover:bg-gray-200 
-                transition-colors
-                cursor-pointer" >
-              +
-            </button>
+          {/* Price */}
+          <div className="mt-6">
+            <span className="text-3xl font-bold">{product.price}</span>
+            <span className="text-lg text-gray-400 ml-2">บาท</span>
           </div>
 
-          <div className="w-full max-w-2xl flex gap-4 mt-30">
+          {/* Quantity */}
+          <div className="flex items-center gap-4 mt-6">
+            <span className="text-sm text-gray-500 font-medium">จำนวน</span>
+            <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
+              <button
+                onClick={() =>
+                  setQuantity(quantity > 1 ? quantity - 1 : 1)
+                }
+                className="
+                  w-10 h-10
+                  flex items-center justify-center
+                  text-lg font-medium
+                  hover:bg-gray-100
+                  transition-colors
+                  cursor-pointer
+                "
+              >
+                −
+              </button>
 
+              <input
+                type="text"
+                inputMode="numeric"
+                value={quantity}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  if (val === "" || val === "0") {
+                    setQuantity(0);
+                    return;
+                  }
+                  const num = parseInt(val, 10);
+                  if (!isNaN(num) && num > 0) {
+                    setQuantity(num);
+                  }
+                }}
+                onBlur={() => {
+                  if (quantity <= 0) {
+                    setQuantity(1);
+                    triggerAlert();
+                  }
+                }}
+                className="
+                  w-12
+                  text-center
+                  font-semibold
+                  text-lg
+                  focus:outline-none
+                  bg-transparent
+                "
+              />
+
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="
+                  w-10 h-10
+                  flex items-center justify-center
+                  text-lg font-medium
+                  hover:bg-gray-100
+                  transition-colors
+                  cursor-pointer
+                "
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Add to Cart Button */}
+          <div className="mt-8">
             <button 
-            onClick={() => {
-              if (quantity <= 0) {
-                triggerAlert();
-                return;
-              }
-              addToCart({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.img || "/placeholder.png",
-                quantity: quantity,
-              });
-            }}
-            className="
-            flex-1 
-            flex 
-            items-center 
-            justify-center 
-            gap-3 
-            bg-[var(--main)] 
-            text-[var(--bg)] 
-            text-lg 
-            font-semibold 
-            py-4 
-            rounded-lg 
-            shadow-md 
-            cursor-pointer 
-            hover:opacity-90 
-            transition">
+              onClick={() => {
+                if (quantity <= 0) {
+                  triggerAlert();
+                  return;
+                }
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.img || "/placeholder.png",
+                  quantity: quantity,
+                });
+              }}
+              className="
+                w-full max-w-sm
+                flex items-center justify-center gap-3
+                py-4
+                rounded-full
+                text-lg font-bold
+                shadow-lg
+                cursor-pointer 
+                hover:opacity-90
+                hover:shadow-xl
+                active:scale-[0.98]
+                transition-all duration-200
+                bg-[var(--bg)] text-[var(--main)]
+              "
+            >
               <ShoppingCart size={22} />
-              เพิ่มไปยังรถเข็น
-            </button>
-
-            <button className="
-            flex-1 
-            bg-(--bg) 
-            text-(--main) 
-            text-lg 
-            font-semibold 
-            py-4 
-            rounded-lg 
-            shadow-md 
-            cursor-pointer
-            hover:opacity-90 
-            transition">
-              ซื้อเลย
+              เพิ่มลงตะกร้า
             </button>
           </div>
         </div>

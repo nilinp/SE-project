@@ -94,13 +94,13 @@ export default function Login() {
             text-6xl 
             font-bold 
             [text-shadow:0_0_10px_rgb(29,25,43),0_0_25px_rgb(29,25,43)]">
-              WELCOME!
+              ยินดีต้อนรับ!
             </h1>
             <p className="
             mt-2.5 
             text-2xl 
             [text-shadow:0_0_10px_rgb(29,25,43),0_0_25px_rgb(29,25,43)]">
-              Continue your fortune journey
+              เริ่มต้นเส้นทางแห่งโชคชะตาไปกับเรา
             </p>
           </div>
         </div>
@@ -119,9 +119,17 @@ export default function Login() {
           <div className="
           bg-white
           p-10
+          flex flex-col items-center
           ">
+            <Image
+              src="/icon.png"
+              alt="logo"
+              width={150}
+              height={150}
+              className="mb-2"
+            />
             <h2 className="text-5xl font-bold text-(--bg)">
-            LOGIN
+              เข้าสู่ระบบ
             </h2>
           </div>
 
@@ -133,7 +141,7 @@ export default function Login() {
 
           <input
             type="text"
-            placeholder="Username"
+            placeholder="ชื่อผู้ใช้"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
@@ -152,7 +160,7 @@ export default function Login() {
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="รหัสผ่าน"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
@@ -190,18 +198,18 @@ export default function Login() {
             {loading ? (
               <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              "Sign in"
+              "เข้าสู่ระบบ"
             )}
           </button>
 
           <p className="text-sm mt-3 text-(--bg) text-[16px]">
-            Don't have an account?{" "}
+            ยังไม่ได้เป็นสมาชิก?{" "}
             <Link href="/register" className="
             font-bold
             hover:underline
             cursor-pointer
             ">
-              Register
+              สมัครสมาชิก
             </Link> 
           </p>
         </div>

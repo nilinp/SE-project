@@ -242,13 +242,13 @@ export default function Horoscope() {
         </div>
       </div>
 
-      {/* RIGHT SECTION */}
-      <div className="w-full lg:w-1/3 flex flex-col items-center">
+      {/* RIGHT SECTION — Desktop only */}
+      <div className="hidden lg:flex w-full lg:w-1/3 flex-col items-center">
         {/* 👤 User Profile Card */}
         <div className="
           relative
           w-full
-          max-w-xs sm:max-w-sm lg:max-w-[380px]
+          max-w-[380px]
           aspect-[3/4]
           rounded-[40px]
           overflow-hidden">

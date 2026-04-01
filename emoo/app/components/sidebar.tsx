@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { Home, ShoppingCart, Store } from "lucide-react";
+import { Home, ShoppingCart, Store, UserCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/cartstore";
@@ -11,9 +11,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 
 export default function Sidebar() {
-  const [open, setOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -26,10 +26,17 @@ export default function Sidebar() {
       if (session?.user) {
         const { data } = await supabase
           .from("profiles")
-          .select("username")
+          .select("username, avatar_url")
           .eq("id", session.user.id)
           .single();
         setUsername(data?.username ?? null);
+
+        if (data?.avatar_url) {
+          const { data: urlData } = supabase.storage
+            .from("avatars")
+            .getPublicUrl(data.avatar_url);
+          setAvatarUrl(urlData.publicUrl + `?t=${Date.now()}`);
+        }
       }
     };
 
@@ -40,18 +47,27 @@ export default function Sidebar() {
       if (session?.user) {
         const { data } = await supabase
           .from("profiles")
-          .select("username")
+          .select("username, avatar_url")
           .eq("id", session.user.id)
           .single();
         setUsername(data?.username ?? null);
+
+        if (data?.avatar_url) {
+          const { data: urlData } = supabase.storage
+            .from("avatars")
+            .getPublicUrl(data.avatar_url);
+          setAvatarUrl(urlData.publicUrl + `?t=${Date.now()}`);
+        } else {
+          setAvatarUrl(null);
+        }
       } else {
         setUsername(null);
+        setAvatarUrl(null);
       }
     });
 
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -61,26 +77,48 @@ export default function Sidebar() {
     };
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setOpen(false);
-    router.push("/login");
-  };
-
   const items = useCartStore((state) => state.cart);
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const totalItems = items.reduce(
-    (sum, item) => sum + item.quantity, 0);
-
-  const displayName = username ?? user?.email?.[0]?.toUpperCase() ?? "?";
   const avatarLetter = (username?.[0] ?? user?.email?.[0] ?? "?").toUpperCase();
+
+  // Avatar bubble for bottom nav
+  const AvatarBubble = () => {
+    const isActive = pathname === "/profile";
+    if (avatarUrl && user) {
+      return (
+        <div className={`w-7 h-7 rounded-full overflow-hidden ring-2 ${isActive ? "ring-(--main)" : "ring-white/20"} flex-shrink-0`}>
+          <Image
+            src={avatarUrl}
+            alt="avatar"
+            width={28}
+            height={28}
+            className="object-cover w-full h-full"
+            unoptimized
+          />
+        </div>
+      );
+    }
+    if (user) {
+      return (
+        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+          isActive ? "bg-(--main) text-(--bg)" : "bg-(--main)/30 text-white/70"
+        }`}>
+          {avatarLetter}
+        </div>
+      );
+    }
+    return (
+      <UserCircle size={24} className="text-white/60 flex-shrink-0" />
+    );
+  };
 
   return (
     <>
-      {/* ─── Desktop Sidebar ─── */}
+      {/* ─── Desktop Sidebar (lg+) ─── */}
       <aside className=" 
         hidden 
-        md:flex 
+        lg:flex 
         fixed
         top-0
         left-0
@@ -150,8 +188,8 @@ export default function Sidebar() {
         </div>  
       </aside>
 
-      {/* ─── Mobile Bottom Navigation ─── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-(--bg) border-t border-white/10 z-40">
+      {/* ─── Mobile + Tablet Bottom Navigation (below lg) ─── */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-(--bg) border-t border-white/10 z-40">
         <div className="flex items-center justify-around py-2">
 
           {/* Home */}
@@ -199,15 +237,7 @@ export default function Sidebar() {
             onClick={() => user ? router.push("/profile") : router.push("/login")}
             className="flex flex-col items-center gap-0.5 py-1 px-3 max-w-[72px]"
           >
-            {/* Avatar circle */}
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-              pathname === "/profile" 
-                ? "bg-(--main) text-(--bg)" 
-                : "bg-(--main)/30 text-white/70"
-            }`}>
-              {avatarLetter}
-            </div>
-            {/* Username or เข้าสู่ระบบ */}
+            <AvatarBubble />
             <span className={`text-[10px] truncate w-full text-center ${pathname === "/profile" ? "text-(--main)" : "text-white/60"}`}>
               {user ? (username ?? "โปรไฟล์") : "เข้าสู่ระบบ"}
             </span>

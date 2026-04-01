@@ -217,7 +217,7 @@ export default function HistoryPage() {
         <div className="min-h-screen bg-[#2F2847] text-white flex">
             <Sidebar />
 
-            <div className="flex-1 md:ml-20 p-4 md:p-10 flex flex-col lg:flex-row gap-6 lg:gap-8">
+            <div className="flex-1 lg:ml-20 p-4 md:p-10 flex flex-col lg:flex-row gap-6 lg:gap-8">
 
                 {/* Back Button */}
                 <button

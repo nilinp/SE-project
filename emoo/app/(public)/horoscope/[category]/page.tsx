@@ -15,12 +15,11 @@ export default function SelectCardPage() {
     const [hoveredCard, setHoveredCard] = useState<number | null>(null);
     const [isShuffling, setIsShuffling] = useState(false);
     const [mounted, setMounted] = useState(false);
-
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const total = tarot.cards.length;
+    const total = 22; // Fix visual cards to exactly 22
 
     const handleSelectCard = (index: number) => {
         if (selectedCard !== null || isShuffling) return;
@@ -47,7 +46,12 @@ export default function SelectCardPage() {
     };
 
     return (
-        <div className="relative min-h-screen pb-20 bg-[#2F2847] text-white pt-0 overflow-x-hidden" style={{ backgroundColor: "#2F2847" }}>
+        <div className="
+        relative 
+        min-h-screen 
+        flex flex-col
+        bg-[#2F2847] text-white 
+        overflow-x-hidden" style={{ backgroundColor: "#2F2847" }}>
 
             <div className="sticky top-0 z-40 bg-[#2F2847]/95 backdrop-blur-md -mx-10 px-10 pt-6 pb-4 mb-4 flex items-center justify-between">
                 {/* Back Button */}
@@ -57,60 +61,38 @@ export default function SelectCardPage() {
                 >
                     <ArrowBigLeft size={28} />
                 </button>
+            </div>
 
-                <h1 className="text-xl md:text-3xl font-semibold">
-                    {getThaiName()}
+            <div className="flex-1 flex flex-col justify-center pb-10">
+                <h1 className="text-4xl text-center mb-8 font-semibold">
+                    เลือกไพ่ — {getThaiName()}
                 </h1>
-            </div>
 
-            <h1 className="text-4xl text-center mb-4 font-semibold">
-                เลือกไพ่ — {getThaiName()}
-            </h1>
-
-            {/* Shuffle Button */}
-            <div className="flex justify-center mb-6">
-                <button
-                    onClick={handleShuffle}
-                    disabled={selectedCard !== null || isShuffling}
-                    className="
-                        flex items-center gap-2
-                        cursor-pointer
-                        px-6 py-2.5
-                        rounded-full
-                        bg-gradient-to-r from-purple-600 to-indigo-600
-                        text-white font-medium text-sm
-                        shadow-lg shadow-purple-900/30
-                        hover:from-purple-500 hover:to-indigo-500
-                        disabled:opacity-50 disabled:cursor-not-allowed
-                        transition-all duration-200
-                        cursor-pointer
-                        hover:scale-105 active:scale-95
-                    "
-                >
-                    <Shuffle
-                        size={16}
-                        className={isShuffling ? "animate-spin" : ""}
-                    />
-                    สับไพ่
-                </button>
-            </div>
-
-            <div className="flex justify-center items-center min-h-full">
-                <div className="relative w-full max-w-[1200px] h-[450px]">
+            <style>{`
+                .responsive-card-pos {
+                    left: calc(var(--percent) * 100% - var(--percent) * 4rem);
+                }
+                @media (min-width: 640px) {
+                    .responsive-card-pos { left: calc(var(--percent) * 100% - var(--percent) * 5rem); }
+                }
+                @media (min-width: 768px) {
+                    .responsive-card-pos { left: calc(var(--percent) * 100% - var(--percent) * 7rem); }
+                }
+            `}</style>
+            
+            <div className="w-full max-w-5xl mx-auto my-10 px-2 sm:px-6">
+                <div className="relative w-full h-[120px] sm:h-[180px] md:h-[240px] mx-auto">
 
                     {mounted && Array.from({ length: total }).map((_, index) => {
-
-                        const spread = Math.PI / 3;
-                        const start = -spread / 2;
-                        const angle = start + (spread / (total - 1)) * index;
-                        const radius = 900;
-                        const x = radius * Math.sin(angle);
-                        const y = radius * (1 - Math.cos(angle)) - 200;
-                        const deg = angle * (180 / Math.PI);
 
                         const isSelected = selectedCard === index;
                         const isOther = selectedCard !== null && selectedCard !== index;
                         const isHovered = hoveredCard === index && selectedCard === null && !isShuffling;
+
+                        const percent = index / (total - 1);
+                        const isCenter = index - (total - 1) / 2; // ranges from -10.5 to 10.5
+                        const curveY = 0; // Flat layout
+                        const rotateDeg = 0; // No rotation
 
                         return (
                             <motion.div
@@ -121,21 +103,23 @@ export default function SelectCardPage() {
                                 }}
                                 onHoverEnd={() => setHoveredCard(null)}
 
-                                initial={{ x, y, rotate: deg, scale: 1, opacity: 1 }}
+                                initial={{ opacity: 0, scale: 0.8, y: 50 }}
 
                                 animate={
                                     isShuffling
-                                        ? { x: 0, y: -30, rotate: 0, scale: 0.92, opacity: 1 }
+                                        ? { scale: [1, 0.9, 1], y: curveY, rotate: [rotateDeg, rotateDeg - 3, rotateDeg + 3, rotateDeg], opacity: 1, zIndex: index }
                                         : isSelected
-                                            ? { x: 0, y: -80, rotate: 0, scale: 1.35, opacity: 1, zIndex: 500 }
+                                            ? { scale: 1.15, y: curveY - 40, rotate: rotateDeg, opacity: 1, zIndex: 100 }
                                             : isOther
-                                                ? { x, y, rotate: deg, scale: 0.95, opacity: 0, filter: "blur(4px)" }
-                                                : { x, y, rotate: deg, scale: 1, opacity: 1 }
+                                                ? { scale: 0.95, y: curveY, rotate: rotateDeg, opacity: 0.5, filter: "blur(4px)", zIndex: index }
+                                                : isHovered
+                                                    ? { scale: 1.1, y: curveY - 20, rotate: rotateDeg, opacity: 1, zIndex: 50 }
+                                                    : { scale: 1, y: curveY, rotate: rotateDeg, opacity: 1, zIndex: index }
                                 }
 
                                 transition={
                                     isShuffling
-                                        ? { duration: 0.35, ease: [0.4, 0, 0.2, 1] }
+                                        ? { duration: 0.4, repeat: 1 }
                                         : isSelected
                                             ? { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }
                                             : isOther
@@ -143,8 +127,11 @@ export default function SelectCardPage() {
                                                 : { duration: 0.25, ease: [0.4, 0, 0.2, 1] }
                                 }
 
-                                className="absolute bottom-[-80px] left-1/2 -translate-x-1/2 cursor-pointer"
-                                style={{ transformOrigin: "bottom center" }}
+                                className="absolute top-0 responsive-card-pos cursor-pointer"
+                                style={{ 
+                                    "--percent": percent,
+                                    transformOrigin: "bottom center"
+                                } as React.CSSProperties}
                             >
                                 {/* Hover glow outline */}
                                 {isHovered && (
@@ -178,12 +165,9 @@ export default function SelectCardPage() {
                                 <img
                                     src="/card/back.jpg"
                                     alt="card"
-                                    className="w-32 h-48 rounded-xl"
+                                    className="w-16 h-24 sm:w-20 sm:h-32 md:w-28 md:h-40 rounded-md md:rounded-xl"
                                     style={{
-                                        boxShadow: `
-${index < total / 2 ? "-6px 5px 10px rgba(0,0,0,0.3)" : "6px 5px 10px rgba(0,0,0,0.3)"},
-0 20px 35px rgba(0,0,0,0.35)
-`
+                                        boxShadow: "0 10px 25px rgba(0,0,0,0.4)"
                                     }}
                                 />
                             </motion.div>
@@ -192,6 +176,34 @@ ${index < total / 2 ? "-6px 5px 10px rgba(0,0,0,0.3)" : "6px 5px 10px rgba(0,0,0
                     })}
 
                 </div>
+            </div>
+            {/* Shuffle Button */}
+            <div className="flex justify-center mb-6">
+                <button
+                    onClick={handleShuffle}
+                    disabled={selectedCard !== null || isShuffling}
+                    className="
+                        flex items-center gap-2
+                        cursor-pointer
+                        px-6 py-2.5
+                        rounded-full
+                        bg-gradient-to-r from-purple-600 to-indigo-600
+                        text-white font-medium text-sm
+                        shadow-lg shadow-purple-900/30
+                        hover:from-purple-500 hover:to-indigo-500
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                        transition-all duration-200
+                        cursor-pointer
+                        hover:scale-105 active:scale-95
+                    "
+                >
+                    <Shuffle
+                        size={16}
+                        className={isShuffling ? "animate-spin" : ""}
+                    />
+                    สับไพ่
+                </button>
+            </div>
             </div>
 
         </div>

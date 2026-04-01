@@ -20,7 +20,7 @@ export default function ResultPage() {
         (c) => Number(c.card_id) === cardId
     );
 
-    const [loveType, setLoveType] = useState("single");
+    const [expandedLove, setExpandedLove] = useState<'single' | 'couple' | null>(null);
     const router = useRouter();
     const hasSaved = useRef(false);
 
@@ -144,136 +144,49 @@ export default function ResultPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
 
                                     {/* Single */}
-                                    <div className="
-                                                bg-[#5A5470]
-                                                rounded-xl
-                                                min-h-[150px] md:min-h-[180px]
-                                                flex
-                                                flex-col
-                                                items-center
-                                                justify-start
-                                                text-center
-                                                transition-all
-                                                duration-300
-                                                hover:scale-[1.02] md:hover:scale-105
-                                                hover:bg-[#6A6285]
-                                                group
-                                                cursor-pointer
-                                                p-6
-                                                pt-8
-                                                ">
-
-                                        {/* Title */}
-                                        <div className="
-                                                transition-all
-                                                duration-500
-                                                md:group-hover:-translate-y-6
-                                                ">
-
-                                            <h3 className="text-xl md:text-2xl font-semibold text-pink-300">
-                                                Single
-                                            </h3>
-
-                                            <p className="
-                                                text-sm
-                                                text-gray-300
-                                                mt-2
-                                                transition-opacity
-                                                duration-300
-                                                md:group-hover:opacity-0
-                                                ">
-                                                เลื่อนเมาส์/แตะ เพื่อดูคำทำนาย
+                                    <div 
+                                        onClick={() => setExpandedLove(prev => prev === 'single' ? null : 'single')}
+                                        className={`
+                                            bg-[#5A5470] rounded-xl min-h-[150px] md:min-h-[180px]
+                                            flex flex-col items-center justify-start text-center
+                                            transition-all duration-300 cursor-pointer p-6 pt-8
+                                            ${expandedLove === 'single' ? 'bg-[#6A6285]' : 'hover:bg-[#6A6285] hover:scale-[1.02] md:hover:scale-105'}
+                                        `}
+                                    >
+                                        <div className={`transition-all duration-500 ${expandedLove === 'single' ? '-translate-y-2 md:-translate-y-6' : ''}`}>
+                                            <h3 className="text-xl md:text-2xl font-semibold text-pink-300">Single</h3>
+                                            <p className={`text-sm text-gray-300 mt-2 transition-opacity duration-300 ${expandedLove === 'single' ? 'opacity-0 h-0 hidden' : 'opacity-100'}`}>
+                                                แตะหรือคลิก เพื่อดูคำทำนาย
                                             </p>
-
                                         </div>
-
-                                        {/* Prediction text */}
-                                        <p className="
-                                                text-gray-200
-                                                leading-loose
-                                                mt-4
-                                                opacity-0
-                                                origin-top
-                                                max-h-0
-                                                overflow-hidden
-                                                transition-all
-                                                duration-500
-                                                group-hover:opacity-100
-                                                group-hover:scale-y-100
-                                                group-hover:max-h-[400px]
-                                                text-center
-                                                max-w-[420px]
-                                                mx-auto
-                                                ">
-                                            {card.love.single}
-                                        </p>
-
+                                        <div className={`transition-all duration-500 overflow-hidden ${expandedLove === 'single' ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
+                                            <p className="text-gray-200 leading-loose text-center max-w-[420px] mx-auto flex-1">
+                                                {card.love.single}
+                                            </p>
+                                        </div>
                                     </div>
 
-
                                     {/* Couple */}
-                                    <div className="
-                                                bg-[#5A5470]
-                                                rounded-xl
-                                                min-h-[150px] md:min-h-[180px]
-                                                flex
-                                                flex-col
-                                                items-center
-                                                justify-start
-                                                text-center
-                                                transition-all
-                                                duration-300
-                                                hover:scale-[1.02] md:hover:scale-105
-                                                hover:bg-[#6A6285]
-                                                group
-                                                cursor-pointer
-                                                p-6
-                                                pt-8
-                                                ">
-
-                                        {/* Title */}
-                                        <div className="
-                                                transition-all
-                                                duration-500
-                                                md:group-hover:-translate-y-6
-                                                ">
-
-                                            <h3 className="text-xl md:text-2xl font-semibold text-rose-300">
-                                                Couple
-                                            </h3>
-
-                                            <p className="
-                                                text-sm
-                                                text-gray-300
-                                                mt-2
-                                                transition-opacity
-                                                duration-300
-                                                md:group-hover:opacity-0
-                                                ">
-                                                เลื่อนเมาส์/แตะ เพื่อดูคำทำนาย
+                                    <div 
+                                        onClick={() => setExpandedLove(prev => prev === 'couple' ? null : 'couple')}
+                                        className={`
+                                            bg-[#5A5470] rounded-xl min-h-[150px] md:min-h-[180px]
+                                            flex flex-col items-center justify-start text-center
+                                            transition-all duration-300 cursor-pointer p-6 pt-8
+                                            ${expandedLove === 'couple' ? 'bg-[#6A6285]' : 'hover:bg-[#6A6285] hover:scale-[1.02] md:hover:scale-105'}
+                                        `}
+                                    >
+                                        <div className={`transition-all duration-500 ${expandedLove === 'couple' ? '-translate-y-2 md:-translate-y-6' : ''}`}>
+                                            <h3 className="text-xl md:text-2xl font-semibold text-rose-300">Couple</h3>
+                                            <p className={`text-sm text-gray-300 mt-2 transition-opacity duration-300 ${expandedLove === 'couple' ? 'opacity-0 h-0 hidden' : 'opacity-100'}`}>
+                                                แตะหรือคลิก เพื่อดูคำทำนาย
                                             </p>
-
                                         </div>
-
-                                        {/* Prediction text */}
-                                        <p className="
-                                                text-gray-200
-                                                leading-loose
-                                                mt-4
-                                                opacity-0
-                                                max-h-0
-                                                overflow-hidden
-                                                transition-all
-                                                duration-500
-                                                group-hover:opacity-100
-                                                group-hover:max-h-[1000px]
-                                                text-center
-                                                max-w-[420px]
-                                                mx-auto
-                                                ">
-                                            {card.love.couple}
-                                        </p>
-
+                                        <div className={`transition-all duration-500 overflow-hidden ${expandedLove === 'couple' ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
+                                            <p className="text-gray-200 leading-loose text-center max-w-[420px] mx-auto flex-1">
+                                                {card.love.couple}
+                                            </p>
+                                        </div>
                                     </div>
 
                                 </div>

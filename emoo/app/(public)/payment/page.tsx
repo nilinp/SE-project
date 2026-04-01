@@ -229,12 +229,28 @@ export default function PaymentPage() {
 
         <div className="flex flex-col gap-8">
           <div className="grid grid-cols-2 gap-4">
-            <button onClick={() => setMethod("qr")} className={`p-6 rounded-2xl border transition-all text-left ${method === "qr" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
+            <button onClick={() => setMethod("qr")} 
+            className={`
+            p-6 
+            rounded-2xl 
+            border 
+            transition-all 
+            text-left 
+            cursor-pointer
+            ${method === "qr" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
               <p className="mb-2"><QrCode size={50}/></p>
               <p className="font-bold text-lg">QR Code</p>
               <p className="text-white/40 text-sm mt-1">ชำระผ่าน Mobile Banking</p>
             </button>
-            <button onClick={() => setMethod("credit")} className={`p-6 rounded-2xl border transition-all text-left ${method === "credit" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
+            <button onClick={() => setMethod("credit")} 
+            className={`
+            p-6 
+            rounded-2xl 
+            border 
+            transition-all 
+            text-left  
+            cursor-pointer
+            ${method === "credit" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
               <p className="mb-2"><CreditCard size={50}/></p>
               <p className="font-bold text-lg">บัตรเครดิต / เดบิต</p>
               <p className="text-white/40 text-sm mt-1">Visa, Mastercard</p>
@@ -291,7 +307,20 @@ export default function PaymentPage() {
 
         {method && (
           <div className="flex justify-center pt-8">
-            <button onClick={handleConfirm} disabled={loading} className="bg-transparent border-2 border-white hover:bg-white/10 text-white py-4 rounded-2xl font-black text-2xl transition-all active:scale-[0.98] disabled:opacity-50 px-24">
+            <button onClick={handleConfirm} disabled={loading} className="
+            bg-transparent 
+            border-2 border-white 
+            hover:bg-white/10 
+            text-white 
+            py-4 
+            rounded-2xl 
+            font-black 
+            text-2xl 
+            transition-all 
+            active:scale-[0.98] 
+            disabled:opacity-50 
+            px-24 
+            cursor-pointer">
               {loading ? "กำลังดำเนินการ..." : "ยืนยันการชำระเงิน"}
             </button>
           </div>

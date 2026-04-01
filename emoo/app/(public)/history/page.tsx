@@ -149,6 +149,33 @@ export default function HistoryPage() {
         return { totalSpent, totalOrders, paidOrders };
     }, [orders]);
 
+    const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let val = e.target.value;
+        const oldVal = card.expiry;
+
+        if (val.length < oldVal.length) {
+            setCard({ ...card, expiry: val });
+            return;
+        }
+
+        if (val.endsWith("/") && val.length === 2 && !oldVal.includes("/")) {
+            setCard({ ...card, expiry: `0${val[0]}/` });
+            return;
+        }
+
+        const digits = val.replace(/\D/g, "");
+        if (digits.length === 1) {
+            if (parseInt(digits) >= 2 && parseInt(digits) <= 9) val = `0${digits}/`;
+            else val = digits;
+        } else if (digits.length === 2) {
+            if (parseInt(digits) > 12) val = digits[0];
+            else val = `${digits}/`;
+        } else if (digits.length > 2) {
+            val = `${digits.substring(0, 2)}/${digits.substring(2, 4)}`;
+        }
+        setCard({ ...card, expiry: val });
+    };
+
     // Open payment popup
     const openPayment = (order: Order) => {
         setPayingOrder(order);
@@ -610,7 +637,7 @@ export default function HistoryPage() {
                                             <input
                                                 name="expiry"
                                                 value={card.expiry}
-                                                onChange={(e) => setCard({ ...card, expiry: e.target.value })}
+                                                onChange={handleExpiryChange}
                                                 placeholder="MM/YY"
                                                 maxLength={5}
                                                 className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"

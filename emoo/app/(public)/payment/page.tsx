@@ -92,10 +92,17 @@ export default function PaymentPage() {
       if (parseInt(digits) >= 2 && parseInt(digits) <= 9) val = `0${digits}/`;
       else val = digits;
     } else if (digits.length === 2) {
-      if (parseInt(digits) > 12) val = digits[0];
+      if (digits === "00" || parseInt(digits) > 12) val = digits[0];
       else val = `${digits}/`;
     } else if (digits.length > 2) {
-      val = `${digits.substring(0, 2)}/${digits.substring(2, 4)}`;
+      const mm = digits.substring(0, 2);
+      if (mm === "00" || parseInt(mm) > 12) {
+        val = digits[0];
+      } else {
+        val = `${mm}/${digits.substring(2, 4)}`;
+      }
+    } else {
+      val = digits;
     }
     setCard({ ...card, expiry: val });
     setErrors((prev) => ({ ...prev, expiry: undefined }));
@@ -104,27 +111,33 @@ export default function PaymentPage() {
   // --- LOGIC: CVV (ห้ามเกิน 4 หลัก + ระบบซ่อนตัวเลข) ---
   const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputVal = e.target.value;
+    
+    // Handle deletion
     if (inputVal.length < cvvDisplay.length) {
       const newActualCvv = card.cvv.slice(0, -1);
       setCard({ ...card, cvv: newActualCvv });
       setCvvDisplay(showCvv ? newActualCvv : "•".repeat(newActualCvv.length));
       return;
     }
-    const addedChar = inputVal.slice(-1);
-    if (!/^[0-9]$/.test(addedChar) || card.cvv.length >= 4) return;
 
-    const newActualCvv = card.cvv + addedChar;
-    setCard({ ...card, cvv: newActualCvv });
+    // Handle addition (typing or pasting)
+    const newChars = inputVal.slice(cvvDisplay.length).replace(/\D/g, "");
+    if (!newChars) return; 
+    
+    const finalCvv = (card.cvv + newChars).slice(0, 4);
+    if (finalCvv === card.cvv) return;
+
+    setCard({ ...card, cvv: finalCvv });
     setErrors((prev) => ({ ...prev, cvv: undefined }));
 
     if (showCvv) {
-      setCvvDisplay(newActualCvv);
+      setCvvDisplay(finalCvv);
     } else {
-      const newDisplay = "•".repeat(newActualCvv.length - 1) + addedChar;
+      const newDisplay = "•".repeat(finalCvv.length - 1) + finalCvv.slice(-1);
       setCvvDisplay(newDisplay);
       if (cvvTimer) clearTimeout(cvvTimer);
       const timer = setTimeout(() => {
-        setCvvDisplay("•".repeat(newActualCvv.length));
+        setCvvDisplay("•".repeat(finalCvv.length));
       }, 500);
       setCvvTimer(timer);
     }

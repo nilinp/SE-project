@@ -57,6 +57,7 @@ export default function Register() {
       email,
       password,
       options: {
+        emailRedirectTo: "https://e-moo.onrender.com/",
         data: {
           username,
         },
@@ -66,6 +67,8 @@ export default function Register() {
     if (signUpError) {
       if (signUpError.message.includes("already registered") || signUpError.status === 422) {
         setError("อีเมลนี้ถูกใช้ไปแล้ว กรุณาใช้อีเมลอื่น");
+      } else if (signUpError.message.toLowerCase().includes("rate limit") || signUpError.status === 429) {
+        setError("คุณส่งคำขอมากเกินไป กรุณารอสักครู่แล้วลองใหม่อีกครั้ง");
       } else {
         setError(signUpError.message);
       }

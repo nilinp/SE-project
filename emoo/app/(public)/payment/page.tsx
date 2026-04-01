@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import { ArrowBigLeft, CreditCard, Eye, EyeOff, QrCode } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { usePopupStore } from "@/lib/popupstore";
 
 type FormErrors = {
   number?: string;
@@ -15,6 +16,7 @@ type FormErrors = {
 
 export default function PaymentPage() {
   const router = useRouter();
+  const showPopup = usePopupStore((state) => state.showPopup);
   const cart = useCartStore((state: CartStore) => state.cart);
   const removeItems = useCartStore((state: CartStore) => state.removeItems);
 
@@ -57,7 +59,14 @@ export default function PaymentPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCard({ ...card, [name]: value });
+    
+    let processedValue = value;
+    if (name === "name") {
+      // Allow only Thai letters, English letters, and spaces
+      processedValue = value.replace(/[^a-zA-Zก-ฮะ-์\s]/g, "");
+    }
+
+    setCard({ ...card, [name]: processedValue });
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -171,7 +180,10 @@ export default function PaymentPage() {
   };
 
   const handleConfirm = async () => {
-    if (!method) { alert("กรุณาเลือกวิธีชำระเงิน"); return; }
+    if (!method) { 
+      showPopup("แจ้งเตือน", "กรุณาเลือกวิธีชำระเงิน", "error"); 
+      return; 
+    }
     if (method === "credit") {
       const newErrors: FormErrors = {};
       Object.keys(card).forEach((key) => {
@@ -190,10 +202,11 @@ export default function PaymentPage() {
       removeItems(purchasedIds);
       localStorage.removeItem("order_id");
       localStorage.removeItem("purchased_item_ids");
-      alert("ชำระเงินสำเร็จ! 🎉");
-      router.push("/");
+      showPopup("สำเร็จ!", "ชำระเงินสำเร็จ! 🎉", "success", () => {
+        router.push("/");
+      });
     } catch (_err) { // ใส่ _ ข้างหน้า
-        alert("เกิดข้อผิดพลาด");
+        showPopup("เกิดข้อผิดพลาด", "ไม่สามารถประมวลผลการชำระเงินได้", "error");
         console.error(_err); // หรือเอามา console ดูว่าพังเพราะอะไร
       } finally { setLoading(false); }
   };

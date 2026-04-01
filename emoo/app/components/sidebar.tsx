@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { Home, ShoppingCart, Bell, Store, ShoppingBag, Clock } from "lucide-react";
+import { Home, ShoppingCart, Store } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/cartstore";
@@ -13,19 +13,40 @@ import { User } from "@supabase/supabase-js";
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const loadUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
-    });
 
-    // Listen for changes on auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", session.user.id)
+          .single();
+        setUsername(data?.username ?? null);
+      }
+    };
+
+    loadUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", session.user.id)
+          .single();
+        setUsername(data?.username ?? null);
+      } else {
+        setUsername(null);
+      }
     });
 
     function handleClickOutside(e: MouseEvent) {
@@ -51,18 +72,8 @@ export default function Sidebar() {
   const totalItems = items.reduce(
     (sum, item) => sum + item.quantity, 0);
 
-  const navItems = [
-    { href: "/", icon: Home, label: "หน้าหลัก" },
-    { 
-      href: user ? "/cart" : "/login", 
-      icon: ShoppingCart, 
-      label: "ตะกร้า",
-      badge: user && totalItems > 0 ? totalItems : null,
-      disabled: !user,
-    },
-    { href: "/shopping", icon: Store, label: "ร้านค้า" },
-    { href: "/history", icon: Clock, label: "ประวัติ" },
-  ];
+  const displayName = username ?? user?.email?.[0]?.toUpperCase() ?? "?";
+  const avatarLetter = (username?.[0] ?? user?.email?.[0] ?? "?").toUpperCase();
 
   return (
     <>
@@ -140,8 +151,9 @@ export default function Sidebar() {
       </aside>
 
       {/* ─── Mobile Bottom Navigation ─── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-(--bg) border-t border-white/10 z-40 safe-pb">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-(--bg) border-t border-white/10 z-40">
         <div className="flex items-center justify-around py-2">
+
           {/* Home */}
           <Link href="/" className="flex flex-col items-center gap-0.5 py-1 px-3">
             <Home size={24} className={`transition ${pathname === "/" ? "text-(--main)" : "text-white/60"}`} />
@@ -182,24 +194,25 @@ export default function Sidebar() {
             <span className={`text-[10px] ${pathname === "/cart" ? "text-(--main)" : !user ? "text-white/30" : "text-white/60"}`}>ตะกร้า</span>
           </button>
 
-          {/* History */}
-          <Link href="/history" className="flex flex-col items-center gap-0.5 py-1 px-3">
-            <Clock size={24} className={`transition ${pathname === "/history" ? "text-(--main)" : "text-white/60"}`} />
-            <span className={`text-[10px] ${pathname === "/history" ? "text-(--main)" : "text-white/60"}`}>ประวัติ</span>
-          </Link>
-
-          {/* Profile / Login */}
+          {/* Profile */}
           <button
-            onClick={() => user ? router.push("/horoscope") : router.push("/login")}
-            className="flex flex-col items-center gap-0.5 py-1 px-3"
+            onClick={() => user ? router.push("/profile") : router.push("/login")}
+            className="flex flex-col items-center gap-0.5 py-1 px-3 max-w-[72px]"
           >
-            <div className={`w-6 h-6 rounded-full bg-(--main)/30 flex items-center justify-center text-xs font-bold ${pathname === "/horoscope" ? "text-(--main)" : "text-white/60"}`}>
-              {user ? user.email?.[0]?.toUpperCase() ?? "U" : "👤"}
+            {/* Avatar circle */}
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+              pathname === "/profile" 
+                ? "bg-(--main) text-(--bg)" 
+                : "bg-(--main)/30 text-white/70"
+            }`}>
+              {avatarLetter}
             </div>
-            <span className={`text-[10px] ${pathname === "/horoscope" ? "text-(--main)" : "text-white/60"}`}>
-              {user ? "โปรไฟล์" : "เข้าสู่ระบบ"}
+            {/* Username or เข้าสู่ระบบ */}
+            <span className={`text-[10px] truncate w-full text-center ${pathname === "/profile" ? "text-(--main)" : "text-white/60"}`}>
+              {user ? (username ?? "โปรไฟล์") : "เข้าสู่ระบบ"}
             </span>
           </button>
+
         </div>
       </nav>
     </>

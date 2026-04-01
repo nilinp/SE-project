@@ -25,6 +25,19 @@ export default function Register() {
       return;
     }
 
+    // Check email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("รูปแบบอีเมลไม่ถูกต้อง");
+      return;
+    }
+
+    // Check password length
+    if (password.length < 8) {
+      setError("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
+      return;
+    }
+
     setLoading(true);
 
     // Check if username already exists
@@ -60,15 +73,23 @@ export default function Register() {
       return;
     }
 
-    // บันทึก email ลง profiles เพื่อให้ login ด้วย username ได้
+    // บันทึก email และ username ลง profiles เพื่อให้ login ด้วย username ได้
     if (data.user) {
       await supabase
         .from("profiles")
-        .update({ email })
-        .eq("id", data.user.id);
+        .upsert({ 
+          id: data.user.id,
+          username,
+          email 
+        }, { onConflict: "id" });
     }
 
-    showPopup("สมัครสำเร็จ", "สมัครสมาชิกสำเร็จ ยินดีต้อนรับ! กรุณาเข้าสู่ระบบ", "success", () => router.push("/login"));
+    showPopup(
+      "สมัครสำเร็จ", 
+      "เราได้ส่งลิงก์ยืนยันไปที่อีเมลของคุณแล้ว กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ", 
+      "success", 
+      () => router.push("/login")
+    );
   };
 
   return (

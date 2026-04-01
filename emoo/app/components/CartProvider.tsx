@@ -7,7 +7,12 @@ import { useCartStore } from "@/lib/cartstore";
 export default function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // โหลดตะกร้าเมื่อ user login อยู่แล้ว
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error && (error.message.includes("Refresh Token Not Found") || error.status === 400)) {
+        console.warn("Invalid session detected, signing out to clear state.");
+        supabase.auth.signOut();
+        return;
+      }
       if (session) {
         useCartStore.getState().loadCart();
       }

@@ -40,7 +40,14 @@ export default function UserProfileCard() {
   /* ─── Load profile ─── */
   useEffect(() => {
     const load = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError && (sessionError.message.includes("Refresh Token") || sessionError.status === 400)) {
+        await supabase.auth.signOut();
+        setIsGuest(true);
+        setLoaded(true);
+        return;
+      }
 
       if (!session) {
         // Guest mode

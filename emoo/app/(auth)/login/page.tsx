@@ -53,11 +53,17 @@ export default function Login() {
       .from("profiles")
       .select("id, email")
       .eq("username", username.trim())
-      .single();
+      .maybeSingle();
 
-    if (profileError || !profileData || !profileData.email) {
-      console.error("Profile lookup error:", profileError);
-      setError("ไม่พบชื่อผู้ใช้นี้ในระบบ (ตรวจสอบว่าได้รันโค้ด SQL เปิด RLS ให้ profiles อ่านได้หรือยัง)");
+    if (profileError) {
+      console.error("Profile lookup error:", JSON.stringify(profileError, null, 2));
+      setError("เกิดข้อผิดพลาดในการตรวจสอบบัญชี กรุณาลองใหม่อีกครั้ง");
+      setLoading(false);
+      return;
+    }
+
+    if (!profileData || !profileData.email) {
+      setError("ไม่พบชื่อผู้ใช้นี้ในระบบ");
       setLoading(false);
       return;
     }
@@ -68,7 +74,11 @@ export default function Login() {
     });
 
     if (loginError) {
-      setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      if (loginError.message.includes("Email not confirmed")) {
+        setError("กรุณายืนยันอีเมลของคุณก่อนเข้าสู่ระบบ");
+      } else {
+        setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      }
       setLoading(false);
     } else {
       // โหลดตะกร้าจาก DB

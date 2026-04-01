@@ -63,12 +63,11 @@ export default function CartPage() {
         flex-col 
         lg:flex-row 
         lg:items-start
-        justify-center
-        px-4
+        px-4 md:px-8
         lg:px-16
         md:ml-20 lg:ml-24
         pt-5
-        gap-8 lg:gap-20">
+        gap-6 lg:gap-12">
 
         {/* cart items */}
         <div className="flex-1">

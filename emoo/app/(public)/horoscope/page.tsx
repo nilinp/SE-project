@@ -63,25 +63,24 @@ export default function Horoscope() {
     flex-col 
     lg:flex-row 
     lg:items-start
-    justify-center
-    px-4
+    px-4 md:px-8
     lg:px-16
     lg:ml-24
-    pt-10
-    gap-10">
+    pt-6 md:pt-10
+    gap-4 md:gap-8 lg:gap-10">
       {/* LEFT SECTION */}
       <div className="w-full lg:w-2/3 flex flex-col items-center">
 
-        <div className="w-full mb-10 flex justify-center">
+        <div className="w-full mb-4 md:mb-8 flex justify-center">
           <TabSwitch />
         </div>
 
         {/* CATEGORY BOX */}
         <div className="
-          mt-5
+          mt-2 md:mt-5
           bg-(--bg3)
-          p-10 
-          rounded-[32px] 
+          p-5 md:p-10 
+          rounded-[24px] md:rounded-[32px]
           shadow-2xl
           w-full
           max-w-4xl 
@@ -90,27 +89,27 @@ export default function Horoscope() {
           border-(--main)">
           
           {/* HEADER */}
-          <div className="flex items-center gap-6 mb-12">
+          <div className="flex items-center gap-3 md:gap-6 mb-6 md:mb-12">
 
-            <div className="w-16 h-[4px] bg-[#E6D5B8]" />
+            <div className="w-8 md:w-16 h-[4px] bg-[#E6D5B8]" />
 
             <h2 className="
-            text-4xl md:text-6xl
+            text-3xl md:text-6xl
             font-extrabold 
             text-(--main)
             drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]">
               หมวดหมู่
             </h2>
 
-            <p className="text-sm text-(--main) mt-4 whitespace-nowrap">
+            <p className="hidden sm:block text-sm text-(--main) mt-4 whitespace-nowrap">
               วันนี้คุณอยากรู้อะไร?
             </p>
 
             <div className="flex-1 h-[4px] bg-(--main)" />
-            <div className="w-6 h-[4px] bg-(--main)" />
+            <div className="w-4 md:w-6 h-[4px] bg-(--main)" />
           </div>
 
-          <div className="text-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 mt-10">
+          <div className="text-center grid grid-cols-3 gap-4 md:gap-10 px-2 md:px-4 mt-4 md:mt-10">
             {categories.map((item, index) => (
               <div
                 key={index}
@@ -118,7 +117,7 @@ export default function Horoscope() {
                 className="flex flex-col items-center gap-4 cursor-pointer group"
               >
                 <div
-                  className=" relative w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44
+                  className="relative w-24 h-24 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44
                               rounded-2xl bg-cover bg-center overflow-hidden
                               shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl"
                   style={{ backgroundImage: `url(${item.src})` }}
@@ -135,25 +134,25 @@ export default function Horoscope() {
         </div>
 
         {/* LUCKY COLOR BOX */}
-        <div className="mt-10 bg-[#8E7F7F]
-          p-10 rounded-[28px]
+        <div className="mt-4 md:mt-10 bg-[#8E7F7F]
+          p-5 md:p-10 rounded-[20px] md:rounded-[28px]
           border border-(--main)
           shadow-xl
           w-full
           max-w-4xl">
-            <div className="flex items-center gap-6 mb-8">
-              <div className="w-16 h-[3px] bg-(--bg)" />
-              <h2 className="text-5xl font-bold text-(--main)">
+            <div className="flex items-center gap-3 md:gap-6 mb-4 md:mb-8">
+              <div className="w-8 md:w-16 h-[3px] bg-(--bg)" />
+              <h2 className="text-3xl md:text-5xl font-bold text-(--main)">
                 สีเสริมดวงวันนี้
               </h2>
               <div className="flex-1 h-[3px] bg-(--bg)" />
-              <div className="w-6 h-[3px] bg-(--bg)" />
+              <div className="w-4 md:w-6 h-[3px] bg-(--bg)" />
             </div>
 
             {todayColor && (
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex flex-col items-center gap-3 md:gap-6">
                 {/* วัน */}
-                <p className="text-2xl font-bold text-(--main)">
+                <p className="text-xl md:text-2xl font-bold text-(--main)">
                   {todayColor.name}
                 </p>
 

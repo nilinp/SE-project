@@ -87,30 +87,24 @@ export default function Shopping() {
   }, [index, controls]);
 
   return (
-    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10">
+    <div className="min-h-screen px-4 md:px-8 lg:px-16 lg:ml-24 pt-6 md:pt-10">
 
       {/* TOP SECTION */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-center gap-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
 
-        {/* LEFT SECTION */}
-        <div className="w-full lg:w-2/3 flex flex-col items-center">
-
-          <div className="w-full mb-6 flex justify-center">
-            <TabSwitch />
-          </div>
+        {/* TabSwitch */}
+        <div className="flex justify-center md:justify-start">
+          <TabSwitch />
         </div>
 
-        {/* RIGHT SECTION */}
-        <div className="w-full lg:w-1/2 flex flex-col items-center">
-
-          <div className="w-full mb-6 flex justify-center">
-            <SearchBar 
-              value={searchQuery} 
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)} 
-            />
-          </div>
-
+        {/* SearchBar */}
+        <div className="flex justify-center md:justify-end flex-1 max-w-xs md:max-w-sm">
+          <SearchBar 
+            value={searchQuery} 
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)} 
+          />
         </div>
+
       </div>
 
       {/* BANNER */}
@@ -144,15 +138,15 @@ export default function Shopping() {
           <span className="text-xl font-semibold text-(--sec)">กำลังโหลด...</span>
         </div>
       ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 justify-items-center">
         {products
           .filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
           .map((item: ProductItem) => (
           <div
             key={item.id}
             className="
-              w-5/4.5
-              h-[400px]
+              w-full
+              h-[320px] sm:h-[360px] md:h-[380px] lg:h-[400px]
               bg-white
               rounded-2xl
               shadow-[0_2px_20px_rgba(0,0,0,0.06)]

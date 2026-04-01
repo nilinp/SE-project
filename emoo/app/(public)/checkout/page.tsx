@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-xl text-white/90 leading-tight pr-4">{item.name}</h3>
                       <button 
-                      onClick={() => remove(item.id)} className="
+                      onClick={() => remove(item.id)} className=" cursor-pointer
                       text-white/20 
                       hover:text-red-400 
                       transition-colors 
@@ -332,7 +332,8 @@ export default function CheckoutPage() {
                       rounded-full 
                       bg-white/10 
                       hover:bg-red-500/30 
-                      text-white transition">—</button>
+                      text-white transition
+                      cursor-pointer">—</button>
                       <span className="text-sm font-bold min-w-[20px] text-center">{item.quantity}</span>
                       <button onClick={() => increase(item.id)} 
                       className="
@@ -341,7 +342,8 @@ export default function CheckoutPage() {
                       rounded-full 
                       bg-white/10 
                       hover:bg-green-500/30 
-                      text-white transition">+</button>
+                      text-white transition
+                      cursor-pointer">+</button>
                     </div>
                   </div>
                 </div>

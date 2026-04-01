@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
-import { ArrowBigLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowBigLeft, CreditCard, Eye, EyeOff, QrCode } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 type FormErrors = {
@@ -205,14 +205,14 @@ export default function PaymentPage() {
 
   // --- LAYOUT: ส่วนแสดงผลที่ User จะเห็น ---
   return (
-    <div className="min-h-screen bg-[#11111b] text-white py-16 px-8 lg:ml-24">
+    <div className="min-h-screen text-white py-16 px-8 lg:ml-24">
       <div className="max-w-4xl mx-auto space-y-10">
         
         <header>
           <button onClick={() => router.back()} className="flex items-center gap-1 text-white/60 hover:text-white transition cursor-pointer mb-4">
             <ArrowBigLeft size={28} />
           </button>
-          <h1 className="text-5xl font-black mb-3 tracking-tighter">Payment</h1>
+          <h1 className="text-5xl font-black mb-3 tracking-tighter">ชำระเงิน</h1>
           <p className="text-white/40 text-sm tracking-wide uppercase">เลือกวิธีชำระเงิน</p>
         </header>
 
@@ -230,12 +230,12 @@ export default function PaymentPage() {
         <div className="flex flex-col gap-8">
           <div className="grid grid-cols-2 gap-4">
             <button onClick={() => setMethod("qr")} className={`p-6 rounded-2xl border transition-all text-left ${method === "qr" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
-              <p className="text-3xl mb-2">📱</p>
+              <p className="mb-2"><QrCode size={50}/></p>
               <p className="font-bold text-lg">QR Code</p>
-              <p className="text-white/40 text-sm mt-1">โอนผ่าน Mobile Banking</p>
+              <p className="text-white/40 text-sm mt-1">ชำระผ่าน Mobile Banking</p>
             </button>
             <button onClick={() => setMethod("credit")} className={`p-6 rounded-2xl border transition-all text-left ${method === "credit" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
-              <p className="text-3xl mb-2">💳</p>
+              <p className="mb-2"><CreditCard size={50}/></p>
               <p className="font-bold text-lg">บัตรเครดิต / เดบิต</p>
               <p className="text-white/40 text-sm mt-1">Visa, Mastercard</p>
             </button>

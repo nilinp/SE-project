@@ -292,7 +292,7 @@ export default function Horoscope() {
                   <X size={36}/>
                 </button>
 
-                <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7]">
+                <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7] cursor-pointer">
                   ตารางสีมงคล
                 </h1>
 

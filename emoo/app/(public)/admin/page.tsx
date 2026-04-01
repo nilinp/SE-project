@@ -197,7 +197,7 @@ export default function AdminProfile() {
           <button
             onClick={fetchData}
             disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[#ffecd9]/60 text-sm hover:bg-white/10 hover:text-[#ffecd9] transition-all duration-200 disabled:opacity-40"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[#ffecd9]/60 text-sm hover:bg-white/10 hover:text-[#ffecd9] transition-all duration-200 disabled:opacity-40 cursor-pointer"
           >
             <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
             รีเฟรช

@@ -298,6 +298,7 @@ export default function EditProduct() {
               hover:bg-(--bg) 
               hover:shadow-lg 
               transition 
+              cursor-pointer
               disabled:opacity-50
               cursor-pointer"
             >

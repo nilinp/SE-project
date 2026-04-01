@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { K2D } from "next/font/google";
-import Sidebar from "../components/sidebar";
-import Footer from "../components/Footer";
+import Sidebar from "@/app/components/sidebar";
 
 const k2d = K2D({
   subsets: ["latin", "thai"],
@@ -18,14 +17,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="flex flex-col min-h-screen bg-(--bg)">
-      <div className="flex flex-1 mb-10">
+    <main className="flex bg-[#11111b] min-h-screen">
+      <div className="flex flex-1">
         <Sidebar />
         <div className="flex-1">
           {children}
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

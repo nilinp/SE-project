@@ -68,6 +68,7 @@ export default function SelectCardPage() {
                     disabled={selectedCard !== null || isShuffling}
                     className="
                         flex items-center gap-2
+                        cursor-pointer
                         px-6 py-2.5
                         rounded-full
                         bg-gradient-to-r from-purple-600 to-indigo-600

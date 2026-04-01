@@ -330,6 +330,7 @@ export default function ResultPage() {
                     className="
                             flex
                             items-center
+                            cursor-pointer
                             gap-2
                             px-8
                             py-3

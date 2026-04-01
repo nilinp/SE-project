@@ -67,7 +67,7 @@ export default function ProductDetail({
   const router = useRouter();
 
   return (
-    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10 bg-(white) text-(--sec) relative">
+    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10 pb-20 bg-(white) text-(--sec) relative">
       
       {/* Validation Alert */}
       <AnimatePresence>

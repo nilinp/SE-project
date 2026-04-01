@@ -47,7 +47,7 @@ export default function SelectCardPage() {
     };
 
     return (
-        <div className="relative min-h-screen bg-[#2F2847] text-white p-10 md:pl-28" style={{ backgroundColor: "#2F2847" }}>
+        <div className="relative min-h-screen pb-20 bg-[#2F2847] text-white p-10 md:pl-28" style={{ backgroundColor: "#2F2847" }}>
 
             {/* Back Button */}
             <button

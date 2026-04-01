@@ -83,7 +83,7 @@ export default function ResultPage() {
 
     return (
 
-        <div className="min-h-screen bg-[#2F2847] text-white p-12">
+        <div className="min-h-screen pb-20 bg-[#2F2847] text-white p-12">
 
             {/* Back Button */}
             <button

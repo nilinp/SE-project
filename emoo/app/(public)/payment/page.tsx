@@ -205,7 +205,7 @@ export default function PaymentPage() {
 
   // --- LAYOUT: ส่วนแสดงผลที่ User จะเห็น ---
   return (
-    <div className="min-h-screen text-white py-16 px-8 lg:ml-24">
+    <div className="min-h-screen pb-20 text-white py-16 px-8 lg:ml-24">
       <div className="max-w-4xl mx-auto space-y-10">
         
         <header>

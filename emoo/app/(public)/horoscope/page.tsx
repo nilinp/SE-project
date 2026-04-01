@@ -57,7 +57,7 @@ export default function Horoscope() {
 
   return (
     <div className="
-    min-h-screen 
+    min-h-screen pb-20
     bg-(--bg) 
     flex 
     flex-col 

@@ -87,7 +87,7 @@ export default function Shopping() {
   }, [index, controls]);
 
   return (
-    <div className="min-h-screen px-4 lg:px-16 lg:ml-24 pt-10">
+    <div className="min-h-screen px-4 md:px-8 lg:px-16 lg:ml-24 pt-6 md:pt-10 pb-20">
 
       {/* TOP SECTION */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-center gap-20">

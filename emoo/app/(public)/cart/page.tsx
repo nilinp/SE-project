@@ -57,7 +57,7 @@ export default function CartPage() {
   return (
     <>
       <div className="
-        min-h-screen 
+        min-h-screen pb-20
         text-(--sec)
         flex 
         flex-col 

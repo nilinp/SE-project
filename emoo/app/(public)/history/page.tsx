@@ -214,7 +214,7 @@ export default function HistoryPage() {
 
     return (
         <>
-        <div className="min-h-screen bg-[#2F2847] text-white flex">
+        <div className="min-h-screen pb-20 bg-[#2F2847] text-white flex">
             <Sidebar />
 
             <div className="flex-1 md:ml-20 p-10 flex gap-8">

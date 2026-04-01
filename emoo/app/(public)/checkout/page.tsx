@@ -142,7 +142,7 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-[#1a1a2e] text-white py-16 px-8 lg:ml-24">
+      <div className="min-h-screen pb-20 bg-[#1a1a2e] text-white py-16 px-8 lg:ml-24">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-start">
         
         {/* ฝั่งซ้าย: แบบฟอร์ม */}

@@ -66,9 +66,9 @@ export default function CartPage() {
         justify-center
         px-4
         lg:px-16
-        lg:ml-24
+        md:ml-20 lg:ml-24
         pt-5
-        gap-20">
+        gap-8 lg:gap-20">
 
         {/* cart items */}
         <div className="flex-1">
@@ -200,7 +200,7 @@ export default function CartPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
-              className="w-[350px] p-6 border-2 rounded-xl border-(--bg) sticky top-10"
+              className="w-full lg:w-[350px] p-6 border-2 rounded-xl border-(--bg) lg:sticky lg:top-10"
             >
               <h2 className="text-xl font-bold mb-4">ทำการสั่งซื้อ</h2>
               <div className="flex flex-col flex-1 min-h-0">

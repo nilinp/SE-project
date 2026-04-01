@@ -217,7 +217,7 @@ export default function HistoryPage() {
         <div className="min-h-screen bg-[#2F2847] text-white flex">
             <Sidebar />
 
-            <div className="flex-1 md:ml-20 p-10 flex gap-8">
+            <div className="flex-1 md:ml-20 p-4 md:p-10 flex flex-col lg:flex-row gap-6 lg:gap-8">
 
                 {/* Back Button */}
                 <button
@@ -429,7 +429,7 @@ export default function HistoryPage() {
                 </div>
 
                 {/* RIGHT - Stats */}
-                <div className="w-80 space-y-6">
+                <div className="w-full lg:w-80 space-y-6">
                     {/* Horoscope Stats */}
                     <div className="bg-gradient-to-b from-[#3B3560] to-[#1F1A33] rounded-2xl p-6 shadow-xl">
                         <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">สถิติดูดวง</h3>

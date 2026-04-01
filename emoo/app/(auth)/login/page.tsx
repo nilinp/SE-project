@@ -86,10 +86,11 @@ export default function Login() {
     bg-cover 
     bg-center ">
         
+        {/* Left panel - hidden on mobile */}
         <div className="
+        hidden md:flex
         w-1/2
         min-h-screen
-        flex 
         items-center
         justify-center">
           <div className="text-white text-center ">
@@ -109,35 +110,36 @@ export default function Login() {
         </div>
 
         <div className="
-        w-1/2 
+        w-full md:w-1/2
         min-h-screen
         bg-white 
         flex 
         flex-col
         justify-center 
         items-center 
-        rounded-tl-4xl
-        rounded-bl-4xl
+        md:rounded-tl-4xl
+        md:rounded-bl-4xl
         ">
           <div className="
           bg-white
-          p-10
+          p-8 md:p-10
           flex flex-col items-center
+          w-full max-w-sm
           ">
             <Image
               src="/icon.png"
               alt="logo"
-              width={150}
-              height={150}
+              width={120}
+              height={120}
               className="mb-2"
             />
-            <h2 className="text-5xl font-bold text-(--bg)">
+            <h2 className="text-4xl md:text-5xl font-bold text-(--bg)">
               เข้าสู่ระบบ
             </h2>
           </div>
 
           {error && (
-            <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
+            <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-4/5 md:w-1/2 text-center border border-red-200">
               {error}
             </p>
           )}
@@ -150,7 +152,7 @@ export default function Login() {
             disabled={loading}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             className="
-            w-1/2 
+            w-4/5 md:w-1/2
             mb-5 
             px-4 
             py-3 
@@ -169,7 +171,7 @@ export default function Login() {
             disabled={loading}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             className="
-            w-1/2 
+            w-4/5 md:w-1/2
             mb-5 
             px-4 
             py-3 
@@ -184,7 +186,7 @@ export default function Login() {
             onClick={handleLogin} 
             disabled={loading}
             className="
-            w-1/2 
+            w-4/5 md:w-1/2
             py-3 
             rounded-full 
             bg-(--bg) 

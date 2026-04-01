@@ -21,11 +21,11 @@ export default function RootLayout({
     <main className="flex flex-col min-h-screen bg-(--bg)">
       <div className="flex flex-1">
         <Sidebar />
-        <div className="flex-1">
+        <div className="flex-1 pb-20 md:pb-0">
           {children}
         </div>
       </div>
-      <div className="mt-16">
+      <div className="mt-16 md:mt-16">
         <Footer />
       </div>
     </main>

@@ -95,7 +95,7 @@ export default function Horoscope() {
             <div className="w-16 h-[4px] bg-[#E6D5B8]" />
 
             <h2 className="
-            text-6xl 
+            text-4xl md:text-6xl
             font-extrabold 
             text-(--main)
             drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]">
@@ -247,12 +247,9 @@ export default function Horoscope() {
         {/* 👤 User Profile Card */}
         <div className="
           relative
-          w-[280px]
-          h-[320px]
-          sm:w-[340px]
-          sm:h-[420px]
-          lg:w-[380px]
-          lg:h-[500px]
+          w-full
+          max-w-xs sm:max-w-sm lg:max-w-[380px]
+          aspect-[3/4]
           rounded-[40px]
           overflow-hidden">
           <UserProfileCard />

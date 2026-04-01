@@ -76,7 +76,6 @@ export default function Register() {
       return;
     }
 
-    // บันทึก email และ username ลง profiles เพื่อให้ login ด้วย username ได้
     if (data.user) {
       await supabase
         .from("profiles")
@@ -101,20 +100,22 @@ export default function Register() {
     min-h-screen 
     w-screen 
     flex
-    bg-[url('/bg/register-bg.jpg')] 
-    bg-cover 
-    bg-center ">
+    md:bg-[url('/bg/register-bg.jpg')] 
+    bg-white
+    md:bg-cover 
+    md:bg-center ">
         
         <div className="
-            w-2/3
+            w-full
+            md:w-2/3
             min-h-screen
             bg-white 
             flex 
             flex-col
             justify-center 
             items-center 
-            rounded-tr-4xl
-            rounded-br-4xl
+            md:rounded-tr-4xl
+            md:rounded-br-4xl
             ">
             <div className="            pt-4 pb-2 px-10
             flex flex-col items-center
@@ -135,7 +136,7 @@ export default function Register() {
             </div>
             
             {error && (
-                <p className="text-red-500 mb-2 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
+                <p className="text-red-500 mb-2 text-sm bg-red-50 p-2 rounded w-3/4 md:w-1/2 text-center border border-red-200">
                     {error}
                 </p>
             )}
@@ -146,7 +147,7 @@ export default function Register() {
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
             className="
-            w-1/2 
+            w-3/4 md:w-1/2 
             mb-5
             px-4 
             py-3 
@@ -164,7 +165,7 @@ export default function Register() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 className="
-                w-1/2 
+                w-3/4 md:w-1/2 
                 mb-5 
                 px-4 
                 py-3 
@@ -182,7 +183,7 @@ export default function Register() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 className="
-                w-1/2 
+                w-3/4 md:w-1/2 
                 mb-1 
                 px-4 
                 py-3 
@@ -191,13 +192,13 @@ export default function Register() {
                 outline-none text-(--bg)
                 disabled:opacity-50"
             />
-            <p className="text-xs text-red-400 w-1/2 mb-3 ml-1">*ต้องมีอย่างน้อย 8 ตัว</p>
+            <p className="text-xs text-red-400 w-3/4 md:w-1/2 mb-3 ml-1">*ต้องมีอย่างน้อย 8 ตัว</p>
 
             <button 
                 onClick={handleRegister} 
                 disabled={loading}
                 className="
-                w-1/2 
+                w-3/4 md:w-1/2 
                 py-3 
                 rounded-full 
                 bg-(--bg) 

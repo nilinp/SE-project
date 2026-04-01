@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const supabase = require("../supabase");
 
-// สร้าง order ใหม่
 router.post("/", async (req, res) => {
   const { 
     first_name, last_name, phone, 
@@ -26,7 +25,6 @@ router.post("/", async (req, res) => {
   res.json({ message: "สร้าง order สำเร็จ", data });
 });
 
-// ดึง order ทั้งหมด (สำหรับ Admin)
 router.get("/", async (req, res) => {
   const { data, error } = await supabase
     .from("orders")
@@ -37,7 +35,6 @@ router.get("/", async (req, res) => {
   res.json(data);
 });
 
-// ดึง order ตาม id
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   const { data, error } = await supabase
@@ -50,7 +47,6 @@ router.get("/:id", async (req, res) => {
   res.json(data);
 });
 
-// อัพเดต status ของ order
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

@@ -20,7 +20,6 @@ export default function AdminShopping() {
   const [search, setSearch]     = useState("");
   const [loading, setLoading]   = useState(true);
 
-  // ดึงข้อมูลจาก Backend Supabase
   useEffect(() => {
     const fetchProducts = async () => {
       try {

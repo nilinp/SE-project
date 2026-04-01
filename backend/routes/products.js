@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const supabase = require("../supabase");
 
-// ดึงสินค้าทั้งหมด
 router.get("/", async (req, res) => {
   const { data, error } = await supabase
     .from("products")
@@ -11,7 +10,6 @@ router.get("/", async (req, res) => {
   res.json(data);
 });
 
-// เพิ่มสินค้า
 router.post("/", async (req, res) => {
   const { name, description, price, amount, image } = req.body;
   const { data, error } = await supabase
@@ -21,7 +19,6 @@ router.post("/", async (req, res) => {
   res.json({ message: "เพิ่มสินค้าสำเร็จ", data });
 });
 
-// แก้ไขสินค้า
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { name, description, price, amount, image } = req.body;
@@ -33,7 +30,6 @@ router.put("/:id", async (req, res) => {
   res.json({ message: "แก้ไขสำเร็จ", data });
 });
 
-// ลบสินค้า
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   const { error } = await supabase

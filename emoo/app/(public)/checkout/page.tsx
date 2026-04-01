@@ -142,12 +142,12 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <div className="min-h-screen pb-20 bg-[#1a1a2e] text-white py-16 px-8 lg:ml-24">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-start">
+      <div className="min-h-screen pb-24 md:pb-10 bg-[#1a1a2e] text-white py-6 sm:py-12 px-4 sm:px-8 md:ml-20 flex justify-center">
+      <div className="w-full max-w-xl lg:max-w-7xl flex flex-col lg:flex-row gap-12 lg:gap-20 items-start">
         
         {/* ฝั่งซ้าย: แบบฟอร์ม */}
         <div className="flex-1 w-full space-y-12">
-          <header>
+          <header className="sticky top-0 z-40 bg-[#1a1a2e]/95 backdrop-blur-md -mx-4 px-4 pt-6 pb-4 mb-8">
             <button
               onClick={() => router.back()}
               className="
@@ -158,12 +158,12 @@ export default function CheckoutPage() {
               hover:text-white 
               transition 
               cursor-pointer 
-              mb-4"
+              mb-2"
             >
               <ArrowBigLeft size={28} />
             </button>
-            <h1 className="text-5xl font-black mb-3 tracking-tighter text-white">ทำการสั่งซื้อ</h1>
-            <p className="text-white/40 text-sm tracking-wide uppercase">การจัดส่งและข้อมูลลูกค้า</p>
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-white">ทำการสั่งซื้อ</h1>
+            <p className="text-white/40 text-[10px] sm:text-sm tracking-wide uppercase mt-2">การจัดส่งและข้อมูลลูกค้า</p>
           </header>
 
           <div className="space-y-10">
@@ -175,7 +175,7 @@ export default function CheckoutPage() {
               uppercase 
               tracking-widest 
               italic">ข้อมูลลูกค้า</h2>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <label className="
                   text-xs 
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
                      focus:border-indigo-500 
                      outline-none transition-all" />
                 </div>
-                <div className="col-span-2 space-y-2">
+                <div className="sm:col-span-2 space-y-2">
                   <label className="text-xs font-bold text-white/30 uppercase ml-1">เบอร์โทรศัพท์ <span className="text-indigo-400 normal-case">(10 หลัก)</span></label>
                   <input name="phone" type="tel" inputMode="numeric" value={form.phone} onChange={handleChange} placeholder="0812345678" maxLength={10}
                     className="
@@ -244,7 +244,7 @@ export default function CheckoutPage() {
                     outline-none 
                     transition-all" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-white/30 uppercase ml-1">แขวง / ตำบล</label>
                     <input name="subdistrict" type="text" value={form.subdistrict} onChange={handleChange} placeholder="แขวงลาดยาว"
@@ -293,38 +293,37 @@ export default function CheckoutPage() {
           <div className="
           bg-white/[0.02] 
           border border-white/10 
-          rounded-[3rem] 
-          p-10 
-          lg:p-14 
+          rounded-3xl lg:rounded-[3rem] 
+          p-6 lg:p-14 
           backdrop-blur-xl shadow-2xl">
-            <h2 className="text-3xl font-black mb-10 tracking-tight">ยอดรวมคำสั่งซื้อ</h2>
+            <h2 className="text-xl sm:text-3xl font-black mb-10 tracking-tight">ยอดรวมคำสั่งซื้อ</h2>
 
             <div className="space-y-6 mb-12 max-h-[400px] overflow-y-auto pr-4">
               {checkoutItems.map((item: CartItem) => (
-                <div key={item.id} className="flex gap-6 items-start group py-4 border-b border-white/5">
-                  <div className="w-36 h-36 bg-white/5 rounded-2xl overflow-hidden flex-shrink-0">
+                <div key={item.id} className="flex gap-4 items-start group py-4 border-b border-white/5">
+                  <div className="w-18 h-18 sm:w-36 sm:h-36 bg-white/5 rounded-xl sm:rounded-2xl overflow-hidden flex-shrink-0">
                     <Image src={item.image || (item as any).img || "/placeholder.png"} alt={item.name} width={144} height={144}
                       className="
                       object-cover 
                       w-full h-full 
-                      rounded-2xl 
+                      rounded-xl sm:rounded-2xl 
                       group-hover:scale-110 
                       transition-transform duration-500" />
                   </div>
-                  <div className="flex-1 space-y-2 pl-4">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-xl text-white/90 leading-tight pr-4">{item.name}</h3>
+                  <div className="flex-1 space-y-1 sm:space-y-2 pl-2 sm:pl-4">
+                    <div className="flex justify-between items-start min-w-0">
+                      <h3 className="font-bold text-sm sm:text-xl text-white/90 leading-tight pr-4 truncate flex-1">{item.name}</h3>
                       <button 
                       onClick={() => remove(item.id)} className=" cursor-pointer
                       text-white/20 
                       hover:text-red-400 
                       transition-colors 
-                      text-xl cursor-pointer">
-                      <X size={25} />
+                      text-lg sm:text-xl cursor-pointer">
+                      <X size={20} />
                       </button>
                     </div>
-                    <p className="text-indigo-400 font-black text-2xl">฿{item.price.toLocaleString()}</p>
-                    <div className="flex items-center gap-3 w-fit mt-2">
+                    <p className="text-indigo-400 font-black text-lg sm:text-2xl">฿{item.price.toLocaleString()}</p>
+                    <div className="flex items-center gap-3 w-fit mt-1 sm:mt-2">
                       <button onClick={() => decrease(item.id)} 
                       className="
                       w-8 h-8 
@@ -360,9 +359,9 @@ export default function CheckoutPage() {
                 <span className="text-green-400">Free</span>
               </div>
               <div className="flex justify-between items-end pt-8">
-                <span className="text-2xl font-black italic uppercase">รวมยอดสั่งซื้อ</span>
+                <span className="text-base sm:text-2xl font-black italic uppercase">รวมยอดสั่งซื้อ</span>
                 <div className="text-right">
-                  <p className="text-5xl font-black text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+                  <p className="text-2xl sm:text-5xl font-black text-indigo-500 drop-shadow-[0_0_20px_rgba(99,102,241,0.4)]">
                     ฿{subtotal.toLocaleString()}
                   </p>
                 </div>
@@ -373,21 +372,19 @@ export default function CheckoutPage() {
               onClick={handleConfirm}
               disabled={loading}
               className="
-              mx-auto 
-              block 
+              w-full
               bg-transparent 
               border-2 border-white 
               hover:bg-white/10 
               text-white 
-              mt-20 py-4 
+              mt-10 sm:mt-20 py-4 
               rounded-2xl 
               font-black 
-              text-2xl 
+              text-xl sm:text-2xl 
               transition-all 
               active:scale-[0.98] 
               disabled:opacity-50
               cursor-pointer"
-              style={{ paddingLeft: '6rem', paddingRight: '6rem' }}
             >
               {loading ? "กำลังบันทึก..." : "ยืนยันการสั่งซื้อ"}
             </button>

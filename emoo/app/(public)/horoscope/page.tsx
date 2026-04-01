@@ -57,7 +57,7 @@ export default function Horoscope() {
 
   return (
     <div className="
-    min-h-screen pb-20
+    min-h-screen pb-24 lg:pb-20
     bg-(--bg) 
     flex 
     flex-col 
@@ -67,12 +67,12 @@ export default function Horoscope() {
     px-4
     lg:px-16
     lg:ml-24
-    pt-10
+    pt-0
     gap-10">
       {/* LEFT SECTION */}
       <div className="w-full lg:w-2/3 flex flex-col items-center">
 
-        <div className="w-full mb-10 flex justify-center">
+        <div className="sticky top-0 z-40 bg-(--bg)/95 backdrop-blur-md w-full pt-10 pb-6 flex justify-center border-b border-white/5 sm:border-none">
           <TabSwitch />
         </div>
 
@@ -80,7 +80,7 @@ export default function Horoscope() {
         <div className="
           mt-5
           bg-(--bg3)
-          p-10 
+          p-6 sm:p-10 
           rounded-[32px] 
           shadow-2xl
           w-full
@@ -90,43 +90,51 @@ export default function Horoscope() {
           border-(--main)">
           
           {/* HEADER */}
-          <div className="flex items-center gap-6 mb-12">
+          <div className="flex items-center gap-3 sm:gap-6 mb-8 sm:mb-12">
 
-            <div className="w-16 h-[4px] bg-[#E6D5B8]" />
+            <div className="w-8 sm:w-16 h-[3px] sm:h-[4px] bg-[#E6D5B8]" />
 
             <h2 className="
-            text-6xl 
+            text-3xl sm:text-6xl 
             font-extrabold 
             text-(--main)
-            drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]">
+            drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]
+            whitespace-nowrap">
               หมวดหมู่
             </h2>
 
-            <p className="text-sm text-(--main) mt-4 whitespace-nowrap">
+            <p className="hidden sm:block text-sm text-(--main) mt-4 whitespace-nowrap">
               วันนี้คุณอยากรู้อะไร?
             </p>
 
-            <div className="flex-1 h-[4px] bg-(--main)" />
-            <div className="w-6 h-[4px] bg-(--main)" />
+            <div className="flex-1 h-[3px] sm:h-[4px] bg-(--main)" />
+            <div className="w-3 sm:w-6 h-[3px] sm:h-[4px] bg-(--main)" />
           </div>
 
-          <div className="text-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 mt-10">
+          <div className="
+          text-center 
+          grid grid-cols-3 
+          sm:grid-cols-2 
+          lg:grid-cols-3 
+          gap-4 sm:gap-10 
+          px-0 sm:px-4 
+          mt-6 sm:mt-10">
             {categories.map((item, index) => (
               <div
                 key={index}
                 onClick={() => router.push(`/horoscope/${item.slug}`)}
-                className="flex flex-col items-center gap-4 cursor-pointer group"
+                className="flex flex-col items-center gap-2 sm:gap-4 cursor-pointer group"
               >
                 <div
-                  className=" relative w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44
-                              rounded-2xl bg-cover bg-center overflow-hidden
+                  className=" relative w-16 h-16 sm:w-40 sm:h-40 lg:w-44 lg:h-44
+                              rounded-xl sm:rounded-2xl bg-cover bg-center overflow-hidden
                               shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:shadow-2xl"
                   style={{ backgroundImage: `url(${item.src})` }}
                 >
-                  <div className="absolute inset-0 bg-black/20 rounded-2xl" />
+                  <div className="absolute inset-0 bg-black/20 rounded-xl sm:rounded-2xl" />
                 </div>
 
-                <p className="text-(--main) text-xl font-semibold">
+                <p className="text-(--main) text-sm sm:text-xl font-bold">
                   {item.label}
                 </p>
               </div>
@@ -134,20 +142,19 @@ export default function Horoscope() {
           </div>
         </div>
 
-        {/* LUCKY COLOR BOX */}
         <div className="mt-10 bg-[#8E7F7F]
-          p-10 rounded-[28px]
+          p-6 sm:p-10 rounded-[28px]
           border border-(--main)
           shadow-xl
           w-full
           max-w-4xl">
-            <div className="flex items-center gap-6 mb-8">
-              <div className="w-16 h-[3px] bg-(--bg)" />
-              <h2 className="text-5xl font-bold text-(--main)">
+            <div className="flex items-center gap-3 sm:gap-6 mb-6 sm:mb-8">
+              <div className="w-8 sm:w-16 h-[2px] sm:h-[3px] bg-(--bg)" />
+              <h2 className="text-2xl sm:text-5xl font-bold text-(--main) whitespace-nowrap">
                 สีเสริมดวงวันนี้
               </h2>
-              <div className="flex-1 h-[3px] bg-(--bg)" />
-              <div className="w-6 h-[3px] bg-(--bg)" />
+              <div className="flex-1 h-[2px] sm:h-[3px] bg-(--bg)" />
+              <div className="w-3 sm:w-6 h-[2px] sm:h-[3px] bg-(--bg)" />
             </div>
 
             {todayColor && (
@@ -170,20 +177,24 @@ export default function Horoscope() {
                   <div key={index} className="relative group">
                     <div
                       className="
-                      w-12 
-                      h-12 
+                      w-12 h-12 
                       rounded-full 
                       shadow-lg 
-                      border 
-                      border-white/30 
+                      border border-white/30 
                       hover:scale-110 
-                      transition 
-                      duration-300
-                      cursor-pointer
-                      "
+                      transition duration-300 cursor-pointer"
                       style={{ backgroundColor: item.color }}
                     />
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-(--bg) text-(--main) text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
+                    <div className="
+                    absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 
+                    bg-(--bg) text-(--main) text-sm 
+                    font-medium 
+                    rounded-lg 
+                    opacity-0 
+                    group-hover:opacity-100 
+                    transition 
+                    whitespace-nowrap 
+                    z-10">
                       {item.type}
                     </div>
                   </div>
@@ -242,11 +253,12 @@ export default function Horoscope() {
         </div>
       </div>
 
-      {/* RIGHT SECTION */}
-      <div className="w-full lg:w-1/3 flex flex-col items-center">
+      {/* RIGHT SECTION - Hidden on mobile, shown on desktop */}
+      <div className="hidden lg:flex lg:w-1/3 flex-col items-center">
         {/* 👤 User Profile Card */}
         <div className="
           relative
+          mt-10
           w-[280px]
           h-[320px]
           sm:w-[340px]
@@ -272,11 +284,11 @@ export default function Horoscope() {
             <motion.div
               className="
               bg-[#3E354F] 
-              w-[90%] 
+              w-[95%] sm:w-[90%] 
               max-w-5xl 
               max-h-[85vh] 
               overflow-y-auto
-              p-12 
+              p-6 sm:p-12 
               rounded-3xl 
               shadow-2xl 
               relative"
@@ -292,20 +304,18 @@ export default function Horoscope() {
                   <X size={36}/>
                 </button>
 
-                <h1 className="text-4xl font-bold mb-10 text-[#F3E2C7] cursor-pointer">
+                <h1 className="text-2xl sm:text-4xl font-bold mb-6 sm:mb-10 text-[#F3E2C7] cursor-pointer">
                   ตารางสีมงคล
                 </h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   {luckyData.lucky_color.map((day) => (
-                    <div
-                      key={day.name}
-                      className="bg-[#4B415E] p-8 rounded-2xl shadow-xl border border-[#6B5E7A]" >
-                        {/* Day Title */}
-                        <h2 className="text-2xl font-bold text-[#F3E2C7] mb-6">
+                      <div
+                        key={day.name}
+                        className="bg-[#4B415E] p-4 sm:p-8 rounded-2xl shadow-xl border border-[#6B5E7A]" >
+                        <h2 className="text-xl sm:text-2xl font-bold text-[#F3E2C7] mb-4 sm:mb-6">
                           {day.name}
                         </h2>
-                        {/* Categories Grid */}
                         <div className="grid grid-cols-2 gap-6">
                           
                           {Object.entries(day)

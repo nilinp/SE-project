@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import tarot from "../../data/tarot.json";
 import { useRouter } from "next/navigation";
@@ -311,45 +311,55 @@ export default function HistoryPage() {
 
     return (
         <>
-        <div className="min-h-screen pb-20 bg-[#2F2847] text-white flex">
+        <div className="min-h-screen pb-24 md:pb-10 bg-[#2F2847] text-white flex">
             <Sidebar />
 
-            <div className="flex-1 md:ml-20 p-10 flex gap-8">
+            <div className="flex-1 w-full max-w-7xl mx-auto md:ml-20 flex flex-col">
+                <div className="sticky top-0 z-40 bg-[#2F2847]/95 backdrop-blur-md -mx-4 px-4 pt-4 pb-3 mb-4 flex items-center gap-2 sm:gap-4 border-b border-white/5 sm:border-none">
+                  {/* Back Button */}
+                  <button
+                      onClick={() => router.back()}
+                      className="flex items-center justify-center w-10 h-10 text-[#ffecd9] hover:opacity-70 transition cursor-pointer shrink-0"
+                  >
+                      <ArrowBigLeft size={26} />
+                  </button>
 
-                {/* Back Button */}
-                <button
-                    onClick={() => router.back()}
-                    className="flex items-center gap-1 text-[#ffecd9] hover:opacity-70 transition cursor-pointer self-start mt-1"
-                >
-                    <ArrowBigLeft size={28} />
-                </button>
+                  {/* Tab Switcher */}
+                  <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                          <button
+                              onClick={() => setTab("horoscope")}
+                              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-[11px] sm:text-sm transition-all cursor-pointer ${
+                                  tab === "horoscope"
+                                      ? "bg-purple-500 text-white shadow-lg"
+                                      : "bg-white/10 text-white/50 hover:bg-white/20"
+                              }`}
+                          >
+                              <Sparkles size={14} />
+                              ดูดวง
+                          </button>
+                          <button
+                              onClick={() => setTab("orders")}
+                              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-[11px] sm:text-sm transition-all cursor-pointer ${
+                                  tab === "orders"
+                                      ? "bg-indigo-500 text-white shadow-lg"
+                                      : "bg-white/10 text-white/50 hover:bg-white/20"
+                              }`}
+                          >
+                              <ShoppingBag size={14} />
+                              คำสั่งซื้อ
+                          </button>
+                      </div>
+                  </div>
+                </div>
 
-                {/* LEFT */}
-                <div className="flex-1 bg-[#4A445F] rounded-2xl p-6">
-                    {/* Tab Switcher */}
-                    <div className="flex items-center gap-4 mb-6">
-                        <button
-                            onClick={() => setTab("horoscope")}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
-                                tab === "horoscope"
-                                    ? "bg-purple-500 text-white shadow-lg"
-                                    : "bg-white/10 text-white/60 hover:bg-white/20"
-                            }`}
-                        >
-                            <Sparkles size={16} />
-                            ดูดวง
-                        </button>
-                        <button
-                            onClick={() => setTab("orders")}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
-                                tab === "orders"
-                                    ? "bg-indigo-500 text-white shadow-lg"
-                                    : "bg-white/10 text-white/60 hover:bg-white/20"
-                            }`}
-                        >
-                            <ShoppingBag size={16} />
-                            สั่งซื้อ
-                        </button>
+                <div className="flex flex-col md:flex-row gap-8">
+
+                <div className="flex-1 w-full bg-[#3B3560]/30 md:bg-[#4A445F] rounded-2xl p-4 sm:p-6">
+
+                    {/* MOBILE STATS BLOCK (Under tabs) */}
+                    <div className="md:hidden space-y-6 mb-6">
+                        <StatsBlock stats={stats} orderStats={orderStats} tab={tab} />
                     </div>
 
                     {/* Horoscope Tab */}
@@ -361,7 +371,7 @@ export default function HistoryPage() {
                                 </p>
                             )}
 
-                            <div className="space-y-6">
+                            <div className="grid grid-cols-1 gap-4 sm:gap-6">
                                 {views.map((view) => {
                                     const card = cardMap[String(view.card_id).padStart(2, "0")];
                                     if (!card) return null;
@@ -369,34 +379,41 @@ export default function HistoryPage() {
                                     return (
                                         <div
                                             key={view.id}
-                                            className="flex gap-4 items-center border-b border-white/10 pb-4"
+                                            className="flex flex-row gap-3 items-center bg-white/[0.03] sm:bg-transparent p-2.5 sm:p-0 rounded-xl sm:rounded-none border-b border-white/5 sm:border-white/10 pb-2.5 sm:pb-4"
                                         >
-                                            <img
-                                                src={card.image}
-                                                className="w-20 h-32 object-cover rounded-md"
-                                            />
-                                            <div className="flex-1">
-                                                <p className="text-sm text-gray-300">
-                                                    {categoryLabel[view.category] || view.category}
-                                                </p>
-                                                <h2 className="text-lg font-semibold">
+                                            <div className="w-14 h-20 sm:w-20 sm:h-32 flex-shrink-0">
+                                                <img
+                                                    src={card.image}
+                                                    className="w-full h-full object-cover rounded-lg shadow-lg"
+                                                />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex justify-between items-start">
+                                                    <p className="text-[10px] sm:text-sm text-indigo-300 font-medium uppercase tracking-wider">
+                                                        {categoryLabel[view.category] || view.category}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-500 sm:hidden">
+                                                        {new Date(view.viewed_at).toLocaleDateString("th-TH")}
+                                                    </p>
+                                                </div>
+                                                <h2 className="text-[14px] sm:text-lg font-bold text-white truncate">
                                                     {card.name}
                                                 </h2>
-                                                <p className="text-xs text-gray-400">
+                                                <p className="hidden sm:block text-xs text-gray-400 mt-1">
                                                     {new Date(view.viewed_at).toLocaleDateString("th-TH", {
                                                         year: "numeric",
                                                         month: "long",
                                                         day: "numeric",
                                                     })}
                                                 </p>
-                                                <div className="flex gap-2 mt-2">
+                                                <div className="flex gap-2 mt-3">
                                                     <button
                                                         onClick={() =>
                                                             router.push(
                                                                 `/horoscope/result/${card.card_id}?category=${view.category}`
                                                             )
                                                         }
-                                                        className="bg-purple-300 text-[var(--bg)] px-3 py-1 rounded-md text-sm hover:opacity-80 cursor-pointer"
+                                                        className="bg-[#ffecd9]/10 border border-[#ffecd9]/20 text-[#ffecd9] px-3 py-1.5 rounded-lg text-xs sm:text-sm hover:bg-[#ffecd9]/20 transition cursor-pointer"
                                                     >
                                                         ดูคำทำนาย
                                                     </button>
@@ -526,65 +543,13 @@ export default function HistoryPage() {
                 </div>
 
                 {/* RIGHT - Stats */}
-                <div className="w-80 space-y-6">
-                    {/* Horoscope Stats */}
-                    <div className="bg-gradient-to-b from-[#3B3560] to-[#1F1A33] rounded-2xl p-6 shadow-xl">
-                        <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">สถิติดูดวง</h3>
-                        <div className="flex flex-col gap-4">
-                            <StatCard
-                                icon={<Heart size={20} style={{ color: "#f472b6" }} />}
-                                label="ความรัก"
-                                value={stats.love}
-                                iconBg="rgba(236,72,153,0.2)"
-                            />
-                            <StatCard
-                                icon={<DollarSign size={20} style={{ color: "#facc15" }} />}
-                                label="การเงิน"
-                                value={stats.money}
-                                iconBg="rgba(250,204,21,0.2)"
-                            />
-                            <StatCard
-                                icon={<BookOpen size={20} style={{ color: "#4ade80" }} />}
-                                label="การเรียน"
-                                value={stats.study}
-                                iconBg="rgba(74,222,128,0.15)"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Order Stats */}
-                    <div className="bg-gradient-to-b from-[#2D3561] to-[#1A1F33] rounded-2xl p-6 shadow-xl">
-                        <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">สถิติสั่งซื้อ</h3>
-                        <div className="flex flex-col gap-4">
-                            <StatCard
-                                icon={<ShoppingBag size={20} style={{ color: "#818cf8" }} />}
-                                label="คำสั่งซื้อทั้งหมด"
-                                value={orderStats.totalOrders}
-                                iconBg="rgba(129,140,248,0.2)"
-                            />
-                            <StatCard
-                                icon={<Package size={20} style={{ color: "#34d399" }} />}
-                                label="ชำระแล้ว"
-                                value={orderStats.paidOrders}
-                                iconBg="rgba(52,211,153,0.2)"
-                            />
-                            <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-                                <div
-                                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                    style={{ backgroundColor: "rgba(250,204,21,0.2)" }}
-                                >
-                                    <DollarSign size={20} style={{ color: "#facc15" }} />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-xs text-gray-400">ยอดรวม</p>
-                                    <p className="text-lg font-bold text-white">฿{orderStats.totalSpent.toLocaleString()}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div className="hidden md:block w-80 shrink-0 space-y-6">
+                    <StatsBlock stats={stats} orderStats={orderStats} />
                 </div>
             </div>
         </div>
+    </div>
+
 
         {/* ===== Payment Popup ===== */}
         <AnimatePresence>
@@ -750,7 +715,6 @@ export default function HistoryPage() {
                 </motion.div>
             )}
         </AnimatePresence>
-
         <PopupAlert
             isOpen={isOpen}
             title={title}
@@ -762,24 +726,92 @@ export default function HistoryPage() {
     );
 }
 
-function StatCard({ icon, label, value, iconBg }: {
+function StatCard({ icon, label, value, iconBg, compact }: {
     icon: React.ReactNode;
     label: string;
     value?: number;
     iconBg: string;
+    compact?: boolean;
 }) {
     return (
-        <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+        <div className={`flex items-center gap-2 sm:gap-4 bg-white/5 border border-white/10 rounded-xl ${compact ? "px-3 py-2 sm:px-4 sm:py-3" : "px-4 py-3"}`}>
             <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                className={`${compact ? "w-7 h-7 sm:w-10 sm:h-10" : "w-10 h-10"} rounded-lg flex items-center justify-center shrink-0`}
                 style={{ backgroundColor: iconBg }}
             >
-                {icon}
+                {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { size: compact ? 14 : 18 }) : icon}
             </div>
-            <div className="flex-1">
-                <p className="text-xs text-gray-400">{label}</p>
-                <p className="text-xl font-bold text-white">{value || 0}</p>
+            <div className="flex-1 min-w-0">
+                <p className="text-[9px] sm:text-xs text-gray-400 truncate uppercase tracking-tighter sm:tracking-normal">{label}</p>
+                <p className={`${compact ? "text-sm sm:text-xl" : "text-xl"} font-bold text-white`}>{value || 0}</p>
             </div>
         </div>
+    );
+}
+
+function StatsBlock({ stats, orderStats, tab }: { stats: any; orderStats: any; tab?: string }) {
+    return (
+        <>
+            {(!tab || tab === "horoscope") && (
+                <div className="bg-gradient-to-b from-[#3B3560] to-[#1F1A33] rounded-2x p-4 sm:p-6 shadow-xl">
+                    <h3 className="text-[10px] sm:text-sm font-bold text-white/40 uppercase tracking-widest mb-3">สถิติดูดวง</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 md:flex md:flex-col gap-2.5 sm:gap-4">
+                        <StatCard
+                            icon={<Heart style={{ color: "#f472b6" }} />}
+                            label="ความรัก"
+                            value={stats.love}
+                            iconBg="rgba(236,72,153,0.1)"
+                            compact
+                        />
+                        <StatCard
+                            icon={<DollarSign style={{ color: "#facc15" }} />}
+                            label="การเงิน"
+                            value={stats.money}
+                            iconBg="rgba(250,204,21,0.1)"
+                            compact
+                        />
+                        <StatCard
+                            icon={<BookOpen style={{ color: "#4ade80" }} />}
+                            label="การเรียน"
+                            value={stats.study}
+                            iconBg="rgba(74,222,128,0.1)"
+                            compact
+                        />
+                    </div>
+                </div>
+            )}
+
+            {(!tab || tab === "orders") && (
+                <div className="bg-gradient-to-b from-[#2D3561] to-[#1A1F33] rounded-2xl p-6 shadow-xl">
+                    <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">สถิติสั่งซื้อ</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-4">
+                        <StatCard
+                            icon={<ShoppingBag size={20} style={{ color: "#818cf8" }} />}
+                            label="คำสั่งซื้อ"
+                            value={orderStats.totalOrders}
+                            iconBg="rgba(129,140,248,0.15)"
+                        />
+                        <StatCard
+                            icon={<Package size={20} style={{ color: "#34d399" }} />}
+                            label="ชำระแล้ว"
+                            value={orderStats.paidOrders}
+                            iconBg="rgba(52,211,153,0.15)"
+                        />
+                    </div>
+                    <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3 mt-4">
+                        <div
+                            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: "rgba(250,204,21,0.15)" }}
+                        >
+                            <DollarSign size={20} style={{ color: "#facc15" }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[10px] text-gray-400">ยอดรวมทั้งหมด</p>
+                            <p className="text-lg font-bold text-white truncate">฿{orderStats.totalSpent.toLocaleString()}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

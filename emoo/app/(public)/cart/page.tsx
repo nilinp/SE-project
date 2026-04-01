@@ -5,7 +5,6 @@ import { useCartStore, CartItem, CartStore } from "@/lib/cartstore";
 import Image from "next/image";
 import { EllipsisVertical, ArrowBigLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
 import { useRouter } from "next/navigation";
 
 export default function CartPage() {
@@ -57,7 +56,7 @@ export default function CartPage() {
   return (
     <>
       <div className="
-        min-h-screen pb-20
+        min-h-screen pb-10
         text-(--sec)
         flex 
         flex-col 
@@ -65,13 +64,14 @@ export default function CartPage() {
         lg:items-start
         justify-center
         px-4
+        sm:px-6
         lg:px-16
-        lg:ml-24
+        md:ml-20
         pt-5
-        gap-20">
+        gap-10 lg:gap-20">
 
         {/* cart items */}
-        <div className="flex-1">
+        <div className="flex-1 w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
           <div className="
             sticky 
             top-0 
@@ -81,15 +81,18 @@ export default function CartPage() {
             pb-2 pt-4 mb-4
             mt-2 
             flex 
-            items-baseline 
-            gap-2">
+            items-center
+            justify-center
+            md:justify-start
+            gap-2
+            w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
             <button
               onClick={() => router.back()}
               className="flex items-center text-[var(--bg)] hover:opacity-70 transition cursor-pointer mr-2"
             >
               <ArrowBigLeft size={28} />
             </button>
-            <h1 className="text-3xl font-bold">ตะกร้าของคุณ</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">ตะกร้าของคุณ</h1>
             {totalItems > 0 && (
               <span className="text-gray-500 font-medium">({totalItems})</span>
             )}
@@ -105,86 +108,112 @@ export default function CartPage() {
                   exit={{ opacity: 0, scale: 0.9, y: -10 }}
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   key={item.id}
-                  className="flex gap-6 items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_15px_rgba(0,0,0,0.05)]"
+                  className="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_4px_15px_rgba(0,0,0,0.05)]"
                 >
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(item.id)}
-                    onChange={() => toggleSelect(item.id)}
-                    className="w-5 h-5 accent-(--bg) cursor-pointer"
-                  />
-                  <Image
-                    src={item.image || (item as any).img || "/placeholder.png"}
-                    alt={item.name}
-                    width={250}
-                    height={250}
-                    className="rounded-xl"
-                  />
-                  <div className="flex-1">
-                    <h2 className="text-xl font-semibold">{item.name}</h2>
-                    <p>{item.price} ฿</p>
-                  </div>
+                  <div className="flex items-center gap-2 sm:gap-6 w-full">
+                    {/* Select + Image */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(item.id)}
+                        onChange={() => toggleSelect(item.id)}
+                        className="w-4 h-4 sm:w-5 sm:h-5 accent-(--bg) cursor-pointer"
+                      />
+                      <div className="w-14 h-14 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-white/5 border border-gray-50 flex-shrink-0">
+                        <Image
+                          src={item.image || (item as any).img || "/placeholder.png"}
+                          alt={item.name}
+                          width={128}
+                          height={128}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                    </div>
 
-                  <div className="flex gap-3 items-center">
-                    <button onClick={() => handleDecrease(item)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-                      -
-                    </button>
-                    <input 
-                      type="text" 
-                      inputMode="numeric"
-                      value={item.quantity === 0 ? "0" : item.quantity}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        const val = e.target.value.replace(/[^0-9]/g, '');
-                        if (val === "" || val === "0") {
-                          updateQuantity(item.id, 0);
-                          confirmDelete(item.id);
-                          return;
-                        }
-                        const num = parseInt(val, 10);
-                        if (!isNaN(num) && num > 0) {
-                          updateQuantity(item.id, num);
-                        }
-                      }}
-                      onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-                        if (item.quantity === 0 && itemToDelete !== item.id) {
-                          updateQuantity(item.id, 1);
-                        }
-                      }}
-                      className="w-12 text-center bg-gray-100/80 rounded-md py-1 font-medium hover:bg-gray-200 focus:bg-white focus:ring-1 focus:ring-(--bg) transition-colors focus:outline-none"
-                    />
-                    <button onClick={() => increase(item.id)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-                      +
-                    </button>
-                  </div>
+                    {/* Content: Name + Price + Qty + Menu */}
+                    <div className="flex-1 min-w-0 flex items-center justify-between gap-1.5 sm:gap-4">
+                      {/* Name & Price */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-[13px] sm:text-xl font-bold truncate text-(--sec) leading-tight">
+                          {item.name}
+                        </h3>
+                        <p className="text-gray-500 font-medium text-[11px] sm:text-base mt-0.5">
+                          ฿{item.price.toLocaleString()}
+                        </p>
+                      </div>
 
-                  <div className="relative isolate ml-4 self-start -mt-2">
-                    <button 
-                      onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                      className="text-gray-500 hover:text-black p-2 text-xl leading-none cursor-pointer"
-                    >
-                      <EllipsisVertical/>
-                    </button>
-                    <AnimatePresence>
-                      {openMenuId === item.id && (
-                        <>
-                          <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                          <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                            transition={{ duration: 0.15 }}
-                            className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg z-20 border border-gray-100 py-1 origin-top-right"
+                      {/* Qty Controls + Ellipsis */}
+                      <div className="flex items-center gap-1 sm:gap-6">
+                        <div className="flex gap-1 sm:gap-2 items-center bg-gray-50/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded-xl border border-gray-100">
+                          <button 
+                            onClick={() => handleDecrease(item)} 
+                            className="
+                            w-6 h-6 
+                            sm:w-8 sm:h-8 
+                            flex items-center justify-center 
+                            rounded-full 
+                            hover:bg-gray-200 
+                            transition-colors 
+                            cursor-pointer 
+                            text-gray-400 
+                            font-bold"
                           >
-                            <button
-                              onClick={() => { confirmDelete(item.id); setOpenMenuId(null); }}
-                              className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-50 transition-colors cursor-pointer"
-                            >
-                              ลบสินค้า
-                            </button>
-                          </motion.div>
-                        </>
-                      )}
-                    </AnimatePresence>
+                            —
+                          </button>
+                          <span className="w-5 sm:w-10 text-center text-[12px] sm:text-base font-bold text-(--sec)">
+                            {item.quantity}
+                          </span>
+                          <button 
+                            onClick={() => increase(item.id)} 
+                            className="
+                            w-6 h-6 
+                            sm:w-8 sm:h-8 
+                            flex items-center justify-center 
+                            rounded-full 
+                            hover:bg-gray-200 
+                            transition-colors 
+                            cursor-pointer 
+                            text-gray-400 
+                            font-bold"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <div className="relative shrink-0">
+                          <button
+                            onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                            className="p-1 text-gray-400 hover:text-indigo-500 transition-colors cursor-pointer"
+                          >
+                            <EllipsisVertical size={18} />
+                          </button>
+
+                          <AnimatePresence>
+                            {openMenuId === item.id && (
+                              <>
+                                <motion.div
+                                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                  className="absolute right-0 bottom-full mb-2 w-32 bg-white rounded-xl shadow-2xl border border-gray-100 py-1 z-50 overflow-hidden"
+                                >
+                                  <button
+                                    onClick={() => { confirmDelete(item.id); setOpenMenuId(null); }}
+                                    className="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-red-500 font-semibold hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer"
+                                  >
+                                    ลบสินค้า
+                                  </button>
+                                </motion.div>
+                                <div 
+                                  className="fixed inset-0 z-40" 
+                                  onClick={() => setOpenMenuId(null)} 
+                                />
+                              </>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -200,7 +229,7 @@ export default function CartPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
-              className="w-[350px] p-6 border-2 rounded-xl border-(--bg) sticky top-10"
+              className="w-full max-w-md lg:w-[350px] p-6 border-2 rounded-2xl border-(--bg) bg-white/50 backdrop-blur-md lg:sticky lg:top-8 shadow-xl mx-auto lg:mx-0"
             >
               <h2 className="text-xl font-bold mb-4">ทำการสั่งซื้อ</h2>
               <div className="flex flex-col flex-1 min-h-0">

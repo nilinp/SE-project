@@ -83,16 +83,17 @@ export default function ProductDetail({
         )}
       </AnimatePresence>
 
-      {/* Back Button */}
-      <button
-        onClick={() => router.back()}
-        className="flex items-center gap-1 text-[var(--bg)] hover:opacity-70 transition cursor-pointer mb-4"
-      >
-        <ArrowBigLeft size={28} />
-      </button>
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md -mx-4 px-4 pt-6 pb-4 mb-4">
+        {/* Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-1 text-[var(--bg)] hover:opacity-70 transition cursor-pointer"
+        >
+          <ArrowBigLeft size={28} />
+        </button>
+      </div>
 
-      <div className="flex gap-20 mt-10 justify-center">
-
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 mt-10 justify-center">
         {loading ? (
           <div className="flex justify-center items-center py-20 w-full h-[450px]">
             <span className="text-xl font-semibold text-(--sec)">กำลังโหลด...</span>
@@ -103,7 +104,7 @@ export default function ProductDetail({
           </div>
         ) : (
         <>
-        <div className="w-[500px] h-100 relative bg-gray-50 rounded-2xl overflow-hidden">
+        <div className="w-full lg:w-[500px] h-72 sm:h-100 relative bg-gray-50 rounded-2xl overflow-hidden">
           <Image
             src={product.img || "/placeholder.png"}
             alt={product.name}
@@ -112,8 +113,8 @@ export default function ProductDetail({
           />
         </div>
 
-        <div className="flex-1 max-w-xl">
-          <h1 className="text-3xl font-bold leading-tight">{product.name}</h1>
+        <div className="flex-1 w-full max-w-xl text-center lg:text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold leading-tight">{product.name}</h1>
 
           {/* Details */}
           <p className="mt-4 text-sm text-gray-500 leading-relaxed">
@@ -194,7 +195,7 @@ export default function ProductDetail({
           </div>
 
           {/* Add to Cart Button */}
-          <div className="mt-8">
+          <div className="mt-8 flex justify-center lg:justify-start">
             <button 
               onClick={() => {
                 if (!user) {
@@ -214,7 +215,7 @@ export default function ProductDetail({
                 });
               }}
               className="
-                w-full max-w-sm
+                w-full sm:max-w-sm
                 flex items-center justify-center gap-3
                 py-4
                 rounded-full

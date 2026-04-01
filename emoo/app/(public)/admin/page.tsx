@@ -10,7 +10,6 @@ import {
 } from "recharts";
 import { Clock, User, Mail, Globe, Monitor, TrendingUp, Eye, Heart, DollarSign, BookOpen, RefreshCw, LogOut } from "lucide-react";
 
-/* ─── Types ─── */
 type LoginRecord = {
   id: string;
   username: string;
@@ -113,7 +112,6 @@ export default function AdminProfile() {
   const fetchData = async () => {
     setRefreshing(true);
 
-    // 1. Fetch login history
     const { data: logins } = await supabase
       .from("admin_login_history")
       .select("*")
@@ -122,13 +120,11 @@ export default function AdminProfile() {
 
     if (logins) setLoginHistory(logins);
 
-    // 2. Fetch horoscope views
     const { data: views } = await supabase
       .from("horoscope_views")
       .select("category, viewed_at");
 
     if (views) {
-      // Category totals
       const counts: Record<string, number> = { love: 0, money: 0, study: 0 };
       views.forEach((v) => {
         if (counts[v.category] !== undefined) counts[v.category]++;
@@ -138,7 +134,6 @@ export default function AdminProfile() {
       );
       setTotalViews(views.length);
 
-      // Monthly breakdown (last 6 months)
       const monthMap: Record<string, Record<string, number>> = {};
       views.forEach((v) => {
         const label = getMonthLabel(v.viewed_at);
@@ -149,7 +144,6 @@ export default function AdminProfile() {
       const sorted = Object.entries(monthMap)
         .map(([month, data]) => ({ month, ...data }))
         .sort((a, b) => {
-          // parse back to date for sorting
           const parse = (m: string) => {
             const parts = m.split(" ");
             return parts.join(" ");

@@ -48,7 +48,7 @@ export default function Login() {
 
     setLoading(true);
 
-    // ─── Look up email from profiles table via username ───
+    // ─── Look up email from profiles table via username ──ﬁ─
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("id, email")
@@ -74,14 +74,13 @@ export default function Login() {
     });
 
     if (loginError) {
-      if (loginError.message.includes("Email not confirmed")) {
+      if (loginError.message.includes("อีเมลนี้ยังไม่ได้รับการยืนยัน")) {
         setError("กรุณายืนยันอีเมลของคุณก่อนเข้าสู่ระบบ");
       } else {
         setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
       }
       setLoading(false);
     } else {
-      // โหลดตะกร้าจาก DB
       await useCartStore.getState().loadCart();
       router.push("/horoscope");
     }
@@ -92,14 +91,16 @@ export default function Login() {
     min-h-screen 
     w-screen 
     flex
-    bg-[url('/bg/login-bg.jpg')] 
-    bg-cover 
-    bg-center ">
+    md:bg-[url('/bg/login-bg.jpg')] 
+    bg-white
+    md:bg-cover 
+    md:bg-center ">
         
         <div className="
+        hidden
+        md:flex
         w-1/2
         min-h-screen
-        flex 
         items-center
         justify-center">
           <div className="text-white text-center ">
@@ -119,15 +120,16 @@ export default function Login() {
         </div>
 
         <div className="
-        w-1/2 
+        w-full 
+        md:w-1/2 
         min-h-screen
         bg-white 
         flex 
         flex-col
         justify-center 
         items-center 
-        rounded-tl-4xl
-        rounded-bl-4xl
+        md:rounded-tl-4xl
+        md:rounded-bl-4xl
         ">
           <div className="
           bg-white
@@ -147,7 +149,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-1/2 text-center border border-red-200">
+            <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded w-3/4 md:w-1/2 text-center border border-red-200">
               {error}
             </p>
           )}
@@ -160,7 +162,7 @@ export default function Login() {
             disabled={loading}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             className="
-            w-1/2 
+            w-3/4 md:w-1/2 
             mb-5 
             px-4 
             py-3 
@@ -179,7 +181,7 @@ export default function Login() {
             disabled={loading}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             className="
-            w-1/2 
+            w-3/4 md:w-1/2 
             mb-5 
             px-4 
             py-3 
@@ -194,7 +196,7 @@ export default function Login() {
             onClick={handleLogin} 
             disabled={loading}
             className="
-            w-1/2 
+            w-3/4 md:w-1/2 
             py-3 
             rounded-full 
             bg-(--bg) 

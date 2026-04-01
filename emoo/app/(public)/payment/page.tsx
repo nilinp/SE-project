@@ -37,7 +37,6 @@ export default function PaymentPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
 
-  // State สำหรับ CVV
   const [cvvDisplay, setCvvDisplay] = useState("");
   const [cvvTimer, setCvvTimer] = useState<NodeJS.Timeout | null>(null);
   const [showCvv, setShowCvv] = useState(false);
@@ -48,7 +47,6 @@ export default function PaymentPage() {
     };
   }, [cvvTimer]);
 
-  // --- LOGIC: หมายเลขบัตร (เว้นวรรคทุก 4 ตัว) ---
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
     if (val.length > 16) val = val.slice(0, 16);
@@ -62,7 +60,6 @@ export default function PaymentPage() {
     
     let processedValue = value;
     if (name === "name") {
-      // Allow only Thai letters, English letters, and spaces
       processedValue = value.replace(/[^a-zA-Zก-ฮะ-์\s]/g, "");
     }
 
@@ -72,7 +69,6 @@ export default function PaymentPage() {
     }
   };
 
-  // --- LOGIC: วันหมดอายุ (Smart Auto-slash & Easy Delete) ---
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
     const oldVal = card.expiry;
@@ -231,23 +227,23 @@ export default function PaymentPage() {
 
   // --- LAYOUT: ส่วนแสดงผลที่ User จะเห็น ---
   return (
-    <div className="min-h-screen pb-20 text-white py-16 px-8 lg:ml-24">
+    <div className="min-h-screen pb-32 md:pb-20 text-white py-12 px-4 sm:px-8 lg:ml-24">
       <div className="max-w-4xl mx-auto space-y-10">
         
-        <header>
-          <button onClick={() => router.back()} className="flex items-center gap-1 text-white/60 hover:text-white transition cursor-pointer mb-4">
+        <header className="sticky top-0 z-40 bg-[#1a1a2e]/95 backdrop-blur-md -mx-4 px-4 pt-6 pb-4">
+          <button onClick={() => router.back()} className="flex items-center gap-1 text-white/60 hover:text-white transition cursor-pointer mb-2">
             <ArrowBigLeft size={28} />
           </button>
-          <h1 className="text-5xl font-black mb-3 tracking-tighter">ชำระเงิน</h1>
-          <p className="text-white/40 text-sm tracking-wide uppercase">เลือกวิธีชำระเงิน</p>
+          <h1 className="text-3xl sm:text-5xl font-black mb-1 tracking-tighter">ชำระเงิน</h1>
+          <p className="text-white/40 text-xs sm:text-sm tracking-wide uppercase">เลือกวิธีชำระเงิน</p>
         </header>
 
-        <div className="bg-white/[0.02] border border-white/5 rounded-[24px] p-8 flex justify-between items-center shadow-lg">
-          <div>
-            <p className="text-white/40 text-sm uppercase tracking-widest font-bold">ยอดที่ต้องชำระ</p>
-            <p className="text-5xl font-black text-indigo-400 mt-1">฿{total.toLocaleString()}</p>
+        <div className="bg-white/[0.02] border border-white/5 rounded-[24px] p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 shadow-lg">
+          <div className="text-center sm:text-left">
+            <p className="text-white/40 text-xs sm:text-sm uppercase tracking-widest font-bold">ยอดที่ต้องชำระ</p>
+            <p className="text-3xl sm:text-5xl font-black text-indigo-400 mt-1">฿{total.toLocaleString()}</p>
           </div>
-          <div className="text-right text-white/30 text-sm">
+          <div className="text-center sm:text-right text-white/30 text-xs sm:text-sm">
             <p>{checkoutItems.length} รายการ</p>
             <p className="text-green-400 font-bold mt-1">ฟรีค่าจัดส่ง</p>
           </div>
@@ -257,29 +253,29 @@ export default function PaymentPage() {
           <div className="grid grid-cols-2 gap-4">
             <button onClick={() => setMethod("qr")} 
             className={`
-            p-6 
+            p-4 sm:p-6 
             rounded-2xl 
             border 
             transition-all 
             text-left 
             cursor-pointer
             ${method === "qr" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
-              <p className="mb-2"><QrCode size={50}/></p>
-              <p className="font-bold text-lg">QR Code</p>
-              <p className="text-white/40 text-sm mt-1">ชำระผ่าน Mobile Banking</p>
+              <p className="mb-2"><QrCode className="w-9 h-9 sm:w-12 sm:h-12" /></p>
+              <p className="font-bold text-base sm:text-lg">QR Code</p>
+              <p className="text-white/40 text-[10px] sm:text-sm mt-1">ชำระผ่าน Mobile Banking</p>
             </button>
             <button onClick={() => setMethod("credit")} 
             className={`
-            p-6 
+            p-4 sm:p-6 
             rounded-2xl 
             border 
             transition-all 
             text-left  
             cursor-pointer
             ${method === "credit" ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
-              <p className="mb-2"><CreditCard size={50}/></p>
-              <p className="font-bold text-lg">บัตรเครดิต / เดบิต</p>
-              <p className="text-white/40 text-sm mt-1">Visa, Mastercard</p>
+              <p className="mb-2"><CreditCard className="w-9 h-9 sm:w-12 sm:h-12" /></p>
+              <p className="font-bold text-base sm:text-lg">บัตรเครดิต</p>
+              <p className="text-white/40 text-[10px] sm:text-sm mt-1">Visa, Mastercard</p>
             </button>
           </div>
 
@@ -334,6 +330,7 @@ export default function PaymentPage() {
         {method && (
           <div className="flex justify-center pt-8">
             <button onClick={handleConfirm} disabled={loading} className="
+            w-full sm:w-auto
             bg-transparent 
             border-2 border-white 
             hover:bg-white/10 
@@ -345,7 +342,7 @@ export default function PaymentPage() {
             transition-all 
             active:scale-[0.98] 
             disabled:opacity-50 
-            px-24 
+            sm:px-24 
             cursor-pointer">
               {loading ? "กำลังดำเนินการ..." : "ยืนยันการชำระเงิน"}
             </button>

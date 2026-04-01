@@ -47,15 +47,21 @@ export default function SelectCardPage() {
     };
 
     return (
-        <div className="relative min-h-screen pb-20 bg-[#2F2847] text-white p-10 md:pl-28" style={{ backgroundColor: "#2F2847" }}>
+        <div className="relative min-h-screen pb-20 bg-[#2F2847] text-white pt-0 overflow-x-hidden" style={{ backgroundColor: "#2F2847" }}>
 
-            {/* Back Button */}
-            <button
-                onClick={() => router.back()}
-                className="flex items-center gap-1 text-[#ffecd9] hover:opacity-70 transition cursor-pointer mb-4"
-            >
-                <ArrowBigLeft size={28} />
-            </button>
+            <div className="sticky top-0 z-40 bg-[#2F2847]/95 backdrop-blur-md -mx-10 px-10 pt-6 pb-4 mb-4 flex items-center justify-between">
+                {/* Back Button */}
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-1 text-[#ffecd9] hover:opacity-70 transition cursor-pointer"
+                >
+                    <ArrowBigLeft size={28} />
+                </button>
+
+                <h1 className="text-xl md:text-3xl font-semibold">
+                    {getThaiName()}
+                </h1>
+            </div>
 
             <h1 className="text-4xl text-center mb-4 font-semibold">
                 เลือกไพ่ — {getThaiName()}

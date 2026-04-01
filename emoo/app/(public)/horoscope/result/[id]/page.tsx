@@ -83,278 +83,284 @@ export default function ResultPage() {
 
     return (
 
-        <div className="min-h-screen pb-20 bg-[#2F2847] text-white p-12">
+        <div className="min-h-screen pb-20 bg-[#2F2847] text-white overflow-x-hidden pt-0">
 
-            {/* Back Button */}
-            <button
-                onClick={() => router.back()}
-                className="flex items-center gap-1 text-[#ffecd9] hover:opacity-70 transition cursor-pointer mb-4"
-            >
-                <ArrowBigLeft size={28} />
-            </button>
-
-            <div className="max-w-6xl mx-auto flex gap-16 items-start">
-
-                {/* ไพ่ */}
-                <div className="w-1/3 flex flex-col items-center">
-
-                    <img
-                        src={card.image}
-                        className="w-80 rounded-xl shadow-2xl mb-6"
-                    />
-
-                    <h1 className="text-3xl font-bold">
-                        {card.name}
-                    </h1>
-
-                </div>
-
-
-                {/* ข้อความ */}
-                <div className="w-2/3 space-y-8">
-
-
-                    {/* Keyword */}
-                    <div className="bg-white/10 p-6 rounded-xl shadow-lg">
-
-                        <h2 className="text-3xl font-bold mb-4 text-yellow-300 border-b-2 border-yellow-300/40 pb-2">
-                            ความหมายไพ่
-                        </h2>
-
-                        <p className="leading-relaxed text-gray-200">
-                            {card.keyword}
-                        </p>
-
-                    </div>
-
-
-                    {/* Prediction */}
-                    <div className="bg-white/10 p-6 rounded-xl shadow-lg">
-
-                        <h2 className="text-3xl font-bold mb-4 text-purple-300 border-b-2 border-purple-300/40 pb-2">
-                            คำทำนาย
-                        </h2>
-
-                        {category === "love" && (
-
-                            <div className="grid md:grid-cols-2 gap-6 mt-4">
-
-                                {/* Single */}
-                                <div className="
-                                            bg-[#5A5470]
-                                            rounded-xl
-                                            min-h-[180px]
-                                            flex
-                                            flex-col
-                                            items-center
-                                            justify-start
-                                            text-center
-                                            transition-all
-                                            duration-300
-                                            hover:scale-105
-                                            hover:bg-[#6A6285]
-                                            group
-                                            cursor-pointer
-                                            p-6
-                                            pt-8
-                                            ">
-
-                                    {/* Title */}
-                                    <div className="
-                                            transition-all
-                                            duration-500
-                                            group-hover:-translate-y-6
-                                            ">
-
-                                        <h3 className="text-2xl font-semibold text-pink-300">
-                                            Single
-                                        </h3>
-
-                                        <p className="
-                                            text-sm
-                                            text-gray-300
-                                            mt-2
-                                            transition-opacity
-                                            duration-300
-                                            group-hover:opacity-0
-                                            ">
-                                            เลื่อนเมาส์เพื่อดูคำทำนาย
-                                        </p>
-
-                                    </div>
-
-                                    {/* Prediction text */}
-                                    <p className="
-                                            text-gray-200
-                                            leading-loose
-                                            mt-4
-                                            opacity-0
-                                            origin-top
-                                            max-h-0
-                                            overflow-hidden
-                                            transition-all
-                                            duration-500
-                                            group-hover:opacity-100
-                                            group-hover:scale-y-100
-                                            group-hover:max-h-[400px]
-                                            text-center
-                                            max-w-[420px]
-                                            mx-auto
-                                            ">
-                                        {card.love.single}
-                                    </p>
-
-                                </div>
-
-
-                                {/* Couple */}
-                                <div className="
-                                            bg-[#5A5470]
-                                            rounded-xl
-                                            min-h-[180px]
-                                            flex
-                                            flex-col
-                                            items-center
-                                            justify-start
-                                            text-center
-                                            transition-all
-                                            duration-300
-                                            hover:scale-105
-                                            hover:bg-[#6A6285]
-                                            group
-                                            cursor-pointer
-                                            p-6
-                                            pt-8
-                                            ">
-
-                                    {/* Title */}
-                                    <div className="
-                                            transition-all
-                                            duration-500
-                                            group-hover:-translate-y-6
-                                            ">
-
-                                        <h3 className="text-2xl font-semibold text-rose-300">
-                                            Couple
-                                        </h3>
-
-                                        <p className="
-                                            text-sm
-                                            text-gray-300
-                                            mt-2
-                                            transition-opacity
-                                            duration-300
-                                            group-hover:opacity-0
-                                            ">
-                                            เลื่อนเมาส์เพื่อดูคำทำนาย
-                                        </p>
-
-                                    </div>
-
-                                    {/* Prediction text */}
-                                    <p className="
-                                            text-gray-200
-                                            leading-loose
-                                            mt-4
-                                            opacity-0
-                                            max-h-0
-                                            overflow-hidden
-                                            transition-all
-                                            duration-500
-                                            group-hover:opacity-100
-                                            group-hover:max-h-[1000px]
-                                            text-center
-                                            max-w-[420px]
-                                            mx-auto
-                                            ">
-                                        {card.love.couple}
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        )}
-                        
-                        {category === "money" && (
-                            <p className="text-gray-200">
-                                {card.finance.predict}
-                            </p>
-                        )}
-
-                        {category === "study" && (
-                            <p className="text-gray-200">
-                                {card.job_edu.predict}
-                            </p>
-                        )}
-
-                    </div>
-
-
-                    {/* Guidance */}
-                    <div className="bg-white/10 p-6 rounded-xl shadow-lg">
-
-                        <h2 className="text-3xl font-bold mb-4 text-pink-300 border-b-2 border-pink-300/40 pb-2">
-                            คำแนะนำ
-                        </h2>
-
-                        {category === "love" && (
-                            <p className="text-gray-200">
-                                {card.love.guidance}
-                            </p>
-                        )}
-
-                        {category === "money" && (
-                            <p className="text-gray-200">
-                                {card.finance.guidance}
-                            </p>
-                        )}
-
-                        {category === "study" && (
-                            <p className="text-gray-200">
-                                {card.job_edu.guidance}
-                            </p>
-                        )}
-
-                    </div>
-
-                </div>
-
+            <div className="sticky top-0 z-40 bg-[#2F2847]/95 backdrop-blur-md -mx-6 px-6 pt-6 pb-4 mb-4">
+                {/* Back Button */}
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-1 text-[#ffecd9] hover:opacity-70 transition cursor-pointer"
+                >
+                    <ArrowBigLeft size={28} />
+                </button>
             </div>
 
-            {/* Next Button */}
-            <div className="max-w-6xl mx-auto flex justify-end mt-2">
+            <div className="p-6 pt-0 md:p-12">
 
-                <button
-                    onClick={() => router.push("/history")}
-                    className="
-                            flex
-                            items-center
-                            cursor-pointer
-                            gap-2
-                            px-8
-                            py-3
-                            rounded-xl
-                            bg-gradient-to-r
-                            from-purple-500
-                            to-indigo-500
-                            text-yellow-200
-                            font-semibold
-                            tracking-wide
-                            shadow-lg
-                            shadow-purple-900/40
-                            border
-                            border-yellow-300/30
-                            hover:scale-105
-                            hover:shadow-purple-500/40
-                            hover:from-purple-400
-                            hover:to-indigo-400
-                            transition
-                            duration-300
-                            "
-                >
-                    <History size={16} /> ดูประวัติทั้งหมด
-                </button>
+                <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 items-start">
+
+                    {/* ไพ่ */}
+                    <div className="w-full md:w-1/3 flex flex-col items-center">
+
+                        <img
+                            src={card.image}
+                            className="w-64 md:w-80 rounded-xl shadow-2xl mb-6"
+                        />
+
+                        <h1 className="text-2xl md:text-3xl font-bold">
+                            {card.name}
+                        </h1>
+
+                    </div>
+
+
+                    {/* ข้อความ */}
+                    <div className="w-full md:w-2/3 space-y-8">
+
+
+                        {/* Keyword */}
+                        <div className="bg-white/10 p-6 rounded-xl shadow-lg">
+
+                            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-yellow-300 border-b-2 border-yellow-300/40 pb-2">
+                                ความหมายไพ่
+                            </h2>
+
+                            <p className="leading-relaxed text-gray-200">
+                                {card.keyword}
+                            </p>
+
+                        </div>
+
+
+                        {/* Prediction */}
+                        <div className="bg-white/10 p-6 rounded-xl shadow-lg">
+
+                            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-purple-300 border-b-2 border-purple-300/40 pb-2">
+                                คำทำนาย
+                            </h2>
+
+                            {category === "love" && (
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+
+                                    {/* Single */}
+                                    <div className="
+                                                bg-[#5A5470]
+                                                rounded-xl
+                                                min-h-[150px] md:min-h-[180px]
+                                                flex
+                                                flex-col
+                                                items-center
+                                                justify-start
+                                                text-center
+                                                transition-all
+                                                duration-300
+                                                hover:scale-[1.02] md:hover:scale-105
+                                                hover:bg-[#6A6285]
+                                                group
+                                                cursor-pointer
+                                                p-6
+                                                pt-8
+                                                ">
+
+                                        {/* Title */}
+                                        <div className="
+                                                transition-all
+                                                duration-500
+                                                md:group-hover:-translate-y-6
+                                                ">
+
+                                            <h3 className="text-xl md:text-2xl font-semibold text-pink-300">
+                                                Single
+                                            </h3>
+
+                                            <p className="
+                                                text-sm
+                                                text-gray-300
+                                                mt-2
+                                                transition-opacity
+                                                duration-300
+                                                md:group-hover:opacity-0
+                                                ">
+                                                เลื่อนเมาส์/แตะ เพื่อดูคำทำนาย
+                                            </p>
+
+                                        </div>
+
+                                        {/* Prediction text */}
+                                        <p className="
+                                                text-gray-200
+                                                leading-loose
+                                                mt-4
+                                                opacity-0
+                                                origin-top
+                                                max-h-0
+                                                overflow-hidden
+                                                transition-all
+                                                duration-500
+                                                group-hover:opacity-100
+                                                group-hover:scale-y-100
+                                                group-hover:max-h-[400px]
+                                                text-center
+                                                max-w-[420px]
+                                                mx-auto
+                                                ">
+                                            {card.love.single}
+                                        </p>
+
+                                    </div>
+
+
+                                    {/* Couple */}
+                                    <div className="
+                                                bg-[#5A5470]
+                                                rounded-xl
+                                                min-h-[150px] md:min-h-[180px]
+                                                flex
+                                                flex-col
+                                                items-center
+                                                justify-start
+                                                text-center
+                                                transition-all
+                                                duration-300
+                                                hover:scale-[1.02] md:hover:scale-105
+                                                hover:bg-[#6A6285]
+                                                group
+                                                cursor-pointer
+                                                p-6
+                                                pt-8
+                                                ">
+
+                                        {/* Title */}
+                                        <div className="
+                                                transition-all
+                                                duration-500
+                                                md:group-hover:-translate-y-6
+                                                ">
+
+                                            <h3 className="text-xl md:text-2xl font-semibold text-rose-300">
+                                                Couple
+                                            </h3>
+
+                                            <p className="
+                                                text-sm
+                                                text-gray-300
+                                                mt-2
+                                                transition-opacity
+                                                duration-300
+                                                md:group-hover:opacity-0
+                                                ">
+                                                เลื่อนเมาส์/แตะ เพื่อดูคำทำนาย
+                                            </p>
+
+                                        </div>
+
+                                        {/* Prediction text */}
+                                        <p className="
+                                                text-gray-200
+                                                leading-loose
+                                                mt-4
+                                                opacity-0
+                                                max-h-0
+                                                overflow-hidden
+                                                transition-all
+                                                duration-500
+                                                group-hover:opacity-100
+                                                group-hover:max-h-[1000px]
+                                                text-center
+                                                max-w-[420px]
+                                                mx-auto
+                                                ">
+                                            {card.love.couple}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            )}
+                            
+                            {category === "money" && (
+                                <p className="text-gray-200">
+                                    {card.finance.predict}
+                                </p>
+                            )}
+
+                            {category === "study" && (
+                                <p className="text-gray-200">
+                                    {card.job_edu.predict}
+                                </p>
+                            )}
+
+                        </div>
+
+
+                        {/* Guidance */}
+                        <div className="bg-white/10 p-6 rounded-xl shadow-lg">
+
+                            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-pink-300 border-b-2 border-pink-300/40 pb-2">
+                                คำแนะนำ
+                            </h2>
+
+                            {category === "love" && (
+                                <p className="text-gray-200">
+                                    {card.love.guidance}
+                                </p>
+                            )}
+
+                            {category === "money" && (
+                                <p className="text-gray-200">
+                                    {card.finance.guidance}
+                                </p>
+                            )}
+
+                            {category === "study" && (
+                                <p className="text-gray-200">
+                                    {card.job_edu.guidance}
+                                </p>
+                            )}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {/* Next Button */}
+                <div className="max-w-6xl mx-auto flex justify-end mt-8">
+
+                    <button
+                        onClick={() => router.push("/history")}
+                        className="
+                                flex
+                                items-center
+                                cursor-pointer
+                                gap-2
+                                px-6 md:px-8
+                                py-3
+                                rounded-xl
+                                bg-gradient-to-r
+                                from-purple-500
+                                to-indigo-500
+                                text-yellow-200
+                                font-semibold
+                                tracking-wide
+                                shadow-lg
+                                shadow-purple-900/40
+                                border
+                                border-yellow-300/30
+                                hover:scale-105
+                                hover:shadow-purple-500/40
+                                hover:from-purple-400
+                                hover:to-indigo-400
+                                transition
+                                duration-300
+                                "
+                    >
+                        <History size={16} /> ดูประวัติทั้งหมด
+                    </button>
+
+                </div>
 
             </div>
 

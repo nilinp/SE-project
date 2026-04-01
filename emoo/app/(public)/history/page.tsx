@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import tarot from "../../data/tarot.json";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/sidebar";
-import { Heart, DollarSign, BookOpen, ArrowBigLeft, ShoppingBag, Sparkles, Package, QrCode, CreditCard, X } from "lucide-react";
+import { Heart, DollarSign, BookOpen, ArrowBigLeft, ShoppingBag, Sparkles, Package, QrCode, CreditCard, X, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePopupStore } from "@/lib/popupstore";
@@ -52,6 +52,17 @@ export default function HistoryPage() {
     const [method, setMethod] = useState<"qr" | "credit" | null>(null);
     const [card, setCard] = useState({ number: "", name: "", expiry: "", cvv: "" });
     const [paying, setPaying] = useState(false);
+
+    // CVV states
+    const [cvvDisplay, setCvvDisplay] = useState("");
+    const [cvvTimer, setCvvTimer] = useState<NodeJS.Timeout | null>(null);
+    const [showCvv, setShowCvv] = useState(false);
+
+    useEffect(() => {
+        return () => {
+            if (cvvTimer) clearTimeout(cvvTimer);
+        };
+    }, [cvvTimer]);
 
     const { isOpen, title, message, type, showPopup, closePopup } = usePopupStore();
 
@@ -174,6 +185,51 @@ export default function HistoryPage() {
             val = `${digits.substring(0, 2)}/${digits.substring(2, 4)}`;
         }
         setCard({ ...card, expiry: val });
+    };
+
+    const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let val = e.target.value.replace(/\D/g, "");
+        if (val.length > 16) val = val.slice(0, 16);
+        const formatted = val.match(/.{1,4}/g)?.join(" ") || "";
+        setCard({ ...card, number: formatted });
+    };
+
+    const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputVal = e.target.value;
+        if (inputVal.length < cvvDisplay.length) {
+            const newActualCvv = card.cvv.slice(0, -1);
+            setCard({ ...card, cvv: newActualCvv });
+            setCvvDisplay(showCvv ? newActualCvv : "•".repeat(newActualCvv.length));
+            return;
+        }
+        const addedChar = inputVal.slice(-1);
+        if (!/^[0-9]$/.test(addedChar) || card.cvv.length >= 4) return;
+
+        const newActualCvv = card.cvv + addedChar;
+        setCard({ ...card, cvv: newActualCvv });
+
+        if (showCvv) {
+            setCvvDisplay(newActualCvv);
+        } else {
+            const newDisplay = "•".repeat(newActualCvv.length - 1) + addedChar;
+            setCvvDisplay(newDisplay);
+            if (cvvTimer) clearTimeout(cvvTimer);
+            const timer = setTimeout(() => {
+                setCvvDisplay("•".repeat(newActualCvv.length));
+            }, 500);
+            setCvvTimer(timer);
+        }
+    };
+
+    const toggleCvv = () => {
+        const nextShow = !showCvv;
+        setShowCvv(nextShow);
+        if (nextShow) {
+            setCvvDisplay(card.cvv);
+            if (cvvTimer) clearTimeout(cvvTimer);
+        } else {
+            setCvvDisplay("•".repeat(card.cvv.length));
+        }
     };
 
     // Open payment popup
@@ -615,7 +671,7 @@ export default function HistoryPage() {
                                         <input
                                             name="number"
                                             value={card.number}
-                                            onChange={(e) => setCard({ ...card, number: e.target.value })}
+                                            onChange={handleNumberChange}
                                             placeholder="0000 0000 0000 0000"
                                             maxLength={19}
                                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"
@@ -643,17 +699,21 @@ export default function HistoryPage() {
                                                 className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"
                                             />
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="space-y-2 relative">
                                             <label className="text-xs font-bold text-white/30 uppercase ml-1">CVV</label>
-                                            <input
-                                                name="cvv"
-                                                value={card.cvv}
-                                                onChange={(e) => setCard({ ...card, cvv: e.target.value })}
-                                                placeholder="000"
-                                                maxLength={3}
-                                                type="password"
-                                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm"
-                                            />
+                                            <div className="relative">
+                                                <input
+                                                    name="cvv"
+                                                    value={cvvDisplay}
+                                                    onChange={handleCvvChange}
+                                                    placeholder="000"
+                                                    type="text"
+                                                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-sm pr-12"
+                                                />
+                                                <button type="button" onClick={toggleCvv} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/60 p-1 cursor-pointer">
+                                                    {showCvv ? <Eye size={20} /> : <EyeOff size={20} />}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>

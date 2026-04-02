@@ -627,7 +627,7 @@ export default function HistoryPage() {
                                     <p className="text-white/40 text-xs uppercase tracking-widest font-bold">สแกน QR เพื่อชำระเงิน</p>
                                     <div className="bg-white p-3 rounded-xl">
                                         <img
-                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=payment-${payingOrder.total}`}
+                                            src={`https://promptpay.io/0867895835/${payingOrder.total}`}
                                             alt="QR Code"
                                             className="w-44 h-44"
                                         />

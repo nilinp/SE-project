@@ -283,7 +283,7 @@ export default function PaymentPage() {
             <div className="bg-white/[0.02] border border-white/5 rounded-[24px] p-10 flex flex-col items-center gap-6 shadow-lg animate-in fade-in zoom-in-95 duration-300">
               <p className="text-white/40 text-sm uppercase tracking-widest font-bold">สแกน QR เพื่อชำระเงิน</p>
               <div className="bg-white p-4 rounded-2xl">
-                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=payment-${total}`} alt="QR Code" className="w-48 h-48" />
+                <img src={`https://promptpay.io/0867895835/${total}`} alt="QR Code" className="w-48 h-48" />
               </div>
               <p className="text-indigo-400 font-black text-3xl">฿{total.toLocaleString()}</p>
             </div>
